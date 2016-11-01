@@ -20,9 +20,9 @@ public class MySpringTransactionAnnotationParser extends SpringTransactionAnnota
     protected TransactionAttribute parseTransactionAnnotation(AnnotationAttributes attributes) {
         TransactionAttribute transactionAttribute = super.parseTransactionAnnotation(attributes);
         if (transactionAttribute.isReadOnly()){
-            ((RuleBasedTransactionAttribute)transactionAttribute).setQualifier(NutDataSourceConfiguration.ReadTransactionManagerKey);
+            //((RuleBasedTransactionAttribute)transactionAttribute).setQualifier(NutDataSourceConfiguration.ReadTransactionManagerKey);
         }else {
-            ((RuleBasedTransactionAttribute)transactionAttribute).setQualifier(NutDataSourceConfiguration.RWTransactionManagerKey);
+            //((RuleBasedTransactionAttribute)transactionAttribute).setQualifier(NutDataSourceConfiguration.RWTransactionManagerKey);
         }
         return transactionAttribute;
     }

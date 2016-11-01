@@ -32,6 +32,6 @@ public class MyProxyTransactionManagementConfiguration extends ProxyTransactionM
     @Bean
     @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
     public TransactionAttributeSource transactionAttributeSource() {
-        return new AnnotationTransactionAttributeSource(new MySpringTransactionAnnotationParser());
+        return new MyAnnotationTransactionAttributeSource();
     }
 }

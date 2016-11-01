@@ -15,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.util.AssertionErrors;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Random;
 
@@ -33,11 +34,16 @@ public class TestApplication{
     public void testDelAllUser(){
         int size = userService.delAll();
         logger.info("testDelAllUser size:{}", size);
+
+
+        List<User> list = userService.selectAll();
+
+        logger.debug("testLoadAll1 :{}", list);
     }
 
     @Test
     public void testUserService(){
-        Random random = new Random(100);
+        Random random = new Random();
         String uname = "zy"+random.nextInt();
         User user = new User();
         user.setAge((byte)12);
@@ -47,12 +53,14 @@ public class TestApplication{
         User regedUser = userService.regUser(user);
         logger.debug("regedUser :{}", regedUser);
         Assert.assertTrue("hahaha", regedUser.getUid()>0);
+
+
     }
 
     @After
     public void testLoadAll(){
         List<User> list = userService.selectAll();
 
-        logger.debug("testLoadAll :{}", list);
+        logger.debug("testLoadAll2 :{}", list);
     }
 }

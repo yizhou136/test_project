@@ -1,6 +1,7 @@
 package com.zy.nut.services.configuration.datasource;
 
 
+import com.zy.nut.services.configuration.tx.MyAnnotationTransactionAttributeSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
@@ -14,14 +15,14 @@ import javax.sql.DataSource;
  */
 public class NutRoutingDataSource extends AbstractRoutingDataSource{
     private Logger logger = LoggerFactory.getLogger(NutRoutingDataSource.class);
-    public static final String ReadKey = "ReadKey";
-    public static final String WriteKey = "WriteKey";
+
 
     @Override
     protected String determineCurrentLookupKey() {
-        String re = WriteKey;
-        if (TransactionSynchronizationManager.isCurrentTransactionReadOnly()){
-            re = ReadKey;
+        String re = NutDataSourceConfiguration.RWDataSourceKey;
+        Boolean isReadOnly = (Boolean) MyAnnotationTransactionAttributeSource.getValue();
+        if (isReadOnly){
+            re = NutDataSourceConfiguration.ReadDataSourceKey;
         }
 
         logger.debug("determineCurrentLookupKey {}", re);

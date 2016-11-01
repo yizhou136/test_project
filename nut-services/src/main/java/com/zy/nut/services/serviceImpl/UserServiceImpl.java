@@ -14,6 +14,7 @@ import org.springframework.test.context.transaction.AfterTransaction;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
