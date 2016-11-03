@@ -12,11 +12,23 @@
     <description>The parent project of nut project</description>
 
     <properties>
-        <springboot_version>1.4.0.RELEASE</springboot_version>
+        <springboot_version>1.4.1.RELEASE</springboot_version>
+        <dubbo_version>2.5.4</dubbo_version>
+        <javassist_version>3.15.0-GA</javassist_version>
+        <parent-path>${project.basedir}</parent-path>
     </properties>
     <modules>
         <module>nut-common</module>
         <module>nut-web</module>
         <module>nut-services</module>
     </modules>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.javassist</groupId>
+                <artifactId>javassist</artifactId>
+                <version>${javassist_version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 </project>

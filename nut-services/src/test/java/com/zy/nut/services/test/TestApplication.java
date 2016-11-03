@@ -53,8 +53,6 @@ public class TestApplication{
         User regedUser = userService.regUser(user);
         logger.debug("regedUser :{}", regedUser);
         Assert.assertTrue("hahaha", regedUser.getUid()>0);
-
-
     }
 
     @After
