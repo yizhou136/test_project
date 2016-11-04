@@ -1,4 +1,4 @@
-package com.zy.nut.web.dubbo;
+package com.zy.nut.web.configuration.dubbo;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
