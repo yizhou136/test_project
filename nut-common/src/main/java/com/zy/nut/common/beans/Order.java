@@ -1,9 +1,11 @@
 package com.zy.nut.common.beans;
 
+import java.io.Serializable;
+
 /**
  * Created by Administrator on 2016/10/30.
  */
-public class Order {
+public class Order implements Serializable {
     private long oid;
     private long pid;
     private int ctime;

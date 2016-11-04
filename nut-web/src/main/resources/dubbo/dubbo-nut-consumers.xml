@@ -10,10 +10,9 @@
 
         <dubbo:application name="nut"/>
         <dubbo:registry group="for_test" address="192.168.5.81" port="6379" protocol="redis"></dubbo:registry>
-        <dubbo:service interface="com.zy.nut.common.service.UserService" ref="userServiceImpl" protocol="dubboProtocol" timeout="3000">
-        </dubbo:service>
-
         <dubbo:protocol name="dubbo" id="dubboProtocol" transporter="netty4"/>
+
+        <dubbo:reference interface="com.zy.nut.common.service.UserService" id="userService"/>
         <!--
         <dubbo:protocol name="http" id="httpProtocol" port="8181" />
         -->

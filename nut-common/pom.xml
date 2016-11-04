@@ -10,6 +10,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>nut_common</artifactId>
-
-
+    <packaging>jar</packaging>
+    <name>${project.artifactId}</name>
+    <description>The common module of nut project</description>
+    <properties>
+        <skip_maven_deploy>true</skip_maven_deploy>
+    </properties>
 </project>
