@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/nut-common" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/nut-relayer-parent" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/nut-relayer-parent/hessian-lite" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/nut-relayer-parent/nut-relayer-client" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/nut-relayer-parent/nut-relayer-common" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/nut-relayer-parent/nut-relayer-server" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/nut-services" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/nut-web" charset="UTF-8" />
+    <file url="PROJECT" charset="UTF-8" />
+  </component>
+</project>
