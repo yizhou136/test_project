@@ -2,6 +2,7 @@ package com.zy.nut.relayer.common.remoting;
 
 
 import com.zy.nut.relayer.common.URL;
+import com.zy.nut.relayer.common.remoting.exchange.header.RelayerCodec;
 
 /**
  * Created by Administrator on 2016/11/6.
@@ -47,6 +48,6 @@ public abstract class AbstractEndPoint extends AbstractPeer{
 
 
     protected static Codec getChannelCodec(URL url) {
-        return null;
+        return new RelayerCodec();
     }
 }

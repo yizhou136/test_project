@@ -19,5 +19,7 @@
     <orderEntry type="module" module-name="nut-relayer-common" />
     <orderEntry type="library" name="Maven: org.javassist:javassist:3.15.0-GA" level="project" />
     <orderEntry type="library" name="Maven: io.netty:netty-all:4.1.1.Final" level="project" />
+    <orderEntry type="library" name="Maven: com.alibaba:fastjson:1.2.20" level="project" />
+    <orderEntry type="module" module-name="hessian-lite" />
   </component>
 </module>

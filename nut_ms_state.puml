@@ -1,0 +1,59 @@
+@startuml
+left to right direction
+package Clients {
+   [Mobile_Client1]
+   [Mobile_Client2]
+   [Mobile_ClientN]
+   [PC_Client1]
+   [PC_Client2]
+   [PC_ClientN]
+}
+
+cloud HttpIpServices {
+    [ipserver] . [Mobile_Client1] : list[ip..]
+    [ipserver] . [Mobile_Client2] : list[ip..]
+    [ipserver] . [Mobile_ClientN] : list[ip..]
+    [ipserver] . [PC_Client1] : list[ip..]
+    [ipserver] . [PC_Client2] : list[ip..]
+    [ipserver] . [PC_ClientN] : list[ip..]
+}
+
+
+
+node NettyGroup1 {
+    [Mobile_Client1] <----> [G1_Netty1]
+    [PC_Client2] <----> [G1_Netty2]
+    [PC_ClientN] <----> [G1_Netty2]
+
+    cloud ZooKeeperCluster1{
+            [C1_zookeeperChiff] <-> [C1_zookeeper2]
+            [C1_zookeeperChiff] <-> [C1_zookeeper2]
+    }
+    [G1_Netty1] -> [C1_zookeeperChiff]
+    [G1_Netty2] -> [C1_zookeeperChiff]
+}
+
+
+node NettyGroup2 {
+    [Mobile_Client2] <----> [G2_Netty1]
+    [Mobile_ClientN] <----> [G2_Netty2]
+    [PC_Client1] <----> [G2_Netty2]
+    cloud ZooKeeperCluster2{
+        [C2_zookeeperChiff] <-> [C2_zookeeper2]
+        [C2_zookeeperChiff] <-> [C2_zookeeper2]
+    }
+    [G2_Netty1] -> [C2_zookeeperChiff]
+    [G2_Netty2] -> [C2_zookeeperChiff]
+}
+
+cloud Dispatcher_RabbitMQ_Cluster1{
+    node RabbitMQ1 {
+        [Queue1]
+    }
+
+    node RabbitMQ2 {
+        [Queue2]
+    }
+
+}
+@enduml

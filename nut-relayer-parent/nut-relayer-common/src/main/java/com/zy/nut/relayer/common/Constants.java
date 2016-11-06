@@ -106,4 +106,8 @@ public class Constants {
     public static final String  LOCALHOST_KEY                      = "localhost";
 
     public static final String  BUFFER_KEY                         = "buffer";
+
+    public static final String  SERIALIZATION_KEY                  = "serialization";
+
+    public static final String  DEFAULT_REMOTING_SERIALIZATION     = "hessian2";
 }

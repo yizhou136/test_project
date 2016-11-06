@@ -17,6 +17,7 @@
         <module>nut-relayer-server</module>
         <module>nut-relayer-client</module>
         <module>nut-relayer-common</module>
+        <module>hessian-lite</module>
     </modules>
 
     <dependencyManagement>
@@ -25,6 +26,11 @@
                 <groupId>com.zy</groupId>
                 <artifactId>nut-relayer-common</artifactId>
                 <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.zy</groupId>
+                <artifactId>hessian-lite</artifactId>
+                <version>3.2.1-fixed-2</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

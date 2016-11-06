@@ -1,9 +1,11 @@
 package com.zy.nut.relayer.client.test;
 
+import java.io.Serializable;
+
 /**
  * Created by Administrator on 2016/11/6.
  */
-public class User {
+public class User implements Serializable{
     private String name;
     private int age;
     private String addreass;

@@ -1,13 +1,15 @@
 package com.zy.nut.relayer.common.remoting.exchange.codec;
 
+import com.zy.nut.relayer.common.logger.Logger;
+import com.zy.nut.relayer.common.logger.LoggerFactory;
 import com.zy.nut.relayer.common.remoting.Channel;
 import com.zy.nut.relayer.common.remoting.Codec;
-import com.zy.nut.relayer.common.serialization.Serialization;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import com.zy.nut.relayer.common.serialize.Serialization;
+import com.zy.nut.relayer.common.transporter.CodecSupport;
+
 
 import java.io.IOException;
-import java.net.URL;
 
 /**
  * Created by Administrator on 2016/11/6.
@@ -17,11 +19,11 @@ public abstract class AbstractCodec implements Codec{
     public static final int     MAX_DEFAULT_PAYLOAD                    = 8 * 1024 * 1024;                      // 8M
 
     protected Serialization getSerialization(Channel channel) {
-        return null;
+        return CodecSupport.getDefaultSerialization();
     }
 
     protected Serialization getSerialization(Byte id) {
-        return null;
+        return CodecSupport.getSerializationById(id);
     }
 
     protected static void checkPayload(Channel channel, long size) throws IOException {

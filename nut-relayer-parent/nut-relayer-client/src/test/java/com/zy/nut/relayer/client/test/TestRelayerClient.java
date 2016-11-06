@@ -7,6 +7,7 @@ import com.zy.nut.relayer.common.logger.LoggerFactory;
 import com.zy.nut.relayer.common.remoting.Channel;
 import com.zy.nut.relayer.common.remoting.ChannelHandler;
 import com.zy.nut.relayer.common.remoting.RemotingException;
+import com.zy.nut.relayer.common.remoting.exchange.TransfredData;
 import com.zy.nut.relayer.common.utils.UrlUtils;
 
 /**
@@ -45,7 +46,13 @@ public class TestRelayerClient {
             user.setAddreass("asdfasdfas");
             user.setAge(234);
             user.setName("asdfasd");
-            nettyClient.send(user);
+
+            TransfredData transfredData = new TransfredData();
+            transfredData.setGroup("com.zy");
+            transfredData.setFid("123");
+            transfredData.setTid("456");
+            transfredData.setData(user);
+            nettyClient.send(transfredData);
         }catch (Exception e){
             e.printStackTrace();
         }

@@ -1,8 +1,9 @@
 package com.zy.nut.relayer.common.remoting.exchange.header;
 
-import com.sun.org.apache.bcel.internal.classfile.Code;
 import com.zy.nut.relayer.common.io.Bytes;
 import com.zy.nut.relayer.common.io.StreamUtils;
+import com.zy.nut.relayer.common.logger.Logger;
+import com.zy.nut.relayer.common.logger.LoggerFactory;
 import com.zy.nut.relayer.common.remoting.Channel;
 import com.zy.nut.relayer.common.remoting.Codec;
 import com.zy.nut.relayer.common.remoting.buffer.ChannelBuffer;
@@ -10,23 +11,20 @@ import com.zy.nut.relayer.common.remoting.buffer.ChannelBufferInputStream;
 import com.zy.nut.relayer.common.remoting.buffer.ChannelBufferOutputStream;
 import com.zy.nut.relayer.common.remoting.exchange.TransfredData;
 import com.zy.nut.relayer.common.remoting.exchange.codec.AbstractCodec;
-import com.zy.nut.relayer.common.serialization.ObjectInput;
-import com.zy.nut.relayer.common.serialization.ObjectOutput;
-import com.zy.nut.relayer.common.serialization.Serialization;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import com.zy.nut.relayer.common.serialize.ObjectInput;
+import com.zy.nut.relayer.common.serialize.ObjectOutput;
+import com.zy.nut.relayer.common.serialize.Serialization;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.nio.channels.ByteChannel;
 
 /**
  * Created by Administrator on 2016/11/6.
  */
 public class HeaderExchangeCodec extends AbstractCodec implements Codec{
     private static Logger logger = LoggerFactory.getLogger(AbstractCodec.class);
-    protected  static final int HEADER_LENGTH          = 11;
+    protected  static final int HEADER_LENGTH          = 15;
     // magic header.
     protected static final short    MAGIC              = (short) 0xdabf;
 
@@ -60,7 +58,7 @@ public class HeaderExchangeCodec extends AbstractCodec implements Codec{
         bos.close();
         int len = bos.writtenBytes();
         checkPayload(channel, len);
-        Bytes.int2bytes(len, header, 7);
+        Bytes.int2bytes(len, header, 11);
 
         // write
         buffer.writerIndex(savedWriteIndex);
@@ -99,7 +97,7 @@ public class HeaderExchangeCodec extends AbstractCodec implements Codec{
         }
 
         // get data length.
-        int len = Bytes.bytes2int(header, 7);
+        int len = Bytes.bytes2int(header, 11);
         checkPayload(channel, len);
 
         int tt = len + HEADER_LENGTH;

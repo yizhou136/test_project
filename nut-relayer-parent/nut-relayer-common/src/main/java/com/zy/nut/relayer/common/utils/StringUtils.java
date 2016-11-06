@@ -18,6 +18,7 @@ package com.zy.nut.relayer.common.utils;
 
 import com.zy.nut.relayer.common.Constants;
 import com.zy.nut.relayer.common.io.UnsafeStringWriter;
+import com.zy.nut.relayer.common.json.JSON;
 import com.zy.nut.relayer.common.logger.Logger;
 import com.zy.nut.relayer.common.logger.LoggerFactory;
 
@@ -427,7 +428,7 @@ public final class StringUtils {
 	    return buf == null ? camelName : buf.toString();
 	}
 	
-	/*public static String toArgumentString(Object[] args) {
+	public static String toArgumentString(Object[] args) {
 	    StringBuilder buf = new StringBuilder();
         for (Object arg : args) {
             if (buf.length() > 0) {
@@ -445,7 +446,7 @@ public final class StringUtils {
             }
         }
         return buf.toString();
-	}*/
+	}
 
 	private StringUtils(){}
 }
