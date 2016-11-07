@@ -15,13 +15,24 @@
  */
 package com.zy.nut.relayer.common.remoting.exchange;
 
-import com.zy.nut.relayer.common.remoting.Client;
+import com.zy.nut.relayer.common.remoting.ChannelHandler;
+import com.zy.nut.relayer.common.remoting.RemotingException;
 
 /**
- * ExchangeClient. (API/SPI, Prototype, ThreadSafe)
+ * ExchangeHandler. (API, Prototype, ThreadSafe)
  * 
  * @author william.liangf
  */
-public interface ExchangeClient extends Client, ExchangeChannel {
+public interface ExchangeHandler extends ChannelHandler{//, TelnetHandler {
+
+    /**
+     * reply.
+     * 
+     * @param channel
+     * @param request
+     * @return response
+     * @throws RemotingException
+     */
+    Object reply(ExchangeChannel channel, Object request) throws RemotingException;
 
 }
