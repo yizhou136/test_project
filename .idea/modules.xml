@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/nut-relayer-parent/hessian-lite/hessian-lite.iml" filepath="$PROJECT_DIR$/nut-relayer-parent/hessian-lite/hessian-lite.iml" />
+      <module fileurl="file://$PROJECT_DIR$/nut-relayer-parent/nut-relayer-client/nut-relayer-client.iml" filepath="$PROJECT_DIR$/nut-relayer-parent/nut-relayer-client/nut-relayer-client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/nut-relayer-parent/nut-relayer-common/nut-relayer-common.iml" filepath="$PROJECT_DIR$/nut-relayer-parent/nut-relayer-common/nut-relayer-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/nut-relayer-parent/nut-relayer-parent.iml" filepath="$PROJECT_DIR$/nut-relayer-parent/nut-relayer-parent.iml" />
+      <module fileurl="file://$PROJECT_DIR$/nut-relayer-parent/nut-relayer-server/nut-relayer-server.iml" filepath="$PROJECT_DIR$/nut-relayer-parent/nut-relayer-server/nut-relayer-server.iml" />
+      <module fileurl="file://$PROJECT_DIR$/nut-web/nut-web.iml" filepath="$PROJECT_DIR$/nut-web/nut-web.iml" />
+      <module fileurl="file://$PROJECT_DIR$/nut-common/nut_common.iml" filepath="$PROJECT_DIR$/nut-common/nut_common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/nut_parent.iml" filepath="$PROJECT_DIR$/nut_parent.iml" />
+      <module fileurl="file://$PROJECT_DIR$/nut-services/nut_services.iml" filepath="$PROJECT_DIR$/nut-services/nut_services.iml" />
+    </modules>
+  </component>
+</project>
