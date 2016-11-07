@@ -29,7 +29,7 @@ import java.util.Collection;
  * 
  * @author william.liangf
  */
-public class ExchangeServerDelegate implements ExchangeServer {
+public class ExchangeServerDelegate {//implements ExchangeServer {
     
     private transient ExchangeServer server;
     
@@ -52,11 +52,9 @@ public class ExchangeServerDelegate implements ExchangeServer {
         return server.isBound();
     }
 
-    public void reset(URL url) {
-        server.reset(url);
-    }
 
-    @Deprecated
+
+    /*@Deprecated
     public void reset(com.alibaba.dubbo.common.Parameters parameters){
         reset(getUrl().addParameters(parameters.getParameters()));
     }
@@ -107,6 +105,6 @@ public class ExchangeServerDelegate implements ExchangeServer {
 
     public void close(int timeout) {
         server.close(timeout);
-    }
+    }*/
 
 }

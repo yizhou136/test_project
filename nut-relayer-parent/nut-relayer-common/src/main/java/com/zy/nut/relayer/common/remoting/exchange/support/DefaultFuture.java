@@ -20,6 +20,7 @@ import com.zy.nut.relayer.common.logger.Logger;
 import com.zy.nut.relayer.common.logger.LoggerFactory;
 import com.zy.nut.relayer.common.remoting.Channel;
 import com.zy.nut.relayer.common.remoting.RemotingException;
+import com.zy.nut.relayer.common.remoting.TimeoutException;
 import com.zy.nut.relayer.common.remoting.exchange.Request;
 import com.zy.nut.relayer.common.remoting.exchange.Response;
 import com.zy.nut.relayer.common.remoting.exchange.ResponseCallback;

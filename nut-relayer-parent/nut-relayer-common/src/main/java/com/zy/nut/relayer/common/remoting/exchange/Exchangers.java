@@ -30,7 +30,7 @@ import com.zy.nut.relayer.common.remoting.exchange.support.Replier;
  */
 public class Exchangers {
 
-    public static ExchangeServer bind(String url, Replier<?> replier) throws RemotingException {
+    /*public static ExchangeServer bind(String url, Replier<?> replier) throws RemotingException {
         return bind(URL.valueOf(url), replier);
     }
 
@@ -115,6 +115,6 @@ public class Exchangers {
     }
 
     private Exchangers(){
-    }
+    }*/
 
 }

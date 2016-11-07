@@ -38,6 +38,8 @@ public class Constants {
 
     public static final int     DEFAULT_CONNECT_QUEUE_WARNING_SIZE = 1000;
 
+    public static final int     DEFAULT_TIMEOUT                    = 1000;
+
 
     /**
      * 重试周期
@@ -62,6 +64,7 @@ public class Constants {
     // default buffer size is 8k.
     public static final int     DEFAULT_BUFFER_SIZE                = 8 * 1024;
 
+    public static final String  TIMEOUT_KEY                        = "timeout";
 
     public static final String  GROUP_KEY                          = "group";
 

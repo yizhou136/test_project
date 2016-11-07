@@ -15,8 +15,8 @@
  */
 package com.zy.nut.relayer.common.remoting.exchange.support;
 
-import com.alibaba.dubbo.remoting.RemotingException;
-import com.alibaba.dubbo.remoting.exchange.ExchangeChannel;
+import com.zy.nut.relayer.common.remoting.RemotingException;
+import com.zy.nut.relayer.common.remoting.exchange.ExchangeChannel;
 
 /**
  * Replier. (API, Prototype, ThreadSafe)

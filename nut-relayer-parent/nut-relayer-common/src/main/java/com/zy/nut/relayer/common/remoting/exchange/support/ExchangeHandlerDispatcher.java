@@ -24,11 +24,11 @@ import com.zy.nut.relayer.common.remoting.exchange.ExchangeHandler;
  * 
  * @author william.liangf
  */
-public class ExchangeHandlerDispatcher implements ExchangeHandler {
+public class ExchangeHandlerDispatcher {//implements ExchangeHandler {
 
-    private final ReplierDispatcher replierDispatcher;
+    //private final ReplierDispatcher replierDispatcher;
 
-    private final ChannelHandlerDispatcher handlerDispatcher;
+    /*private final ChannelHandlerDispatcher handlerDispatcher;
 
     private final TelnetHandler telnetHandler;
     
@@ -103,6 +103,6 @@ public class ExchangeHandlerDispatcher implements ExchangeHandler {
 
     public String telnet(Channel channel, String message) throws RemotingException {
         return telnetHandler.telnet(channel, message);
-    }
+    }*/
 
 }
