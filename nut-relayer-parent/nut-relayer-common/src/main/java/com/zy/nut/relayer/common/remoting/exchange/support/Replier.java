@@ -13,15 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.zy.nut.relayer.common.remoting.exchange;
+package com.zy.nut.relayer.common.remoting.exchange.support;
 
-import com.zy.nut.relayer.common.remoting.Client;
+import com.alibaba.dubbo.remoting.RemotingException;
+import com.alibaba.dubbo.remoting.exchange.ExchangeChannel;
 
 /**
- * ExchangeClient. (API/SPI, Prototype, ThreadSafe)
+ * Replier. (API, Prototype, ThreadSafe)
  * 
  * @author william.liangf
  */
-public interface ExchangeClient extends Client, ExchangeChannel {
+public interface Replier<T> {
+
+    /**
+     * reply.
+     * 
+     * @param channel
+     * @param request
+     * @return response
+     * @throws RemotingException
+     */
+    Object reply(ExchangeChannel channel, T request) throws RemotingException;
 
 }

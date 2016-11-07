@@ -15,13 +15,31 @@
  */
 package com.zy.nut.relayer.common.remoting.exchange;
 
-import com.zy.nut.relayer.common.remoting.Client;
+import com.zy.nut.relayer.common.remoting.Server;
+
+import java.net.InetSocketAddress;
+import java.util.Collection;
 
 /**
- * ExchangeClient. (API/SPI, Prototype, ThreadSafe)
+ * ExchangeServer. (API/SPI, Prototype, ThreadSafe)
  * 
  * @author william.liangf
  */
-public interface ExchangeClient extends Client, ExchangeChannel {
+public interface ExchangeServer extends Server {
+
+    /**
+     * get channels.
+     * 
+     * @return channels
+     */
+    Collection<ExchangeChannel> getExchangeChannels();
+
+    /**
+     * get channel.
+     * 
+     * @param remoteAddress
+     * @return channel
+     */
+    ExchangeChannel getExchangeChannel(InetSocketAddress remoteAddress);
 
 }

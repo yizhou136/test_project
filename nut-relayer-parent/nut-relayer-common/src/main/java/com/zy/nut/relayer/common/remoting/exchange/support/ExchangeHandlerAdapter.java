@@ -13,15 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.zy.nut.relayer.common.remoting.exchange;
+package com.zy.nut.relayer.common.remoting.exchange.support;
 
-import com.zy.nut.relayer.common.remoting.Client;
+
+import com.zy.nut.relayer.common.remoting.RemotingException;
+import com.zy.nut.relayer.common.remoting.exchange.ExchangeChannel;
+import com.zy.nut.relayer.common.remoting.exchange.ExchangeHandler;
 
 /**
- * ExchangeClient. (API/SPI, Prototype, ThreadSafe)
+ * ExchangeHandlerAdapter
  * 
  * @author william.liangf
  */
-public interface ExchangeClient extends Client, ExchangeChannel {
+public abstract class ExchangeHandlerAdapter  implements ExchangeHandler {
+
+    public Object reply(ExchangeChannel channel, Object msg) throws RemotingException {
+        return null;
+    }
 
 }

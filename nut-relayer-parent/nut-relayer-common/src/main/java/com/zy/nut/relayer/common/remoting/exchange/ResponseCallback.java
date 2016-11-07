@@ -15,13 +15,25 @@
  */
 package com.zy.nut.relayer.common.remoting.exchange;
 
-import com.zy.nut.relayer.common.remoting.Client;
-
 /**
- * ExchangeClient. (API/SPI, Prototype, ThreadSafe)
+ * Callback
  * 
  * @author william.liangf
  */
-public interface ExchangeClient extends Client, ExchangeChannel {
+public interface ResponseCallback {
+
+    /**
+     * done.
+     * 
+     * @param response
+     */
+    void done(Object response);
+
+    /**
+     * caught exception.
+     * 
+     * @param exception
+     */
+    void caught(Throwable exception);
 
 }
