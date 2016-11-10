@@ -5,6 +5,7 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.QueueingConsumer;
 import com.zy.nut.relayer.common.configure.Configuration;
 import com.zy.nut.relayer.common.remoting.exchange.TransfredData;
+import com.zy.nut.relayer.common.utils.StringUtils;
 
 import java.io.IOException;
 import java.util.Map;
@@ -19,69 +20,23 @@ public class ServerendAMQPClient extends AbstractAMQPClient{
         super(configuration);
     }
 
-
-    /*public void declares(String project){
-        String fanoutExchangeName = generateFanoutExchangeName();
-        String topicExchangeName = generateTopicExchangeName();
-        String recvQueueName = generateRecvQueueName(project);
-        String sendQueueName = generateSendQueueName(project);
-
-        boolean durable = false;
-        boolean autoDelete = false;
-        Map<String, Object> arguments = null;
-        Channel channel = generateChannel();
-        try {
-            AMQP.Queue.DeclareOk recvDeclareOk = channel.queueDeclare(recvQueueName, false, false, false, null);
-            AMQP.Queue.DeclareOk sendDeclareOk = channel.queueDeclare(sendQueueName, false, false, false, null);
-
-            AMQP.Exchange.DeclareOk fanoutExchangeDeclareOk = channel.exchangeDeclare(fanoutExchangeName,
-                    "fanout", durable, autoDelete, arguments);
-            AMQP.Exchange.DeclareOk topicExchangeDeclareOk = channel.exchangeDeclare(topicExchangeName,
-                    "topic", durable, autoDelete, arguments);
-            channel.queueBind(recvQueueName,fanoutExchangeName,null);
-            channel.queueBind(recvQueueName,topicExchangeName,generateTopicBindlingKey(project));
-
-
-        } catch (IOException e) {
-            e.printStackTrace();
+    public void transformData(TransfredData transfredData){
+        String project = transfredData.getProject();
+        Set<String> projectSet = transfredData.parseProject();
+        String exchangeName = null;
+        String routingKey = null;
+        if (StringUtils.isEmpty(project) ||
+            "*".equals(project)) {
+            exchangeName = generateBackendFanoutExchangeName();
+            routingKey = "";
+        }else if (projectSet.isEmpty()){
+            exchangeName = generateBackendDirectExchangeName();
+            routingKey = generateBackendDirectRoutingBindlingKey(project);
+        }else {
+            exchangeName = generateBackendTopicExchangeName();
+            routingKey = generateBackendTopicRoutingKey(projectSet);
         }
-    }*/
-
-    public String generateRecvQueueName(String project){
-        return String.format("recv_qu.%s.%s", getClusterName(), project);
-    }
-
-    public String generateFanoutExchangeName(){
-        return String.format("%s_ex_fanout", getClusterName());
-    }
-    public String generateTopicExchangeName(){
-        return String.format("%s_ex_topic", getClusterName());
-    }
-
-    public void declares(String project)throws IOException {
         Channel channel = generateChannel();
-        //for receive
-        String recvQueueName = generateRecvQueueName(project);
-        AMQP.Queue.DeclareOk recvDeclareOk = channel.queueDeclare(recvQueueName, false, false, false, null);
-        logger.info("recvDeclareOk:"+recvDeclareOk);
-
-
-        //for send
-        AMQP.Exchange.DeclareOk fanoutExchangeDeclareOk = channel.exchangeDeclare(fanoutExchangeName,
-                "fanout", false, true, null);
-        AMQP.Exchange.DeclareOk topicExchangeDeclareOk = channel.exchangeDeclare(topicExchangeName,
-                "topic", false, true, null);
-        /*channel.queueBind(recvQueueName,fanoutExchangeName,null);
-        channel.queueBind(recvQueueName,topicExchangeName,generateTopicBindlingKey(project));*/
-    }
-
-
-    public void transformData(TransfredData transfredData, Set<String> clusterNames){
-        boolean isFanout = clusterNames == null || clusterNames.isEmpty() ? true : false;
-        String exchangeName = isFanout ? fanoutExchangeName : topicExchangeName;
-        String routingKey  = isFanout ? "" : generateTopicRoutingKey(transfredData.getProject(),clusterNames);
-        Channel channel = generateChannel();
-
         /*channel.addReturnListener(new ReturnListener() {
             @Override
             public void handleReturn(int replyCode, String replyText, String exchange, String routingKey, AMQP.BasicProperties properties, byte[] body) throws IOException {
@@ -124,27 +79,29 @@ public class ServerendAMQPClient extends AbstractAMQPClient{
         //channel.close();
     }
 
-
-
     public void initAMQPReceiver(){
         for(final String project:getConfiguration().getProjects()){
+            try {
+                declares(project);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             executorService.submit(new Runnable() {
                 public void run() {
                     try {
                         Channel channel = generateChannel();
-                        declares(project);
-
                         QueueingConsumer queueingConsumer = new QueueingConsumer(channel);
-                        channel.basicConsume(generateRecvQueueName(project), false, queueingConsumer);
+                        channel.basicConsume(generateServerRecvQueueName(project), false, queueingConsumer);
 
                         while (true){
                             QueueingConsumer.Delivery delivery = queueingConsumer.nextDelivery();
                             System.out.println("log: "+new String(delivery.getBody()));
-                            channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
+                            channel.basicAck(delivery.getEnvelope().getDeliveryTag(),false);
 
-                            System.out.println("reply to :"+delivery.getProperties().getReplyTo());
+                            //System.out.println("reply to :"+delivery.getProperties().getReplyTo());
                             logger.info("AMQPReceiver delivery:"+delivery);
-                            channel.basicPublish("", delivery.getProperties().getReplyTo(), null, "asfasdfas".getBytes());
+                            TransfredData transfredData = new TransfredData();
+                            transformData(transfredData);
                         }
                     }catch (InterruptedException ine){
                         ine.printStackTrace();

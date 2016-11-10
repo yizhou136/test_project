@@ -17,22 +17,71 @@ import java.util.concurrent.Executors;
 /**
  * Created by zhougb on 2016/11/10.
  */
-public abstract class AbstractAMQPClient {
+public abstract class AbstractAMQPClient{
     protected static final Logger logger = LoggerFactory.getLogger(AbstractAMQPClient.class);
     private Configuration configuration;
     private Channel channel;
     protected ExecutorService executorService = Executors.newCachedThreadPool();
 
-    protected String fanoutExchangeName;
-    protected String topicExchangeName;
-
     public AbstractAMQPClient(Configuration configuration){
         this.configuration = configuration;
-        fanoutExchangeName = generateFanoutExchangeName();
-        topicExchangeName = generateTopicExchangeName();
     }
 
-    public abstract void declares(String project)throws IOException;
+    public void declares(String project)throws IOException {
+        Channel channel = generateChannel();
+        //declare for backend
+        //for receive
+        String backendRecvQueueName = generateBackendRecvQueueName(project);
+        AMQP.Queue.DeclareOk recvDeclareOk = channel.queueDeclare(backendRecvQueueName, false, false, false, null);
+        logger.info("backend recvDeclareOk:"+recvDeclareOk);
+
+        //for send
+        AMQP.Exchange.DeclareOk fanoutExchangeDeclareOk = channel.exchangeDeclare(
+                generateBackendFanoutExchangeName(),
+                "fanout", false, true, null);
+        AMQP.Exchange.DeclareOk topicExchangeDeclareOk = channel.exchangeDeclare(
+                generateBackendTopicExchangeName(),
+                "topic", false, true, null);
+        AMQP.Exchange.DeclareOk directExchangeDeclareOk = channel.exchangeDeclare(
+                generateBackendDirectExchangeName(),
+                "direct", false, true, null);
+        /*channel.queueBind(recvQueueName,fanoutExchangeName,null);
+        channel.queueBind(recvQueueName,topicExchangeName,generateTopicBindlingKey(project));*/
+
+
+        //declare for server
+        //for receive queue
+        String serverRecvQueueName = generateServerRecvQueueName(project);
+        recvDeclareOk = channel.queueDeclare(serverRecvQueueName, false, false, false, null);
+        logger.info("server recvDeclareOk:"+recvDeclareOk);
+
+        //for send
+        fanoutExchangeDeclareOk = channel.exchangeDeclare(
+                generateServerFanoutExchangeName(),
+                "fanout", false, true, null);
+        topicExchangeDeclareOk = channel.exchangeDeclare(
+                generateServerTopicExchangeName(),
+                "topic", false, true, null);
+        directExchangeDeclareOk = channel.exchangeDeclare(
+                generateServerDirectExchangeName(),
+                "direct", false, true, null);
+
+        //binding key for backend
+        channel.queueBind(backendRecvQueueName,
+                generateBackendTopicExchangeName(), generateBackendTopicBindlingKey(project));
+        channel.queueBind(backendRecvQueueName,
+                generateBackendFanoutExchangeName(), "");
+        channel.queueBind(backendRecvQueueName,
+                generateBackendDirectExchangeName(), generateBackendDirectRoutingBindlingKey(project));
+
+        //binding key for server
+        channel.queueBind(serverRecvQueueName,
+                generateServerTopicExchangeName(), generateServerTopicBindlingKey(project));
+        channel.queueBind(serverRecvQueueName,
+                generateServerFanoutExchangeName(), "");
+        channel.queueBind(serverRecvQueueName,
+                generateServerDirectExchangeName(), generateServerDirectRoutingBindlingKey(project, getClusterName()));
+    }
 
     public void initChannel(){
         AMQPConf amqpConf = configuration.getAmqpConf();
@@ -63,35 +112,65 @@ public abstract class AbstractAMQPClient {
     }
 
 
-
-    public String generateSendQueueName(String project){
-        return String.format("send_qu.%s.%s", getClusterName(), project);
+    public String generateBackendRecvQueueName(String project) {
+        return String.format("backend.recvq.%s", project);
     }
 
-    /*public String generateExchangeName(){
-        return String.format("%s_ex", getClusterName());
-    }*/
+    public String generateServerRecvQueueName(String project) {
+        return String.format("recv_qu.%s.%s", getClusterName(), project);
+    }
 
-    public String generateFanoutExchangeName(){
-        return String.format("%s_ex_fanout", getClusterName());
+    public String generateBackendSendQueueName(String project){
+        return generateServerRecvQueueName(project);
     }
-    public String generateTopicExchangeName(){
-        return String.format("%s_ex_topic", getClusterName());
+
+    public String generateServerSendQueueName(String project){
+        return generateBackendRecvQueueName(project);
     }
-    /*public String generateFanoutRoutingKey(){
-        return String.format("", getClusterName());
-    }*/
-    public String generateTopicRoutingKey(String project, Set<String> clusterNames){
+
+    public String generateServerFanoutExchangeName() { return "server_ex_fanout";}
+    public String generateServerTopicExchangeName(){
+        return "server_ex_topic";
+    }
+    public String generateServerDirectExchangeName() { return "server_ex_direct";}
+
+    public String generateBackendFanoutExchangeName(){
+        return "backend_ex_fanout";
+    }
+    public String generateBackendTopicExchangeName() { return "backend_ex_topic";}
+    public String generateBackendDirectExchangeName(){
+        return "backend_ex_direct";
+    }
+
+    public String generateServerTopicRoutingKey(String project, Set<String> clusterNames){
         StringBuilder stringBuilder = new StringBuilder(project);
         for (String clusterName:clusterNames)
             stringBuilder.append(".").append(clusterName);
         return stringBuilder.toString();
     }
 
-    public String generateTopicBindlingKey(String project){
+    public String generateServerTopicBindlingKey(String project){
         return String.format("%s.#.%s.#", project,getClusterName());
     }
 
+    public String generateServerDirectRoutingBindlingKey(String project, String clusterName){
+        return String.format("ferk_%s_%s", project, clusterName);
+    }
+
+    public String generateBackendTopicRoutingKey(Set<String> projects){
+        StringBuilder stringBuilder = new StringBuilder("berk");
+        for (String project:projects)
+            stringBuilder.append(".").append(project);
+        return stringBuilder.toString();
+    }
+
+    public String generateBackendTopicBindlingKey(String project){
+        return String.format("berk.#.%s.#", project);
+    }
+
+    public String generateBackendDirectRoutingBindlingKey(String project){
+        return String.format("berk_%s", project);
+    }
 
     /*public void transformDataToFrontend(TransfredData transfredData, boolean isFanout){
         String project = transfredData.getProject();
@@ -113,7 +192,6 @@ public abstract class AbstractAMQPClient {
             e.printStackTrace();
         }
     }*/
-
 
 
 

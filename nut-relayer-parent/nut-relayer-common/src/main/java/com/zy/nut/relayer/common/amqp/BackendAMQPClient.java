@@ -16,35 +16,23 @@ public class BackendAMQPClient extends AbstractAMQPClient{
         super(configuration);
     }
 
-    @Override
-    public String generateRecvQueueName(String project) {
-        return String.format("backend.recvq.%s", project);
-    }
-
-    public void declares(String project)throws IOException {
-        Channel channel = generateChannel();
-        //for receive
-        String recvQueueName = generateRecvQueueName(project);
-        AMQP.Queue.DeclareOk recvDeclareOk = channel.queueDeclare(recvQueueName, false, false, false, null);
-        logger.info("recvDeclareOk:"+recvDeclareOk);
-
-
-        //for send
-        AMQP.Exchange.DeclareOk fanoutExchangeDeclareOk = channel.exchangeDeclare(fanoutExchangeName,
-                "fanout", false, true, null);
-        AMQP.Exchange.DeclareOk topicExchangeDeclareOk = channel.exchangeDeclare(topicExchangeName,
-                "topic", false, true, null);
-        /*channel.queueBind(recvQueueName,fanoutExchangeName,null);
-        channel.queueBind(recvQueueName,topicExchangeName,generateTopicBindlingKey(project));*/
-    }
-
 
     public void transformData(TransfredData transfredData, Set<String> clusterNames){
-        boolean isFanout = clusterNames == null || clusterNames.isEmpty() ? true : false;
-        String exchangeName = isFanout ? fanoutExchangeName : topicExchangeName;
-        String routingKey  = isFanout ? "" : generateTopicRoutingKey(transfredData.getProject(),clusterNames);
+        String project = transfredData.getProject();
+        String exchangeName = null;
+        String routingKey = null;
+        if (clusterNames == null || clusterNames.isEmpty()) {
+            exchangeName = generateServerFanoutExchangeName();
+            routingKey = "";
+        }else if (clusterNames.size() == 1){
+            String clusterName = clusterNames.iterator().next();
+            exchangeName = generateServerDirectExchangeName();
+            routingKey = generateServerDirectRoutingBindlingKey(project, clusterName);
+        }else {
+            exchangeName = generateServerTopicExchangeName();
+            routingKey = generateServerTopicRoutingKey(project,clusterNames);
+        }
         Channel channel = generateChannel();
-
         /*channel.addReturnListener(new ReturnListener() {
             @Override
             public void handleReturn(int replyCode, String replyText, String exchange, String routingKey, AMQP.BasicProperties properties, byte[] body) throws IOException {
@@ -87,18 +75,19 @@ public class BackendAMQPClient extends AbstractAMQPClient{
         //channel.close();
     }
 
-
-
     public void initAMQPReceiver(){
         for(final String project:getConfiguration().getProjects()){
+            try {
+                declares(project);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             executorService.submit(new Runnable() {
                 public void run() {
                     try {
                         Channel channel = generateChannel();
-                        declares(project);
-
                         QueueingConsumer queueingConsumer = new QueueingConsumer(channel);
-                        channel.basicConsume(generateRecvQueueName(project), false, queueingConsumer);
+                        channel.basicConsume(generateBackendRecvQueueName(project), false, queueingConsumer);
 
                         while (true){
                             QueueingConsumer.Delivery delivery = queueingConsumer.nextDelivery();
@@ -107,7 +96,8 @@ public class BackendAMQPClient extends AbstractAMQPClient{
 
                             System.out.println("reply to :"+delivery.getProperties().getReplyTo());
                             logger.info("AMQPReceiver delivery:"+delivery);
-                            channel.basicPublish("", delivery.getProperties().getReplyTo(), null, "asfasdfas".getBytes());
+                            TransfredData transfredData = new TransfredData();
+                            transformData(transfredData, null);
                         }
                     }catch (InterruptedException ine){
                         ine.printStackTrace();

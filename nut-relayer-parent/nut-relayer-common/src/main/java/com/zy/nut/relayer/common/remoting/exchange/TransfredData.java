@@ -1,5 +1,10 @@
 package com.zy.nut.relayer.common.remoting.exchange;
 
+import com.zy.nut.relayer.common.utils.StringUtils;
+
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -60,6 +65,16 @@ public class TransfredData {
 
     public String getProject() {
         return project;
+    }
+
+    public Set<String> parseProject(){
+        if (StringUtils.isEmpty(project) || !StringUtils.isContains(project, ","))
+            return Collections.emptySet();
+        Set<String> stringSet = new LinkedHashSet<String>();
+        for(String p:project.split(",")){
+            stringSet.add(p);
+        }
+        return stringSet;
     }
 
     public void setProject(String project) {
