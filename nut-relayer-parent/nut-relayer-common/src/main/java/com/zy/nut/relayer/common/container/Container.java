@@ -5,10 +5,6 @@ package com.zy.nut.relayer.common.container;
  */
 public interface Container {
 
-    void configure(String url);
-
-    void reconfigure(String url);
-
     void start();
 
     void stop();

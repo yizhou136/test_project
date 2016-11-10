@@ -15,18 +15,15 @@
  */
 package com.zy.nut.relayer.common.remoting;
 
+import com.zy.nut.relayer.common.URL;
+
 import java.net.InetSocketAddress;
 
-/**
- * Channel. (API/SPI, Prototype, ThreadSafe)
- * 
- * @see com.alibaba.dubbo.remoting.Client
- * @see com.alibaba.dubbo.remoting.Server#getChannels()
- * @see com.alibaba.dubbo.remoting.Server#getChannel(InetSocketAddress)
- * @author qian.lei
- * @author william.liangf
- */
-public interface Channel extends Endpoint {
+public interface Channel{
+
+    void send(Object message, boolean sent) throws RemotingException;
+
+    URL getUrl();
 
     /**
      * get remote address.
@@ -34,6 +31,8 @@ public interface Channel extends Endpoint {
      * @return remote address.
      */
     InetSocketAddress getRemoteAddress();
+
+    InetSocketAddress getLocalAddress();
 
     /**
      * is connected.

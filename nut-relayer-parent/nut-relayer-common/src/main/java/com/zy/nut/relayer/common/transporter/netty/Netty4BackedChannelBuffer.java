@@ -96,9 +96,10 @@ public class Netty4BackedChannelBuffer implements ChannelBuffer {
     }
 
     public ByteBuffer toByteBuffer(int index, int length) {
-        ByteBuffer byteBuffer = ByteBuffer.allocate(length);
+        /*ByteBuffer byteBuffer = ByteBuffer.allocate(length);
         this.buffer.getBytes(index, byteBuffer);
-        return byteBuffer;
+        return byteBuffer;*/
+        return buffer.internalNioBuffer(index, length);
     }
 
     public byte[] array() {
@@ -251,9 +252,11 @@ public class Netty4BackedChannelBuffer implements ChannelBuffer {
     }
 
     public ByteBuffer toByteBuffer() {
+        /*buffer.internalNioBuffer()
         ByteBuffer byteBuffer = ByteBuffer.allocate(this.buffer.readableBytes());
         this.buffer.readBytes(byteBuffer);
-        return byteBuffer;
+        return byteBuffer;*/
+        return buffer.nioBuffer();
     }
 
     public boolean writable() {

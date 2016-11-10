@@ -28,13 +28,6 @@ public interface Endpoint {
     URL getUrl();
 
     /**
-     * get channel handler.
-     * 
-     * @return channel handler
-     */
-    ChannelHandler getChannelHandler();
-
-    /**
      * get local address.
      * 
      * @return local address.

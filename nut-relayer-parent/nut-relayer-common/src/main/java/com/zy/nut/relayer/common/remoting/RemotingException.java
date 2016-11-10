@@ -17,19 +17,6 @@ package com.zy.nut.relayer.common.remoting;
 
 import java.net.InetSocketAddress;
 
-/**
- * RemotingException. (API, Prototype, ThreadSafe)
- * 
- * @see com.alibaba.dubbo.remoting.exchange.ResponseFuture#get()
- * @see com.alibaba.dubbo.remoting.exchange.ResponseFuture#get(int)
- * @see com.alibaba.dubbo.remoting.Channel#send(Object, boolean)
- * @see com.alibaba.dubbo.remoting.exchange.ExchangeChannel#request(Object)
- * @see com.alibaba.dubbo.remoting.exchange.ExchangeChannel#request(Object, int)
- * @see com.alibaba.dubbo.remoting.Transporter#bind(com.alibaba.dubbo.common.URL, ChannelHandler)
- * @see com.alibaba.dubbo.remoting.Transporter#connect(com.alibaba.dubbo.common.URL, ChannelHandler)
- * @author qian.lei
- * @export
- */
 public class RemotingException extends Exception {
 
     private static final long serialVersionUID = -3160452149606778709L;

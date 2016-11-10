@@ -9,6 +9,9 @@ import com.zy.nut.relayer.common.remoting.Codec;
 import com.zy.nut.relayer.common.remoting.buffer.ChannelBuffer;
 import com.zy.nut.relayer.common.remoting.buffer.ChannelBufferInputStream;
 import com.zy.nut.relayer.common.remoting.buffer.ChannelBufferOutputStream;
+import com.zy.nut.relayer.common.remoting.exchange.RelayerElecting;
+import com.zy.nut.relayer.common.remoting.exchange.RelayerLoginLogout;
+import com.zy.nut.relayer.common.remoting.exchange.RelayerPingPong;
 import com.zy.nut.relayer.common.remoting.exchange.TransfredData;
 import com.zy.nut.relayer.common.remoting.exchange.codec.AbstractCodec;
 
@@ -21,44 +24,54 @@ import java.io.InputStream;
 
 /**
  * Created by Administrator on 2016/11/6.
+ *   magic  type&serilization&other    data_length       data
+ *   --          -                       ----         pingpong,loginout,electing,transfrom etc
+ *
  */
 public class HeaderExchangeCodec extends AbstractCodec implements Codec{
     private static Logger logger = LoggerFactory.getLogger(AbstractCodec.class);
-    protected  static final int HEADER_LENGTH          = 15;
+    protected  static final int HEADER_LENGTH          = 7;
+    protected  static final int DATA_LENGTH_POS        = 3;
     // magic header.
     protected static final short    MAGIC              = (short) 0xdabf;
-
     protected static final byte     MAGIC_HIGH         = Bytes.short2bytes(MAGIC)[0];
-
     protected static final byte     MAGIC_LOW          = Bytes.short2bytes(MAGIC)[1];
 
-    protected static final byte     FLAG_EVENT     = (byte) 0x20;
-
-    protected static final int      SERIALIZATION_MASK = 0x1f;
+    protected static final byte     LOGIN_FLAG_TYPE         = (byte) 0x01;
+    protected static final byte     LOGOUT_FLAG_TYPE        = (byte) 0x02;
+    protected static final byte     PINGPONG_FLAG_TYPE      = (byte) 0x03;
+    protected static final byte     ELECTING_FLAG_TYPE      = (byte) 0x04;
+    protected static final byte     TRANSFORM_FLAG_TYPE     = (byte) 0x05;
+    protected static final byte     REGISTERING_DIRECT_FLAG_TYPE   = (byte) 0x06;
+    protected static final byte     REGISTERING_FANOUT_FLAG_TYPE   = (byte) 0x07;
+    protected static final byte      FLAG_TYPE_MASK = 0x0F;
+    protected static final byte      SERIALIZATION_MASK = 0x70;
+    protected static final byte      SERIALIZATION_MASK_OFFSET = 4;
+    protected static final int       OTHER_MASK = 0x80;
+    protected static final byte      OTHER_MASK_OFFSET = 7;
 
     public void encode(Channel channel, ChannelBuffer buffer, Object message) throws IOException {
         Serialization serialization = getSerialization(channel);
         byte [] header = new byte[HEADER_LENGTH];
         Bytes.short2bytes(MAGIC, header);
-        header[2] = serialization.getContentTypeId();
-
-        TransfredData transfredData = (TransfredData) message;
-        if (transfredData.isEvent()) header[2] |= FLAG_EVENT;
+        byte serializationId = serialization.getContentTypeId();
+        serializationId = (byte)((serializationId << SERIALIZATION_MASK_OFFSET) & SERIALIZATION_MASK);
+        header[2] =  serializationId;
         // set request id.
-        Bytes.long2bytes(transfredData.getId(), header, 4);
-
+        //Bytes.long2bytes(transfredData.getId(), header, 4);
         // encode request data.
         int savedWriteIndex = buffer.writerIndex();
         buffer.writerIndex(savedWriteIndex + HEADER_LENGTH);
         ChannelBufferOutputStream bos = new ChannelBufferOutputStream(buffer);
-        ObjectOutput out = serialization.serialize(channel.getUrl(), bos);
-        encodeTransfredData(channel, out, transfredData);
+        ObjectOutput out = serialization.serialize(null, bos);
+        byte type = encodeTransfredData(channel, out, message);
         out.flushBuffer();
         bos.flush();
         bos.close();
+        header[2] |= type;
         int len = bos.writtenBytes();
         checkPayload(channel, len);
-        Bytes.int2bytes(len, header, 11);
+        Bytes.int2bytes(len, header, DATA_LENGTH_POS);
 
         // write
         buffer.writerIndex(savedWriteIndex);
@@ -97,7 +110,7 @@ public class HeaderExchangeCodec extends AbstractCodec implements Codec{
         }
 
         // get data length.
-        int len = Bytes.bytes2int(header, 11);
+        int len = Bytes.bytes2int(header, DATA_LENGTH_POS);
         checkPayload(channel, len);
 
         int tt = len + HEADER_LENGTH;
@@ -125,37 +138,34 @@ public class HeaderExchangeCodec extends AbstractCodec implements Codec{
     }
 
     protected Object decodeBody(Channel channel, InputStream is, byte[] header) throws IOException {
-        byte flag = header[2], proto = (byte) (flag & SERIALIZATION_MASK);
+        byte flag = header[2], proto = (byte) ((flag&SERIALIZATION_MASK)>>>SERIALIZATION_MASK_OFFSET), type = (byte)(flag & FLAG_TYPE_MASK);
         Serialization s = getSerialization(proto);
-        ObjectInput in = s.deserialize(channel.getUrl(), is);
+        ObjectInput in = s.deserialize(null, is);
         // get request id.
-        long id = Bytes.bytes2long(header, 4);
-        TransfredData transfredData = new TransfredData(id);
-
+        //long id = Bytes.bytes2long(header, 4);
+        //TransfredData transfredData = new TransfredData();
+        Object ret = null;
         try {
-            if ((flag & FLAG_EVENT) != 0) {
-                decodeTransfredData(channel, in, transfredData);
-            }else {
-                decodeTransfredData(channel, in, transfredData);
-            }
+            ret = decodeTransfredData(channel, in, type);
         } catch (Throwable t) {
-            // bad request
-            transfredData.setBroken(true);
-            transfredData.setData(t);
+            t.printStackTrace();
         }
 
-        return transfredData;
+        return ret;
     }
 
-    protected void encodeTransfredData(Channel channel, ObjectOutput out, TransfredData transfredData) throws IOException{
-        out.writeObject(transfredData);
+    protected byte encodeTransfredData(Channel channel, ObjectOutput out, Object msg) throws IOException{
+        out.writeObject(msg);
+        return 0;
     }
 
-    protected void decodeTransfredData(Channel channel, ObjectInput in, TransfredData transfredData) throws IOException{
-        try {
-            transfredData.setData(in.readObject());
-        } catch (ClassNotFoundException e) {
-            throw new IOException("Read object failed.", e);
+    protected Object decodeTransfredData(Channel channel, ObjectInput in, byte type) throws IOException{
+        if (type == LOGIN_FLAG_TYPE){
+        }else if (type == LOGIN_FLAG_TYPE){
+        }else if (type == LOGOUT_FLAG_TYPE){
+        }else if (type == ELECTING_FLAG_TYPE){
+        }else if (type == TRANSFORM_FLAG_TYPE){
         }
+        return null;
     }
 }

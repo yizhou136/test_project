@@ -17,15 +17,12 @@ package com.zy.nut.relayer.common.remoting;
 
 import com.zy.nut.relayer.common.URL;
 
-/**
- * AbstractChannel
- * 
- * @author william.liangf
- */
-public abstract class AbstractChannel extends AbstractPeer implements Channel {
+public abstract class AbstractChannel implements Channel {
+    private volatile URL url;
+    private volatile boolean     closed;
 
-    public AbstractChannel(URL url, ChannelHandler handler){
-        super(url, handler);
+    public AbstractChannel(URL url){
+        this.url = url;
     }
 
     public void send(Object message, boolean sent) throws RemotingException {
@@ -41,4 +38,23 @@ public abstract class AbstractChannel extends AbstractPeer implements Channel {
         return getLocalAddress() + " -> " + getRemoteAddress();
     }
 
+    public boolean isClosed() {
+        return closed;
+    }
+
+    public void setClosed(boolean closed) {
+        this.closed = closed;
+    }
+
+    public void close() {
+        closed = true;
+    }
+
+    public URL getUrl() {
+        return url;
+    }
+
+    public void setUrl(URL url) {
+        this.url = url;
+    }
 }

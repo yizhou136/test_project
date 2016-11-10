@@ -49,7 +49,7 @@ public class ExchangeServerDelegate {//implements ExchangeServer {
     }
 
     public boolean isBound() {
-        return server.isBound();
+        return false;//server.isBound();
     }
 
 

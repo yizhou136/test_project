@@ -15,12 +15,10 @@
  */
 package com.zy.nut.relayer.common.transporter.netty;
 
-
 import com.zy.nut.relayer.common.logger.Logger;
 import com.zy.nut.relayer.common.logger.LoggerFactory;
 import com.zy.nut.relayer.common.remoting.AbstractChannel;
 import com.zy.nut.relayer.common.remoting.Channel;
-import com.zy.nut.relayer.common.remoting.ChannelHandler;
 import com.zy.nut.relayer.common.remoting.RemotingException;
 import io.netty.channel.ChannelFuture;
 import com.zy.nut.relayer.common.URL;
@@ -30,12 +28,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-/**
- * NettyChannel.
- * 
- * @author qian.lei
- * @author william.liangf
- */
 public class NettyChannel extends AbstractChannel implements Channel{
 
     private static final Logger logger = LoggerFactory.getLogger(NettyChannel.class);
@@ -46,21 +38,21 @@ public class NettyChannel extends AbstractChannel implements Channel{
 
     private final Map<String, Object> attributes = new ConcurrentHashMap<String, Object>();
 
-    private NettyChannel(io.netty.channel.Channel channel, URL url, ChannelHandler handler){
-        super(url, handler);
+    private NettyChannel(io.netty.channel.Channel channel, URL url){
+        super(url);
         if (channel == null) {
             throw new IllegalArgumentException("netty channel == null;");
         }
         this.channel = channel;
     }
 
-    public static NettyChannel getOrAddChannel(io.netty.channel.Channel ch, URL url, ChannelHandler handler) {
+    public static NettyChannel getOrAddChannel(io.netty.channel.Channel ch, URL url) {
         if (ch == null) {
             return null;
         }
         NettyChannel ret = channelMap.get(ch);
         if (ret == null) {
-            NettyChannel nc = new NettyChannel(ch, url, handler);
+            NettyChannel nc = new NettyChannel(ch, url);
             if (ch.isOpen()) {
                 ret = channelMap.putIfAbsent(ch, nc);
             }
@@ -90,12 +82,12 @@ public class NettyChannel extends AbstractChannel implements Channel{
     }
 
     public void send(Object message, boolean sent) throws RemotingException {
-        //super.send(message, sent);
-        
+        super.send(message, sent);
+
         boolean success = true;
         int timeout = 0;
         try {
-            ChannelFuture future = channel.write(message);
+            ChannelFuture future = channel.writeAndFlush(message);
 
             Throwable cause = future.cause();
             if (cause != null) {

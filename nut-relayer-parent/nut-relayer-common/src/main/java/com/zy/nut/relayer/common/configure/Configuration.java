@@ -1,17 +1,41 @@
 package com.zy.nut.relayer.common.configure;
 
-import java.util.Map;
-import java.util.Set;
+import com.zy.nut.relayer.common.URL;
+import com.zy.nut.relayer.common.utils.StringUtils;
+import com.zy.nut.relayer.common.utils.UrlUtils;
+
+import java.util.*;
 
 /**
  * Created by Administrator on 2016/11/7.
  */
 public class Configuration {
+    private Set<String> projects;
     private String serverAddress;
-    private Set<String> clusters;//c1_bj,c2_gz,c3_tj,c4_wh,c5_nj
-    private Map<String,Set<String>> clusterServers;//192.168.5.209:8383,192.168.5.209:8484,192.168.5.209:8585
-    private Set<String> clusterGroups;//c1_bj-c2_gz , c3_tj-c4_wh-c5_nj
+    private Map<String,Cluster> clusters;
+    private Set<ClusterGroup> clusterGroup;//c1_bj-c2_gz , c3_tj-c4_wh-c5_nj
+    private AMQPConf amqpConf;
 
+    private Cluster serverCluster;
+
+    private String clusterServerAddress;
+
+    public Configuration(){}
+
+    public Configuration(Configuration configuration){
+        this.serverAddress = configuration.getServerAddress();
+        this.clusters = configuration.getClusters();
+        this.clusterGroup = configuration.getClusterGroup();
+        this.serverCluster = configuration.getServerCluster();
+    }
+
+    public Set<String> getProjects() {
+        return projects;
+    }
+
+    public void setProjects(Set<String> projects) {
+        this.projects = projects;
+    }
 
     public String getServerAddress() {
         return serverAddress;
@@ -21,38 +45,106 @@ public class Configuration {
         this.serverAddress = serverAddress;
     }
 
-    public Set<String> getClusters() {
+    public Map<String, Cluster> getClusters() {
         return clusters;
     }
 
-    public void setClusters(Set<String> clusters) {
+    public void setClusters(Map<String, Cluster> clusters) {
         this.clusters = clusters;
     }
 
-    public Map<String, Set<String>> getClusterServers() {
-        return clusterServers;
+    public Set<ClusterGroup> getClusterGroup() {
+        return clusterGroup;
     }
 
-    public void setClusterServers(Map<String, Set<String>> clusterServers) {
-        this.clusterServers = clusterServers;
+    public void setClusterGroup(Set<ClusterGroup> clusterGroup) {
+        this.clusterGroup = clusterGroup;
     }
 
-    public Set<String> getClusterGroups() {
-        return clusterGroups;
+    public Cluster getServerCluster() {
+        return serverCluster;
     }
 
-    public void setClusterGroups(Set<String> clusterGroups) {
-        this.clusterGroups = clusterGroups;
+    public void setServerCluster(Cluster serverCluster) {
+        this.serverCluster = serverCluster;
     }
 
+    public boolean isServerClient() {
+        return !StringUtils.isEmpty(clusterServerAddress);
+    }
+
+    public String getClusterServerAddress() {
+        return clusterServerAddress;
+    }
+
+    public void setClusterServerAddress(String clusterServerAddress) {
+        this.clusterServerAddress = clusterServerAddress;
+    }
+
+    public AMQPConf getAmqpConf() {
+        return amqpConf;
+    }
+
+    public void setAmqpConf(AMQPConf amqpConf) {
+        this.amqpConf = amqpConf;
+    }
+
+    public Cluster getClusterByName(String clusterName){
+        Map<String,Cluster> map = getClusters();
+        if (map != null && !map.isEmpty()){
+            return map.get(clusterName);
+        }
+        return null;
+    }
+
+    public Set<String> getCurrentClusterServers(){
+        Cluster cluster = getServerCluster();
+        if (cluster != null){
+            return cluster.getServers();
+        }
+        return Collections.emptySet();
+    }
+
+    public String getCurrentClusterName(){
+        Cluster cluster = getServerCluster();
+        if (cluster != null){
+            return cluster.getName();
+        }
+        return "";
+    }
+
+    public boolean isClusterLeader(){
+        Cluster cluster = getServerCluster();
+        if (cluster == null) return false;
+        int min = cluster.getMinTransmitterCount();
+
+        Iterator<String> iterator = cluster.getServers().iterator();
+        while (iterator.hasNext() && min > 0) {
+            String sa = iterator.next();
+            if (getServerAddress().equals(sa))
+                return true;
+            min--;
+        }
+        return false;
+    }
+
+    public URL getServerAddressParsedURL(){
+        return UrlUtils.parseURL(getServerAddress(), null);
+    }
+
+    public URL getClusterServerAddressParsedURL(){
+        return UrlUtils.parseURL(getClusterServerAddress(), null);
+    }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("serverAddress:").append(getServerAddress())
+        .append("\nprojects:").append(getProjects())
         .append("\nclusters:").append(getClusters())
-        .append("\nclusterServers:").append(getClusterServers())
-        .append("\nclusterGroups:").append(getClusterGroups());
+        .append("\nclusterGroup:").append(getClusterGroup())
+        .append("\nserverCluster:").append(getServerCluster())
+        .append("\namqpConf:").append(getAmqpConf());
         return sb.toString();
     }
 }

@@ -7,19 +7,13 @@ import java.util.Collection;
  * Created by Administrator on 2016/11/6.
  */
 public interface Server {
-    /**
-     * is bound.
-     *
-     * @return bound
-     */
-    boolean isBound();
-
+    //boolean isBound();
     /**
      * get channels.
      *
      * @return channels
      */
-    Collection<Channel> getChannels();
+    //Collection<Channel> getChannels();
 
     /**
      * get channel.
@@ -27,5 +21,5 @@ public interface Server {
      * @param remoteAddress
      * @return channel
      */
-    Channel getChannel(InetSocketAddress remoteAddress);
+    //Channel getChannel(InetSocketAddress remoteAddress);
 }

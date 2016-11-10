@@ -13,84 +13,61 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.zy.nut.relayer.server.transporter;
+package com.zy.nut.relayer.common.transporter;
 
 
 import com.zy.nut.relayer.common.Constants;
+import com.zy.nut.relayer.common.configure.Configuration;
 import com.zy.nut.relayer.common.logger.Logger;
 import com.zy.nut.relayer.common.logger.LoggerFactory;
 import com.zy.nut.relayer.common.remoting.*;
-import com.zy.nut.relayer.common.utils.ExecutorUtil;
-import com.zy.nut.relayer.common.utils.NetUtils;
-import com.zy.nut.relayer.common.URL;
 
-import java.net.InetSocketAddress;
-import java.util.Collection;
-import java.util.concurrent.ExecutorService;
+import java.util.BitSet;
 
-/**
- * AbstractServer
- * 
- * @author qian.lei
- * @author ding.lid
- */
 public abstract class AbstractServer extends AbstractEndPoint implements Server {
-    
     private static final Logger logger = LoggerFactory.getLogger(AbstractServer.class);
 
-    private InetSocketAddress              localAddress;
+    private int     accepts;
+    private int     idleTimeout = 600; //600 seconds
+    private BitSet  clientBitSet;
 
-    private InetSocketAddress              bindAddress;
-
-    private int                            accepts;
-
-    private int                            idleTimeout = 600; //600 seconds
-    
-    protected static final String SERVER_THREAD_POOL_NAME  ="DubboServerHandler";
-    
-    ExecutorService executor;
-
-    public AbstractServer(URL url, ChannelHandler handler) throws RemotingException {
-        super(url, handler);
-        localAddress = new InetSocketAddress(getUrl().getHost(), getUrl().getPort());
-        String host =  NetUtils.isInvalidLocalHost(getUrl().getHost())
-                        ? NetUtils.ANYHOST : getUrl().getHost();
-        bindAddress = new InetSocketAddress(host, getUrl().getPort());
+    public AbstractServer(Configuration configuration) throws RemotingException {
+        super(configuration);
         this.accepts = Constants.DEFAULT_ACCEPTS;
         this.idleTimeout = Constants.DEFAULT_IDLE_TIMEOUT;
+        clientBitSet = new BitSet(512);
         try {
             doOpen();
             if (logger.isInfoEnabled()) {
                 logger.info("Start " + getClass().getSimpleName() + " bind " + getBindAddress() + ", export " + getLocalAddress());
             }
         } catch (Throwable t) {
-            throw new RemotingException(new InetSocketAddress(getUrl().getHost(), getUrl().getPort()), null, "Failed to bind " + getClass().getSimpleName()
+            throw new RemotingException(getLocalAddress(), getRemoteAddress(), "Failed to bind " + getClass().getSimpleName()
                                         + " on " + getLocalAddress() + ", cause: " + t.getMessage(), t);
         }
-        /*if (handler instanceof WrappedChannelHandler ){
-            executor = ((WrappedChannelHandler)handler).getExecutor();
-        }*/
     }
-    
+
+
+
     protected abstract void doOpen() throws Throwable;
     
     protected abstract void doClose() throws Throwable;
 
 
-    public void send(Object message, boolean sent) throws RemotingException {
+    /*public void send(Object message, boolean sent) throws RemotingException {
         Collection<Channel> channels = getChannels();
         for (Channel channel : channels) {
             if (channel.isConnected()) {
                 channel.send(message, sent);
             }
         }
-    }
+    }*/
     
     public void close() {
         if (logger.isInfoEnabled()) {
             logger.info("Close " + getClass().getSimpleName() + " bind " + getBindAddress() + ", export " + getLocalAddress());
         }
-        ExecutorUtil.shutdownNow(executor ,100);
+        //ExecutorUtil.shutdownNow(executor ,100);
         try {
             super.close();
         } catch (Throwable e) {
@@ -104,28 +81,12 @@ public abstract class AbstractServer extends AbstractEndPoint implements Server 
     }
     
     public void close(int timeout) {
-        ExecutorUtil.gracefulShutdown(executor ,timeout);
+        //ExecutorUtil.gracefulShutdown(executor ,timeout);
         close();
     }
 
-    public InetSocketAddress getLocalAddress() {
-        return localAddress;
-    }
-    
-    public InetSocketAddress getBindAddress() {
-        return bindAddress;
-    }
 
-    public int getAccepts() {
-        return accepts;
-    }
-
-    public int getIdleTimeout() {
-        return idleTimeout;
-    }
-
-    @Override
-    public void connected(Channel ch) throws RemotingException {
+    /*public void connected(Channel ch) throws RemotingException {
         Collection<Channel> channels = getChannels();
         if (accepts > 0 && channels.size() > accepts) {
             logger.error("Close channel " + ch + ", cause: The server " + ch.getLocalAddress() + " connections greater than max config " + accepts);
@@ -142,6 +103,14 @@ public abstract class AbstractServer extends AbstractEndPoint implements Server 
             logger.warn("All clients has discontected from " + ch.getLocalAddress() + ". You can graceful shutdown now.");
         }
         super.disconnected(ch);
+    }*/
+
+
+    public void hashClientIdToBitTable(long clientId){
+        if (clientId < 10000){
+
+        }else if (clientId <3){
+
+        }
     }
-    
 }

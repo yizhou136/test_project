@@ -31,6 +31,12 @@
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
+            <version>4.1.1.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-example</artifactId>
+            <version>4.1.1.Final</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.alibaba/fastjson -->
         <dependency>
@@ -38,6 +44,15 @@
             <artifactId>fastjson</artifactId>
             <version>1.2.20</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.rabbitmq/amqp-client -->
+        <dependency>
+            <groupId>com.rabbitmq</groupId>
+            <artifactId>amqp-client</artifactId>
+            <version>3.6.5</version>
+            <scope>provided</scope>
+        </dependency>
+
         <dependency>
             <groupId>com.zy</groupId>
             <artifactId>hessian-lite</artifactId>

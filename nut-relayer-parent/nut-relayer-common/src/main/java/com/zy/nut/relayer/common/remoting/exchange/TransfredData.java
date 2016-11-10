@@ -6,20 +6,19 @@ import java.util.concurrent.atomic.AtomicLong;
  * Created by Administrator on 2016/11/6.
  */
 public class TransfredData {
-    private static final AtomicLong INVOKE_ID = new AtomicLong(0);
-
+    /*private static final AtomicLong INVOKE_ID = new AtomicLong(0);
     private final long  mId;
     private boolean isEvent;
-    private boolean isBroken;
+    private boolean isBroken;*/
 
 
-    private String group;
+    private String project;
     private String fid;
     private String tid;
 
     private Object data;
 
-    public TransfredData(long id){
+    /*public TransfredData(long id){
         this.mId = id;
     }
     public TransfredData(){
@@ -56,6 +55,15 @@ public class TransfredData {
     }
     public void setGroup(String group) {
         this.group = group;
+    }*/
+
+
+    public String getProject() {
+        return project;
+    }
+
+    public void setProject(String project) {
+        this.project = project;
     }
 
     public String getFid() {

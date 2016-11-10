@@ -15,10 +15,12 @@
  */
 package com.zy.nut.relayer.common.utils;
 
+import com.zy.nut.relayer.common.URL;
 import com.zy.nut.relayer.common.logger.Logger;
 import com.zy.nut.relayer.common.logger.LoggerFactory;
 
 import java.io.IOException;
+
 import java.net.*;
 import java.util.Enumeration;
 import java.util.Map;
@@ -155,10 +157,10 @@ public class NetUtils {
             return host;
         }
         if (host.contains("://")) {
-            /*URL u = URL.valueOf(host);
+            URL u = URL.valueOf(host);
             if (NetUtils.isInvalidLocalHost(u.getHost())) {
                 return u.setHost(NetUtils.getLocalHost()).toFullString();
-            }*/
+            }
             return null;
         } else if (host.contains(":")) {
             int i = host.lastIndexOf(':');
