@@ -2,7 +2,8 @@ package com.zy.nut.relayer.common.amqp;
 
 import com.rabbitmq.client.*;
 import com.zy.nut.relayer.common.configure.Configuration;
-import com.zy.nut.relayer.common.remoting.exchange.TransfredData;
+import com.zy.nut.relayer.common.container.ContainerExchange;
+import com.zy.nut.relayer.common.remoting.exchange.TransformData;
 
 import java.io.IOException;
 import java.util.Set;
@@ -16,8 +17,11 @@ public class BackendAMQPClient extends AbstractAMQPClient{
         super(configuration);
     }
 
+    public BackendAMQPClient(Configuration configuration, ContainerExchange containerExchange){
+        super(configuration, containerExchange);
+    }
 
-    public void transformData(TransfredData transfredData, Set<String> clusterNames){
+    public void transformData(TransformData transfredData, Set<String> clusterNames){
         String project = transfredData.getProject();
         String exchangeName = null;
         String routingKey = null;
@@ -91,13 +95,14 @@ public class BackendAMQPClient extends AbstractAMQPClient{
 
                         while (true){
                             QueueingConsumer.Delivery delivery = queueingConsumer.nextDelivery();
-                            System.out.println("log: "+new String(delivery.getBody()));
-                            channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
+                            byte[] data = delivery.getBody();
+                            System.out.println("receive from server:"+delivery.getEnvelope().getRoutingKey()
+                                    +" data.len:"+data.length);
+                            channel.basicAck(delivery.getEnvelope().getDeliveryTag(),false);
 
-                            System.out.println("reply to :"+delivery.getProperties().getReplyTo());
-                            logger.info("AMQPReceiver delivery:"+delivery);
-                            TransfredData transfredData = new TransfredData();
-                            transformData(transfredData, null);
+                            if (getContainerExchange() != null){
+                                getContainerExchange().receiveFromServer(data);
+                            }
                         }
                     }catch (InterruptedException ine){
                         ine.printStackTrace();

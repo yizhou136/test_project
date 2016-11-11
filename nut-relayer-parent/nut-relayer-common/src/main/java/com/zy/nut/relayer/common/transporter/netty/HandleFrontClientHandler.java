@@ -2,6 +2,7 @@ package com.zy.nut.relayer.common.transporter.netty;
 
 import com.zy.nut.relayer.common.logger.Logger;
 import com.zy.nut.relayer.common.logger.LoggerFactory;
+import com.zy.nut.relayer.common.remoting.Server;
 import com.zy.nut.relayer.common.remoting.exchange.*;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -11,6 +12,10 @@ import io.netty.channel.ChannelHandlerContext;
  */
 public class HandleFrontClientHandler extends ChannelDuplexHandler {
     private static final Logger logger = LoggerFactory.getLogger(HandleFrontClientHandler.class);
+    private Server server;
+    public HandleFrontClientHandler(Server server){
+        this.server = server;
+    }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
@@ -30,12 +35,26 @@ public class HandleFrontClientHandler extends ChannelDuplexHandler {
                 logger.info("Uid:"+relayerLoginLogout.getUid()+" has logined");
             else
                 logger.info("Uid:"+relayerLoginLogout.getUid()+" has logouted");
-        }else if (msg instanceof RelayerRegistering){
-            RelayerRegistering relayerRegistering = (RelayerRegistering)msg;
+        }else if (msg instanceof RelayerRegisteringUnRegistering){
+            logger.info("receive RelayerRegisteringUnRegistering clientaddr:"+ctx.channel().remoteAddress());
+            RelayerRegisteringUnRegistering relayerRegistering = (RelayerRegisteringUnRegistering)msg;
+            server.handleRegUnreg(new NettyChannel(ctx.channel(), null), relayerRegistering);
+            /*byte registerType = relayerRegistering.getRegisterType();
+            if (registerType == RelayerRegisteringUnRegistering.
+                    RelayerRegisteringType.SERVER_REG_CLIENT.getType()){
 
+            }else if (registerType == RelayerRegisteringUnRegistering.
+                    RelayerRegisteringType.SERVER_UNREG_CLIENT.getType()){
+
+            }else if (registerType == RelayerRegisteringUnRegistering.
+                    RelayerRegisteringType.NORMAL_REG_CLIENT.getType()){
+
+            }else if (registerType == RelayerRegisteringUnRegistering.
+                    RelayerRegisteringType.NORMAL_UNREG_CLIENT.getType()){
+            }*/
         }else if (msg instanceof RelayerPingPong){
         }else if (msg instanceof RelayerElecting){
-        }else if (msg instanceof TransfredData){
+        }else if (msg instanceof TransformData){
         }
     }
 }

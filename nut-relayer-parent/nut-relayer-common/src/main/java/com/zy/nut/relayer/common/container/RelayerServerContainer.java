@@ -1,21 +1,26 @@
 package com.zy.nut.relayer.common.container;
 
 
+import com.zy.nut.relayer.common.amqp.ServerendAMQPClient;
 import com.zy.nut.relayer.common.configure.Configuration;
+import com.zy.nut.relayer.common.logger.Logger;
+import com.zy.nut.relayer.common.logger.LoggerFactory;
 import com.zy.nut.relayer.common.remoting.RemotingException;
-import com.zy.nut.relayer.common.transporter.netty.NettyClient;
+import com.zy.nut.relayer.common.remoting.exchange.TransformData;
 import com.zy.nut.relayer.common.transporter.netty.NettyServer;
 
 
+import java.io.IOException;
 import java.net.URL;
-import java.util.Set;
 
 /**
  * Created by Administrator on 2016/11/7.
  */
-public class RelayerServerContainer extends AbstractContainer implements Container{
+public class RelayerServerContainer extends AbstractContainer implements ContainerExchange{
+    private static final Logger logger = LoggerFactory.getLogger(RelayerServerContainer.class);
     private NettyServer server;
-    private RelayerClientContainer relayerClientContainer;
+    private ServerendAMQPClient serverendAMQPClient;
+    private ConnectToLeadingClientContainer connectToLeadingClientContainer;
 
     public RelayerServerContainer(URL propertiesURL) throws Throwable{
         super(propertiesURL);
@@ -34,14 +39,32 @@ public class RelayerServerContainer extends AbstractContainer implements Contain
             throw e;
         }
 
-        if (configuration.isClusterLeader()){
-
-        }else {
-
+        if (configuration.isClusterLeader()){//for leading server
+            serverendAMQPClient = new ServerendAMQPClient(configuration);
+        }else {//for normal server
+            connectToLeadingClientContainer = new ConnectToLeadingClientContainer(configuration);
         }
         //int min = configuration.getServerCluster().getMinTransmitterCount();
     }
 
+
+
+    public void receiveFromBackend(byte[] data) {
+        logger.info("receiveFromBackend data:"+data);
+        getDecodedChannelBuffer().clear();
+        getDecodedChannelBuffer().writeBytes(data);
+        try {
+            TransformData transformData = (TransformData)getCodec()
+                    .decode(null,getDecodedChannelBuffer());
+            sendToFrontEnd(transformData);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void sendToFrontEnd(TransformData transformData) {
+        server.sendToFrontEnd(transformData);
+    }
 
     public static void main(String argv[]) throws Throwable{
         URL url = RelayerServerContainer.class.getClassLoader().getResource("relayer.properties");

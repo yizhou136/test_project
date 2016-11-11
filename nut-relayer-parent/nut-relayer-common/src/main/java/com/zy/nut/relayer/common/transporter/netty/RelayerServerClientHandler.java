@@ -1,0 +1,31 @@
+package com.zy.nut.relayer.common.transporter.netty;
+
+import com.zy.nut.relayer.common.logger.Logger;
+import com.zy.nut.relayer.common.logger.LoggerFactory;
+import com.zy.nut.relayer.common.remoting.exchange.RelayerRegisteringUnRegistering;
+import io.netty.channel.ChannelDuplexHandler;
+import io.netty.channel.ChannelHandlerContext;
+
+/**
+ * Created by zhougb on 2016/11/11.
+ */
+public class RelayerServerClientHandler extends ChannelDuplexHandler{
+    private static final Logger logger = LoggerFactory.getLogger(RelayerServerClientHandler.class);
+
+    @Override
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        //super.channelActive(ctx);
+        logger.info("connected to server:"+ctx.channel().remoteAddress()+" and do register.");
+        RelayerRegisteringUnRegistering relayerRegisteringUnRegistering
+                = new RelayerRegisteringUnRegistering();
+        relayerRegisteringUnRegistering.setRegisterType(
+                RelayerRegisteringUnRegistering.RelayerRegisteringType.SERVER_REG_CLIENT.getType());
+        ctx.writeAndFlush(relayerRegisteringUnRegistering);
+        super.channelActive(ctx);
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        cause.printStackTrace();
+    }
+}

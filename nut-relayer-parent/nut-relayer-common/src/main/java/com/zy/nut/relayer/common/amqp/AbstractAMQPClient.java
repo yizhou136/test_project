@@ -4,12 +4,11 @@ import com.rabbitmq.client.*;
 import com.zy.nut.relayer.common.configure.AMQPConf;
 import com.zy.nut.relayer.common.configure.Cluster;
 import com.zy.nut.relayer.common.configure.Configuration;
+import com.zy.nut.relayer.common.container.ContainerExchange;
 import com.zy.nut.relayer.common.logger.Logger;
 import com.zy.nut.relayer.common.logger.LoggerFactory;
-import com.zy.nut.relayer.common.remoting.exchange.TransfredData;
 
 import java.io.IOException;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -22,29 +21,41 @@ public abstract class AbstractAMQPClient{
     private Configuration configuration;
     private Channel channel;
     protected ExecutorService executorService = Executors.newCachedThreadPool();
+    private ContainerExchange containerExchange;
 
     public AbstractAMQPClient(Configuration configuration){
-        this.configuration = configuration;
+        this(configuration, null);
     }
 
+    public AbstractAMQPClient(Configuration configuration, ContainerExchange containerExchange){
+        this.configuration = configuration;
+        this.containerExchange = containerExchange;
+        initAMQPReceiver();
+    }
+
+    public abstract void initAMQPReceiver();
+
     public void declares(String project)throws IOException {
+        boolean exculsive = false;
+        boolean durable = false;
+        boolean autoDelete = true;
         Channel channel = generateChannel();
         //declare for backend
         //for receive
         String backendRecvQueueName = generateBackendRecvQueueName(project);
-        AMQP.Queue.DeclareOk recvDeclareOk = channel.queueDeclare(backendRecvQueueName, false, false, false, null);
+        AMQP.Queue.DeclareOk recvDeclareOk = channel.queueDeclare(backendRecvQueueName, durable, exculsive, autoDelete, null);
         logger.info("backend recvDeclareOk:"+recvDeclareOk);
 
         //for send
         AMQP.Exchange.DeclareOk fanoutExchangeDeclareOk = channel.exchangeDeclare(
                 generateBackendFanoutExchangeName(),
-                "fanout", false, true, null);
+                "fanout", durable, autoDelete, null);
         AMQP.Exchange.DeclareOk topicExchangeDeclareOk = channel.exchangeDeclare(
                 generateBackendTopicExchangeName(),
-                "topic", false, true, null);
+                "topic", durable, autoDelete, null);
         AMQP.Exchange.DeclareOk directExchangeDeclareOk = channel.exchangeDeclare(
                 generateBackendDirectExchangeName(),
-                "direct", false, true, null);
+                "direct", durable, autoDelete, null);
         /*channel.queueBind(recvQueueName,fanoutExchangeName,null);
         channel.queueBind(recvQueueName,topicExchangeName,generateTopicBindlingKey(project));*/
 
@@ -52,19 +63,19 @@ public abstract class AbstractAMQPClient{
         //declare for server
         //for receive queue
         String serverRecvQueueName = generateServerRecvQueueName(project);
-        recvDeclareOk = channel.queueDeclare(serverRecvQueueName, false, false, false, null);
+        recvDeclareOk = channel.queueDeclare(serverRecvQueueName, durable, exculsive, autoDelete, null);
         logger.info("server recvDeclareOk:"+recvDeclareOk);
 
         //for send
         fanoutExchangeDeclareOk = channel.exchangeDeclare(
                 generateServerFanoutExchangeName(),
-                "fanout", false, true, null);
+                "fanout", durable, autoDelete, null);
         topicExchangeDeclareOk = channel.exchangeDeclare(
                 generateServerTopicExchangeName(),
-                "topic", false, true, null);
+                "topic", durable, autoDelete, null);
         directExchangeDeclareOk = channel.exchangeDeclare(
                 generateServerDirectExchangeName(),
-                "direct", false, true, null);
+                "direct", durable, autoDelete, null);
 
         //binding key for backend
         channel.queueBind(backendRecvQueueName,
@@ -117,7 +128,7 @@ public abstract class AbstractAMQPClient{
     }
 
     public String generateServerRecvQueueName(String project) {
-        return String.format("recv_qu.%s.%s", getClusterName(), project);
+        return String.format("server.recvq.%s.%s", project, getClusterName());
     }
 
     public String generateBackendSendQueueName(String project){
@@ -172,29 +183,6 @@ public abstract class AbstractAMQPClient{
         return String.format("berk_%s", project);
     }
 
-    /*public void transformDataToFrontend(TransfredData transfredData, boolean isFanout){
-        String project = transfredData.getProject();
-        String exchangeName = isFanout ? generateFanoutExchangeName() : generateTopicExchangeName();
-        boolean durable = false;
-        boolean autoDelete = true;
-        Map<String, Object> arguments = null;
-        Channel channel = generateChannel();
-
-        try {
-            String recvQueueName = generateRecvQueueName(project);
-            AMQP.Queue.DeclareOk recvDeclareOk = channel.queueDeclare(recvQueueName, false, false, false, null);
-
-            String sendQueueName = generateSendQueueName(project);
-            AMQP.Queue.DeclareOk recvDeclareOk = channel.queueDeclare(recvQueueName, false, false, false, null);
-            AMQP.Exchange.DeclareOk declareOk = channel.exchangeDeclare(exchangeName,
-                    type, durable, autoDelete, arguments);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }*/
-
-
-
     public void stopAMQPReceiver(){
         if (executorService != null){
             executorService.shutdown();
@@ -207,5 +195,13 @@ public abstract class AbstractAMQPClient{
 
     public void setConfiguration(Configuration configuration) {
         this.configuration = configuration;
+    }
+
+    public ContainerExchange getContainerExchange() {
+        return containerExchange;
+    }
+
+    public void setContainerExchange(ContainerExchange containerExchange) {
+        this.containerExchange = containerExchange;
     }
 }

@@ -23,11 +23,13 @@ public class RelayerServerClientInitializer extends AbstractChannelInitializer{
         ChannelPipeline pipeline = channel.pipeline();
         pipeline.addLast(new LoggingHandler(LogLevel.INFO));
 
-        pipeline.addLast(new RelayerReconnectionHandler());
-        pipeline.addLast("idleStateHandler", new IdleStateHandler(20, 10, 0));
-        pipeline.addLast("relayerEventHandler", new RelayerEventHandler());
+        //pipeline.addLast(new RelayerReconnectionHandler());
+        //pipeline.addLast("idleStateHandler", new IdleStateHandler(200, 100, 0));
+        //pipeline.addLast("relayerEventHandler", new RelayerEventHandler());
+
 
         pipeline.addLast("relayerCodec", new RelayerCodecHandler(url));
+        pipeline.addLast("serverClient", new RelayerServerClientHandler());
         //pipeline.addLast(new EchoClientHandler());
 
         /*NettyCodecAdapter adapter = new NettyCodecAdapter(NettyClient.this.getCodec(), NettyClient.this.getUrl(), NettyClient.this);

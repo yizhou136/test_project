@@ -1,16 +1,11 @@
 package com.zy.nut.relayer.client.test;
 
-import com.zy.nut.relayer.common.URL;
 import com.zy.nut.relayer.common.configure.Configuration;
 import com.zy.nut.relayer.common.configure.ConfigurationLoader;
 import com.zy.nut.relayer.common.logger.Logger;
 import com.zy.nut.relayer.common.logger.LoggerFactory;
-import com.zy.nut.relayer.common.remoting.Channel;
-import com.zy.nut.relayer.common.remoting.ChannelHandler;
-import com.zy.nut.relayer.common.remoting.RemotingException;
-import com.zy.nut.relayer.common.remoting.exchange.TransfredData;
+import com.zy.nut.relayer.common.remoting.exchange.TransformData;
 import com.zy.nut.relayer.common.transporter.netty.NettyClient;
-import com.zy.nut.relayer.common.utils.UrlUtils;
 
 /**
  * Created by Administrator on 2016/11/6.
@@ -29,7 +24,7 @@ public class TestRelayerClient {
             user.setAge(234);
             user.setName("asdfasd");
 
-            TransfredData transfredData = new TransfredData();
+            TransformData transfredData = new TransformData();
             transfredData.setGroup("com.zy");
             transfredData.setFid("123");
             transfredData.setTid("456");

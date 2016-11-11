@@ -14,7 +14,11 @@ public class BootRelayerServer {
 
     public static void main(String argv[]){
         //SpringApplication.run(BootRelayerServer.class);
-        URL url = RelayerServerContainer.class.getClassLoader().getResource("relayer.properties");
+        String path = "relayer.properties";
+        if (argv.length > 0)
+            path = argv[0];
+        System.out.println("read path:"+path);
+        URL url = RelayerServerContainer.class.getClassLoader().getResource(path);
         RelayerServerContainer relayerContainer = null;
         try {
             relayerContainer = new RelayerServerContainer(url);

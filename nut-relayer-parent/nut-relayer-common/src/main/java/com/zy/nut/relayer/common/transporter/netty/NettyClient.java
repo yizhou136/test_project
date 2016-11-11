@@ -26,6 +26,8 @@ public class NettyClient extends AbstractClient {
     private NioEventLoopGroup nioEventLoopGroup;
     private volatile io.netty.channel.Channel nettyChannel;
     private GenericFutureListener<ChannelFuture> connectFutureListener;
+    private int doConnectCount;
+    private int reconnecPeriod = 5;
 
     public NettyClient(Configuration configuration) throws RemotingException{
         super(configuration);
@@ -109,9 +111,8 @@ public class NettyClient extends AbstractClient {
                     }
                 }
             } else if (future.cause() != null) {
-                RemotingException remotingException = new RemotingException(getChannel(), "client(url: " + getServerAddress() + ") failed to connect to server "
-                        + getRemoteAddress() + ", error message is:" + future.cause().getMessage(), future.cause());
-                logger.error("connection error:", remotingException);
+                /*RemotingException remotingException = new RemotingException(getChannel(),
+                        + getRemoteAddress() + ", error message is:" + future.cause().getMessage(), future.cause());*/
                 nioEventLoopGroup.schedule(new Runnable() {
                     public void run() {
                         try {
@@ -120,7 +121,12 @@ public class NettyClient extends AbstractClient {
                             throwable.printStackTrace();
                         }
                     }
-                }, 2, TimeUnit.SECONDS);
+                }, reconnecPeriod, TimeUnit.SECONDS);
+                doConnectCount++;
+                reconnecPeriod *= doConnectCount;
+                reconnecPeriod = Math.min(reconnecPeriod, 60);
+                logger.error("client(" + getServerAddress() + ") failed to connect to server:"+getRemoteAddress()+
+                    "\n reconnect at after "+reconnecPeriod+" second");
             } else {
                 throw new RemotingException(getChannel(), "client(url: " + getServerAddress() + ") failed to connect to server "
                         + getRemoteAddress() + " client-side timeout "

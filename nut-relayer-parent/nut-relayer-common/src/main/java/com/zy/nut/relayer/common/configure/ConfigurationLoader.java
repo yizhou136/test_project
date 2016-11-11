@@ -93,7 +93,7 @@ public class ConfigurationLoader {
                 for(String server:clusterServersStr.split(",")){
                     if (server.equals(configuration.getServerAddress())) {
                         configuration.setServerCluster(cluster);
-                        continue;
+                        //continue;
                     }
                     serversSet.add(server);
                 }
@@ -135,7 +135,7 @@ public class ConfigurationLoader {
         //parse amqp
         String amqpHost = properties.getProperty("amqp.host");
         if (!StringUtils.isEmpty(amqpHost)){
-            String amqpPort = properties.getProperty("amqp.host");
+            String amqpPort = properties.getProperty("amqp.port");
             String amqpUsername = properties.getProperty("amqp.username");
             String amqpPassword = properties.getProperty("amqp.password");
             AMQPConf amqpConf = new AMQPConf();

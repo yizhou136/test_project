@@ -2,6 +2,7 @@ package com.zy.nut.relayer.common.container;
 
 
 import com.zy.nut.relayer.common.configure.Configuration;
+import com.zy.nut.relayer.common.remoting.RemotingException;
 import com.zy.nut.relayer.common.transporter.netty.NettyClient;
 import com.zy.nut.relayer.common.transporter.netty.RelayerServerClientInitializer;
 import io.netty.bootstrap.Bootstrap;
@@ -11,21 +12,23 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
  * Created by Administrator on 2016/11/7.
  */
-public class RelayerClientContainer{
-    private Set<NettyClient> clusterGroupServerClients;
-    private Set<NettyClient> clusterServerClients;
+public abstract class AbstractRelayerClientContainer {
+    //private Set<NettyClient> clusterGroupServerClients;
+    protected Set<NettyClient> serverClients;
     private volatile int successedConnections;
 
-    private Bootstrap bootstrap;
-    private NioEventLoopGroup nioEventLoopGroup;
+    protected Bootstrap bootstrap;
+    protected NioEventLoopGroup nioEventLoopGroup;
 
 
-    public RelayerClientContainer(Configuration configuration) throws Throwable{
+    public AbstractRelayerClientContainer(Configuration configuration) throws Throwable{
+        serverClients = new LinkedHashSet<NettyClient>();
         nioEventLoopGroup = new NioEventLoopGroup();
         bootstrap = new Bootstrap();
         bootstrap.group(nioEventLoopGroup)
@@ -35,17 +38,12 @@ public class RelayerClientContainer{
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, getConnectTimeout())
                 .option(ChannelOption.AUTO_READ, Boolean.valueOf(true))
                 .handler(new RelayerServerClientInitializer(null));
-        Set<String> clusterServers = configuration.getCurrentClusterServers();
-        for (String svr : clusterServers){
-            Configuration serverclientConf = new Configuration(configuration);
-            serverclientConf.setClusterServerAddress(svr);
-            NettyClient nettyClient = new NettyClient(serverclientConf, bootstrap, nioEventLoopGroup);
-            nettyClient.setConnectFutureListener(new ServerClientConnectionFutureListener());
-            clusterServerClients.add(nettyClient);
-        }
 
+        init(configuration);
         nioEventLoopGroup.submit(new ElectingClusterLeaders());
     }
+
+    public abstract void init(Configuration configuration) throws RemotingException;
 
     public int getConnectTimeout() {
         return 3000;

@@ -21,21 +21,26 @@ import com.zy.nut.relayer.common.configure.Configuration;
 import com.zy.nut.relayer.common.logger.Logger;
 import com.zy.nut.relayer.common.logger.LoggerFactory;
 import com.zy.nut.relayer.common.remoting.*;
+import com.zy.nut.relayer.common.remoting.exchange.DownStreamClient;
+import com.zy.nut.relayer.common.remoting.exchange.DownStreamMap;
+import com.zy.nut.relayer.common.remoting.exchange.RelayerRegisteringUnRegistering;
+import com.zy.nut.relayer.common.remoting.exchange.TransformData;
 
 import java.util.BitSet;
+import java.util.List;
+import java.util.Map;
 
 public abstract class AbstractServer extends AbstractEndPoint implements Server {
     private static final Logger logger = LoggerFactory.getLogger(AbstractServer.class);
 
     private int     accepts;
     private int     idleTimeout = 600; //600 seconds
-    private BitSet  clientBitSet;
+    private DownStreamMap downStreamMap;
 
     public AbstractServer(Configuration configuration) throws RemotingException {
         super(configuration);
         this.accepts = Constants.DEFAULT_ACCEPTS;
         this.idleTimeout = Constants.DEFAULT_IDLE_TIMEOUT;
-        clientBitSet = new BitSet(512);
         try {
             doOpen();
             if (logger.isInfoEnabled()) {
@@ -106,11 +111,33 @@ public abstract class AbstractServer extends AbstractEndPoint implements Server 
     }*/
 
 
-    public void hashClientIdToBitTable(long clientId){
-        if (clientId < 10000){
+    public void handleRegUnreg(Channel channel,
+                               RelayerRegisteringUnRegistering relayerRegisteringUnRegistering) {
+        byte registerType = relayerRegisteringUnRegistering.getRegisterType();
+        if (registerType == RelayerRegisteringUnRegistering.
+                RelayerRegisteringType.NORMAL_REG_CLIENT.getType()){
+            if (getConfiguration().isClusterLeader()) {
+                downStreamMap = new DownStreamMap();
+                downStreamMap.registerDownStreamClient(relayerRegisteringUnRegistering.getProject(),
+                        relayerRegisteringUnRegistering.getType(),
+                        relayerRegisteringUnRegistering.getMatchConditiones(), channel);
+            }else {
 
-        }else if (clientId <3){
+            }
+        }
+    }
 
+    public void sendToFrontEnd(TransformData transformData) {
+        if (downStreamMap != null) {
+            List<Channel> channelList = downStreamMap.receiveChannelByRoutingKey(transformData.getProject(),
+                    transformData.getType(), transformData.getMatchConditiones());
+            for (Channel channel : channelList) {
+                try {
+                    channel.send(transformData, false);
+                } catch (RemotingException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 }

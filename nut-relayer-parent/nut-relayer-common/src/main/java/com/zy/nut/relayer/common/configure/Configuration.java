@@ -16,9 +16,13 @@ public class Configuration {
     private Set<ClusterGroup> clusterGroup;//c1_bj-c2_gz , c3_tj-c4_wh-c5_nj
     private AMQPConf amqpConf;
 
-    private Cluster serverCluster;
+    //for serverclient
+    private String scConnectedAddress;//serverClient connected address
 
-    private String clusterServerAddress;
+    //parsed
+    private Cluster serverCluster;
+    private Set<String> leadingServerAddress;
+
 
     public Configuration(){}
 
@@ -27,6 +31,7 @@ public class Configuration {
         this.clusters = configuration.getClusters();
         this.clusterGroup = configuration.getClusterGroup();
         this.serverCluster = configuration.getServerCluster();
+        this.leadingServerAddress = configuration.getLeadingServerAddress();
     }
 
     public Set<String> getProjects() {
@@ -69,16 +74,27 @@ public class Configuration {
         this.serverCluster = serverCluster;
     }
 
+    public Set<String> getLeadingServerAddress() {
+        if (leadingServerAddress == null)
+            parseLeadingServerAddress();
+
+        return leadingServerAddress;
+    }
+
+    public void setLeadingServerAddress(Set<String> leadingServerAddress) {
+        this.leadingServerAddress = leadingServerAddress;
+    }
+
     public boolean isServerClient() {
-        return !StringUtils.isEmpty(clusterServerAddress);
+        return !StringUtils.isEmpty(scConnectedAddress);
     }
 
-    public String getClusterServerAddress() {
-        return clusterServerAddress;
+    public String getScConnectedAddress() {
+        return scConnectedAddress;
     }
 
-    public void setClusterServerAddress(String clusterServerAddress) {
-        this.clusterServerAddress = clusterServerAddress;
+    public void setScConnectedAddress(String scConnectedAddress) {
+        this.scConnectedAddress = scConnectedAddress;
     }
 
     public AMQPConf getAmqpConf() {
@@ -105,6 +121,19 @@ public class Configuration {
         return Collections.emptySet();
     }
 
+    public Set<String> getClusterServersExceptSelf(){
+        Set<String> result = new LinkedHashSet<String>();
+        Cluster cluster = getServerCluster();
+        if (cluster != null){
+            for (String server: cluster.getServers()){
+                if (server.equals(getServerAddress()))
+                    continue;
+                result.add(server);
+            }
+        }
+        return result;
+    }
+
     public String getCurrentClusterName(){
         Cluster cluster = getServerCluster();
         if (cluster != null){
@@ -114,18 +143,35 @@ public class Configuration {
     }
 
     public boolean isClusterLeader(){
-        Cluster cluster = getServerCluster();
-        if (cluster == null) return false;
-        int min = cluster.getMinTransmitterCount();
+        if (leadingServerAddress == null){
+            parseLeadingServerAddress();
+        }
+        if (leadingServerAddress == null ||
+            leadingServerAddress == Collections.EMPTY_SET)
+            return false;
+        if (leadingServerAddress.contains(getServerAddress()))
+            return true;
+        return false;
+    }
 
+    private void parseLeadingServerAddress(){
+        Cluster cluster = getServerCluster();
+        if (cluster == null
+            || cluster.getServers() == null
+            || cluster.getServers().isEmpty()){
+            leadingServerAddress = Collections.EMPTY_SET;
+            return;
+        }
+
+        int min = cluster.getMinTransmitterCount();
         Iterator<String> iterator = cluster.getServers().iterator();
         while (iterator.hasNext() && min > 0) {
             String sa = iterator.next();
-            if (getServerAddress().equals(sa))
-                return true;
+            if (leadingServerAddress == null)
+                leadingServerAddress = new LinkedHashSet<String>();
+            leadingServerAddress.add(sa);
             min--;
         }
-        return false;
     }
 
     public URL getServerAddressParsedURL(){
@@ -133,7 +179,7 @@ public class Configuration {
     }
 
     public URL getClusterServerAddressParsedURL(){
-        return UrlUtils.parseURL(getClusterServerAddress(), null);
+        return UrlUtils.parseURL(getScConnectedAddress(), null);
     }
 
     @Override

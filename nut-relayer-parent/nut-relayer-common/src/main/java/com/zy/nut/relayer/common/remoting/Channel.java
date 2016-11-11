@@ -21,6 +21,8 @@ import java.net.InetSocketAddress;
 
 public interface Channel{
 
+    String getChannelId();
+
     void send(Object message, boolean sent) throws RemotingException;
 
     URL getUrl();

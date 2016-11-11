@@ -35,22 +35,33 @@ public class RelayerCodec extends HeaderExchangeCodec implements Codec{
             out.writeUTF(relayerElecting.getServerName());
             out.writeInt(relayerElecting.getGuessedConnections());
             out.writeShort(relayerElecting.getPerformance());
-        }else if (message instanceof TransfredData){
+        }else if (message instanceof RelayerRegisteringUnRegistering){
+            RelayerRegisteringUnRegistering relayerRegistering = (RelayerRegisteringUnRegistering)message;
+            out.writeByte(relayerRegistering.getRegisterType());
+            if (relayerRegistering.getRegisterType() ==
+                    RelayerRegisteringUnRegistering.RelayerRegisteringType.NORMAL_REG_CLIENT.getType()) {
+                out.writeUTF(relayerRegistering.getProject());
+                out.writeByte(relayerRegistering.getType());
+                out.writeUTF(relayerRegistering.getMatchConditiones());
+            }else if (relayerRegistering.getRegisterType() ==
+                    RelayerRegisteringUnRegistering.RelayerRegisteringType.NORMAL_UNREG_CLIENT.getType()) {
+                out.writeUTF(relayerRegistering.getProject());
+                out.writeByte(relayerRegistering.getType());
+                out.writeUTF(relayerRegistering.getMatchConditiones());
+            }else if (relayerRegistering.getRegisterType() ==
+                    RelayerRegisteringUnRegistering.RelayerRegisteringType.SERVER_REG_CLIENT.getType()) {
+            }else if (relayerRegistering.getRegisterType() ==
+                    RelayerRegisteringUnRegistering.RelayerRegisteringType.SERVER_UNREG_CLIENT.getType()) {
+            }
+            type = REGISTERING_ORUNREG_FLAG_TYPE;
+        }else if (message instanceof TransformData) {
             type = TRANSFORM_FLAG_TYPE;
-            TransfredData transfredData = (TransfredData) message;
-            out.writeUTF(transfredData.getGroup());
-            out.writeUTF(transfredData.getFid());
-            out.writeUTF(transfredData.getTid());
-            if(transfredData.getData() != null)
+            TransformData transfredData = (TransformData) message;
+            out.writeUTF(transfredData.getProject());
+            out.writeByte(transfredData.getType());
+            out.writeUTF(transfredData.getMatchConditiones());
+            if (transfredData.getData() != null)
                 out.writeObject(transfredData.getData());
-        }else if (message instanceof RelayerRegistering){
-            RelayerRegistering relayerRegistering = (RelayerRegistering)message;
-            out.writeByte(relayerRegistering.getType());
-            out.writeLong(relayerRegistering.getRoutingkey());
-            if (relayerRegistering.getType() == RelayerRegistering.RelayerRegisteringType.FANOUT_TYPE.getType())
-                type = REGISTERING_FANOUT_FLAG_TYPE;
-            else
-                type = REGISTERING_DIRECT_FLAG_TYPE;
         }
         return type;
     }
@@ -75,28 +86,37 @@ public class RelayerCodec extends HeaderExchangeCodec implements Codec{
             relayerElecting.setPerformance(in.readShort());
             obj = relayerElecting;
         }else if (type == TRANSFORM_FLAG_TYPE){
-            TransfredData transfredData = new TransfredData();
-            transfredData.setGroup(in.readUTF());
-            transfredData.setFid(in.readUTF());
-            transfredData.setTid(in.readUTF());
+            TransformData transfredData = new TransformData();
+            transfredData.setProject(in.readUTF());
+            transfredData.setType(in.readByte());
+            transfredData.setMatchConditiones(in.readUTF());
             try {
                 transfredData.setData(in.readObject());
             } catch (ClassNotFoundException e) {
                 throw new IOException("Read object failed.", e);
             }
             obj = transfredData;
-        }else if (type == REGISTERING_DIRECT_FLAG_TYPE ||
-                type == REGISTERING_FANOUT_FLAG_TYPE){
-            RelayerRegistering relayerRegistering = new RelayerRegistering();
-            if (type == REGISTERING_FANOUT_FLAG_TYPE)
-                relayerRegistering.setType(RelayerRegistering.RelayerRegisteringType.FANOUT_TYPE.getType());
-            else
-                relayerRegistering.setType(RelayerRegistering.RelayerRegisteringType.DIRECTER_TYPE.getType());
-
-            relayerRegistering.setType(in.readByte());
-            relayerRegistering.setRoutingkey(in.readLong());
+        }else if (type == REGISTERING_ORUNREG_FLAG_TYPE){
+            RelayerRegisteringUnRegistering relayerRegistering = new RelayerRegisteringUnRegistering();
+            relayerRegistering.setRegisterType(in.readByte());
+            if (relayerRegistering.getRegisterType() ==
+                    RelayerRegisteringUnRegistering.RelayerRegisteringType.NORMAL_REG_CLIENT.getType()) {
+                relayerRegistering.setProject(in.readUTF());
+                relayerRegistering.setType(in.readByte());
+                relayerRegistering.setMatchConditiones(in.readUTF());
+            }else if (relayerRegistering.getRegisterType() ==
+                    RelayerRegisteringUnRegistering.RelayerRegisteringType.NORMAL_UNREG_CLIENT.getType()) {
+                relayerRegistering.setProject(in.readUTF());
+                relayerRegistering.setType(in.readByte());
+                relayerRegistering.setMatchConditiones(in.readUTF());
+            }else if (relayerRegistering.getRegisterType() ==
+                    RelayerRegisteringUnRegistering.RelayerRegisteringType.SERVER_REG_CLIENT.getType()) {
+            }else if (relayerRegistering.getRegisterType() ==
+                    RelayerRegisteringUnRegistering.RelayerRegisteringType.SERVER_UNREG_CLIENT.getType()) {
+            }
             obj = relayerRegistering;
         }
+
         return obj;
     }
 }

@@ -9,10 +9,6 @@ import com.zy.nut.relayer.common.remoting.Codec;
 import com.zy.nut.relayer.common.remoting.buffer.ChannelBuffer;
 import com.zy.nut.relayer.common.remoting.buffer.ChannelBufferInputStream;
 import com.zy.nut.relayer.common.remoting.buffer.ChannelBufferOutputStream;
-import com.zy.nut.relayer.common.remoting.exchange.RelayerElecting;
-import com.zy.nut.relayer.common.remoting.exchange.RelayerLoginLogout;
-import com.zy.nut.relayer.common.remoting.exchange.RelayerPingPong;
-import com.zy.nut.relayer.common.remoting.exchange.TransfredData;
 import com.zy.nut.relayer.common.remoting.exchange.codec.AbstractCodec;
 
 import com.zy.nut.relayer.common.serialize.ObjectInput;
@@ -42,8 +38,8 @@ public class HeaderExchangeCodec extends AbstractCodec implements Codec{
     protected static final byte     PINGPONG_FLAG_TYPE      = (byte) 0x03;
     protected static final byte     ELECTING_FLAG_TYPE      = (byte) 0x04;
     protected static final byte     TRANSFORM_FLAG_TYPE     = (byte) 0x05;
-    protected static final byte     REGISTERING_DIRECT_FLAG_TYPE   = (byte) 0x06;
-    protected static final byte     REGISTERING_FANOUT_FLAG_TYPE   = (byte) 0x07;
+    protected static final byte     REGISTERING_ORUNREG_FLAG_TYPE   = (byte) 0x06;
+
     protected static final byte      FLAG_TYPE_MASK = 0x0F;
     protected static final byte      SERIALIZATION_MASK = 0x70;
     protected static final byte      SERIALIZATION_MASK_OFFSET = 4;
@@ -143,7 +139,6 @@ public class HeaderExchangeCodec extends AbstractCodec implements Codec{
         ObjectInput in = s.deserialize(null, is);
         // get request id.
         //long id = Bytes.bytes2long(header, 4);
-        //TransfredData transfredData = new TransfredData();
         Object ret = null;
         try {
             ret = decodeTransfredData(channel, in, type);

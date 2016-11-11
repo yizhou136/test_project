@@ -4,11 +4,11 @@ import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.QueueingConsumer;
 import com.zy.nut.relayer.common.configure.Configuration;
-import com.zy.nut.relayer.common.remoting.exchange.TransfredData;
+import com.zy.nut.relayer.common.container.ContainerExchange;
+import com.zy.nut.relayer.common.remoting.exchange.TransformData;
 import com.zy.nut.relayer.common.utils.StringUtils;
 
 import java.io.IOException;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -20,7 +20,11 @@ public class ServerendAMQPClient extends AbstractAMQPClient{
         super(configuration);
     }
 
-    public void transformData(TransfredData transfredData){
+    public ServerendAMQPClient(Configuration configuration, ContainerExchange containerExchange){
+        super(configuration, containerExchange);
+    }
+
+    public void transformData(TransformData transfredData){
         String project = transfredData.getProject();
         Set<String> projectSet = transfredData.parseProject();
         String exchangeName = null;
@@ -95,13 +99,18 @@ public class ServerendAMQPClient extends AbstractAMQPClient{
 
                         while (true){
                             QueueingConsumer.Delivery delivery = queueingConsumer.nextDelivery();
-                            System.out.println("log: "+new String(delivery.getBody()));
+                            byte[] data = delivery.getBody();
+                            System.out.println("receive from backend:"+delivery.getEnvelope().getRoutingKey()
+                               +" data.len:"+data.length);
                             channel.basicAck(delivery.getEnvelope().getDeliveryTag(),false);
 
+                            if (getContainerExchange() != null){
+                                getContainerExchange().receiveFromBackend(data);
+                            }
                             //System.out.println("reply to :"+delivery.getProperties().getReplyTo());
-                            logger.info("AMQPReceiver delivery:"+delivery);
-                            TransfredData transfredData = new TransfredData();
-                            transformData(transfredData);
+                            /*logger.info("AMQPReceiver delivery:"+delivery);
+                            TransformData transfredData = new TransformData();
+                            transformData(transfredData);*/
                         }
                     }catch (InterruptedException ine){
                         ine.printStackTrace();

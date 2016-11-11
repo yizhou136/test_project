@@ -38,7 +38,7 @@ public class NettyChannel extends AbstractChannel implements Channel{
 
     private final Map<String, Object> attributes = new ConcurrentHashMap<String, Object>();
 
-    private NettyChannel(io.netty.channel.Channel channel, URL url){
+    public NettyChannel(io.netty.channel.Channel channel, URL url){
         super(url);
         if (channel == null) {
             throw new IllegalArgumentException("netty channel == null;");
@@ -79,6 +79,10 @@ public class NettyChannel extends AbstractChannel implements Channel{
 
     public boolean isConnected() {
         return channel.isOpen();
+    }
+
+    public String getChannelId() {
+        return channel.id().asShortText();
     }
 
     public void send(Object message, boolean sent) throws RemotingException {
