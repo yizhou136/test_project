@@ -20,6 +20,7 @@ import com.zy.nut.relayer.common.URL;
 import java.net.InetSocketAddress;
 
 public interface Channel{
+    //boolean isServerClient();
 
     String getChannelId();
 

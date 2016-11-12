@@ -11,6 +11,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * Created by Administrator on 2016/11/6.
  */
 public class TransformData {
+    public static final String DefaultProject = "ALL";
     public static enum TRANSFORM_DATA_TYPE{
         DIRECT((byte)0),
         FANOUT((byte)1),
@@ -24,8 +25,11 @@ public class TransformData {
             return type;
         }
     }
+    private transient byte   exchangeType;
+    private transient String routingKey;
+
     private String project;
-    private byte type;
+    private byte   matchType;
     private String matchConditiones;//uid liveid  or more  split by ,
 
     private Object data;
@@ -34,12 +38,12 @@ public class TransformData {
         return project;
     }
 
-    public byte getType() {
-        return type;
+    public String getRoutingKey() {
+        return routingKey;
     }
 
-    public void setType(byte type) {
-        this.type = type;
+    public void setRoutingKey(String routingKey) {
+        this.routingKey = routingKey;
     }
 
     public String getMatchConditiones() {
@@ -62,13 +66,40 @@ public class TransformData {
         this.data = data;
     }
 
-    public Set<String> parseProject(){
-        if (StringUtils.isEmpty(project) || !StringUtils.isContains(project, ","))
+    public byte getExchangeType() {
+        return exchangeType;
+    }
+
+    public void setExchangeType(byte exchangeType) {
+        this.exchangeType = exchangeType;
+    }
+
+    public byte getMatchType() {
+        return matchType;
+    }
+
+    public void setMatchType(byte matchType) {
+        this.matchType = matchType;
+    }
+
+    public Set<String> convertMatchConditionesToSet(){
+        if (StringUtils.isEmpty(matchConditiones))
             return Collections.emptySet();
         Set<String> stringSet = new LinkedHashSet<String>();
-        for(String p:project.split(",")){
+        for(String p:matchConditiones.split(",")){
             stringSet.add(p);
         }
         return stringSet;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(" project:").append(getProject())
+        .append(" matchType:").append(getMatchType())
+        .append(" matchConditiones:").append(getMatchConditiones())
+        .append(" exchangeType:").append(getExchangeType())
+        .append(" routingkey:").append(getRoutingKey());
+        return sb.toString();
     }
 }

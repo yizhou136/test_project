@@ -38,27 +38,25 @@ public class RelayerCodec extends HeaderExchangeCodec implements Codec{
         }else if (message instanceof RelayerRegisteringUnRegistering){
             RelayerRegisteringUnRegistering relayerRegistering = (RelayerRegisteringUnRegistering)message;
             out.writeByte(relayerRegistering.getRegisterType());
-            if (relayerRegistering.getRegisterType() ==
+            out.writeUTF(relayerRegistering.getProject());
+            out.writeByte(relayerRegistering.getMatchType());
+            out.writeUTF(relayerRegistering.getMatchConditiones());
+
+            /*if (relayerRegistering.getRegisterType() ==
                     RelayerRegisteringUnRegistering.RelayerRegisteringType.NORMAL_REG_CLIENT.getType()) {
-                out.writeUTF(relayerRegistering.getProject());
-                out.writeByte(relayerRegistering.getType());
-                out.writeUTF(relayerRegistering.getMatchConditiones());
             }else if (relayerRegistering.getRegisterType() ==
                     RelayerRegisteringUnRegistering.RelayerRegisteringType.NORMAL_UNREG_CLIENT.getType()) {
-                out.writeUTF(relayerRegistering.getProject());
-                out.writeByte(relayerRegistering.getType());
-                out.writeUTF(relayerRegistering.getMatchConditiones());
             }else if (relayerRegistering.getRegisterType() ==
                     RelayerRegisteringUnRegistering.RelayerRegisteringType.SERVER_REG_CLIENT.getType()) {
             }else if (relayerRegistering.getRegisterType() ==
                     RelayerRegisteringUnRegistering.RelayerRegisteringType.SERVER_UNREG_CLIENT.getType()) {
-            }
+            }*/
             type = REGISTERING_ORUNREG_FLAG_TYPE;
         }else if (message instanceof TransformData) {
             type = TRANSFORM_FLAG_TYPE;
             TransformData transfredData = (TransformData) message;
             out.writeUTF(transfredData.getProject());
-            out.writeByte(transfredData.getType());
+            out.writeByte(transfredData.getMatchType());
             out.writeUTF(transfredData.getMatchConditiones());
             if (transfredData.getData() != null)
                 out.writeObject(transfredData.getData());
@@ -88,7 +86,7 @@ public class RelayerCodec extends HeaderExchangeCodec implements Codec{
         }else if (type == TRANSFORM_FLAG_TYPE){
             TransformData transfredData = new TransformData();
             transfredData.setProject(in.readUTF());
-            transfredData.setType(in.readByte());
+            transfredData.setMatchType(in.readByte());
             transfredData.setMatchConditiones(in.readUTF());
             try {
                 transfredData.setData(in.readObject());
@@ -99,21 +97,18 @@ public class RelayerCodec extends HeaderExchangeCodec implements Codec{
         }else if (type == REGISTERING_ORUNREG_FLAG_TYPE){
             RelayerRegisteringUnRegistering relayerRegistering = new RelayerRegisteringUnRegistering();
             relayerRegistering.setRegisterType(in.readByte());
-            if (relayerRegistering.getRegisterType() ==
+            relayerRegistering.setProject(in.readUTF());
+            relayerRegistering.setMatchType(in.readByte());
+            relayerRegistering.setMatchConditiones(in.readUTF());
+            /*if (relayerRegistering.getRegisterType() ==
                     RelayerRegisteringUnRegistering.RelayerRegisteringType.NORMAL_REG_CLIENT.getType()) {
-                relayerRegistering.setProject(in.readUTF());
-                relayerRegistering.setType(in.readByte());
-                relayerRegistering.setMatchConditiones(in.readUTF());
             }else if (relayerRegistering.getRegisterType() ==
                     RelayerRegisteringUnRegistering.RelayerRegisteringType.NORMAL_UNREG_CLIENT.getType()) {
-                relayerRegistering.setProject(in.readUTF());
-                relayerRegistering.setType(in.readByte());
-                relayerRegistering.setMatchConditiones(in.readUTF());
             }else if (relayerRegistering.getRegisterType() ==
                     RelayerRegisteringUnRegistering.RelayerRegisteringType.SERVER_REG_CLIENT.getType()) {
             }else if (relayerRegistering.getRegisterType() ==
                     RelayerRegisteringUnRegistering.RelayerRegisteringType.SERVER_UNREG_CLIENT.getType()) {
-            }
+            }*/
             obj = relayerRegistering;
         }
 

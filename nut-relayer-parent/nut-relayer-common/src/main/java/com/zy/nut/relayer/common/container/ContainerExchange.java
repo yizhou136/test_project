@@ -1,5 +1,6 @@
 package com.zy.nut.relayer.common.container;
 
+import com.zy.nut.relayer.common.remoting.RemotingException;
 import com.zy.nut.relayer.common.remoting.exchange.TransformData;
 
 /**
@@ -11,6 +12,5 @@ public interface ContainerExchange extends Container{
     void receiveFromBackend(byte[] data);
 
     void sendToFrontEnd(TransformData transformData);
-    void sendToServerEnd(TransformData transformData);
-
+    void sendToLeadingServers(Object msg, boolean isFanout);
 }

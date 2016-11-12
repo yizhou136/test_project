@@ -1,24 +1,19 @@
 package com.zy.nut.relayer.common.transporter.netty;
 
 import com.zy.nut.relayer.common.URL;
-import com.zy.nut.relayer.common.remoting.AbstractEndPoint;
 import com.zy.nut.relayer.common.remoting.Server;
-import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import io.netty.handler.timeout.IdleStateHandler;
 
 /**
  * Created by zhougb on 2016/11/8.
  */
-public class RelayerServerClientInitializer extends AbstractChannelInitializer{
-    private Server server;
+public class RelayerNormalClientInitializer extends AbstractChannelInitializer{
 
-    public RelayerServerClientInitializer(Server server, URL url){
+    public RelayerNormalClientInitializer(URL url){
         super(url);
-        this.server = server;
     }
 
     @Override
@@ -32,7 +27,7 @@ public class RelayerServerClientInitializer extends AbstractChannelInitializer{
 
 
         pipeline.addLast("relayerCodec", new RelayerCodecHandler(url));
-        pipeline.addLast("serverClient", new RelayerServerClientHandler(server));
+        //pipeline.addLast("serverClient", new RelayerServerClientHandler(server));
         //pipeline.addLast(new EchoClientHandler());
 
         /*NettyCodecAdapter adapter = new NettyCodecAdapter(NettyClient.this.getCodec(), NettyClient.this.getUrl(), NettyClient.this);

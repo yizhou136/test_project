@@ -1,6 +1,7 @@
 package com.zy.nut.relayer.common.transporter.netty;
 
 import com.zy.nut.relayer.common.URL;
+import com.zy.nut.relayer.common.remoting.Server;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.logging.LogLevel;
@@ -11,9 +12,11 @@ import io.netty.handler.timeout.IdleStateHandler;
  * Created by zhougb on 2016/11/8.
  */
 public class RelayerServerInitializer extends AbstractChannelInitializer{
+    private Server server;
 
-    public RelayerServerInitializer(URL url){
+    public RelayerServerInitializer(Server server, URL url){
         super(url);
+        this.server = server;
     }
 
     @Override
@@ -23,6 +26,6 @@ public class RelayerServerInitializer extends AbstractChannelInitializer{
         //pipeline.addLast("idleStateHandler", new IdleStateHandler(20, 10, 0));
         //pipeline.addLast("relayerEventHandler", new RelayerEventHandler());
         pipeline.addLast("relayerCodec", new RelayerCodecHandler(url));
-        pipeline.addLast("frontClient", new HandleFrontClientHandler());
+        pipeline.addLast("frontClient", new HandleFrontClientHandler(server));
     }
 }

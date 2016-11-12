@@ -4,8 +4,10 @@ import com.rabbitmq.client.*;
 import com.zy.nut.relayer.common.configure.Configuration;
 import com.zy.nut.relayer.common.container.ContainerExchange;
 import com.zy.nut.relayer.common.remoting.exchange.TransformData;
+import com.zy.nut.relayer.common.utils.StringUtils;
 
 import java.io.IOException;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
@@ -21,20 +23,66 @@ public class BackendAMQPClient extends AbstractAMQPClient{
         super(configuration, containerExchange);
     }
 
-    public void transformData(TransformData transfredData, Set<String> clusterNames){
+    public void transformDataTo(Object msg, String matchConditions, Set<String> clusterNames){
+        TransformData transformData = new TransformData();
+        transformData.setProject(getDefaultProject());
+        if (clusterNames == null || clusterNames.isEmpty()) {
+            transformData.setExchangeType(TransformData.TRANSFORM_DATA_TYPE.FANOUT.getType());
+            //transformData.setRoutingKey();
+        }else if (clusterNames.size() == 1){
+            String routingkey = clusterNames.iterator().next();
+            transformData.setExchangeType(TransformData.TRANSFORM_DATA_TYPE.DIRECT.getType());
+            transformData.setRoutingKey(routingkey);
+        }else {
+            String routingkey = genTopicRoutingKey(getDefaultProject(), clusterNames);
+            transformData.setExchangeType(TransformData.TRANSFORM_DATA_TYPE.TOPIC.getType());
+            transformData.setRoutingKey(routingkey);
+        }
+
+        transformData.setMatchConditiones(matchConditions);
+        transformData.setData(msg);
+        transformData(transformData);
+    }
+
+    public void transformData(TransformData transfredData){
         String project = transfredData.getProject();
+        byte   forwardtype = transfredData.getExchangeType();
         String exchangeName = null;
         String routingKey = null;
-        if (clusterNames == null || clusterNames.isEmpty()) {
-            exchangeName = generateServerFanoutExchangeName();
+        if (StringUtils.isEmpty(project) || "all".equals(project)) {
+            if (forwardtype == TransformData.TRANSFORM_DATA_TYPE.DIRECT.getType()) {
+                exchangeName = genGlobalRelayerDirectEx();
+                routingKey = transfredData.getRoutingKey();
+                if (StringUtils.isEmpty(routingKey)) {
+                    routingKey = genDirectRoutingBindlingKey(getClusterName());
+                }
+            }else if (forwardtype == TransformData.TRANSFORM_DATA_TYPE.TOPIC.getType()){
+                exchangeName = genGlobalRelayerTopicEx();
+                routingKey = transfredData.getRoutingKey();
+                if (StringUtils.isEmpty(routingKey)) {
+                    Set<String> set = new LinkedHashSet<String>();
+                    set.add("all");
+                    routingKey = genTopicRoutingKey("", set);
+                }
+            }else if (forwardtype == TransformData.TRANSFORM_DATA_TYPE.FANOUT.getType()){
+                exchangeName = genGlobalRelayerFanoutEx();
+            }
+        }else if (forwardtype == TransformData.TRANSFORM_DATA_TYPE.DIRECT.getType()){
+            exchangeName = genRelayerDirectEx(project);
+            routingKey = transfredData.getRoutingKey();//genDirectRoutingBindlingKey(project);
+            if (StringUtils.isEmpty(routingKey))
+                routingKey = genDirectRoutingBindlingKey(getClusterName());
+        }else if (forwardtype == TransformData.TRANSFORM_DATA_TYPE.TOPIC.getType()){
+            exchangeName = genRelayerTopicEx(project);
+            routingKey = transfredData.getRoutingKey();//genDirectRoutingBindlingKey(project);
+            if (StringUtils.isEmpty(routingKey)) {
+                Set<String> set = new LinkedHashSet<String>();
+                set.add(getClusterName());
+                routingKey = genTopicRoutingKey("", set);
+            }
+        }else if (forwardtype == TransformData.TRANSFORM_DATA_TYPE.FANOUT.getType()){
+            exchangeName = genRelayerFanoutEx(project);
             routingKey = "";
-        }else if (clusterNames.size() == 1){
-            String clusterName = clusterNames.iterator().next();
-            exchangeName = generateServerDirectExchangeName();
-            routingKey = generateServerDirectRoutingBindlingKey(project, clusterName);
-        }else {
-            exchangeName = generateServerTopicExchangeName();
-            routingKey = generateServerTopicRoutingKey(project,clusterNames);
         }
         Channel channel = generateChannel();
         /*channel.addReturnListener(new ReturnListener() {
@@ -70,7 +118,8 @@ public class BackendAMQPClient extends AbstractAMQPClient{
         //channel.basicPublish(TestAmqp.ExchangerName, "haha", true, basicProperties, generateMsg().getBytes());
         //channel.basicPublish(TestAmqp.ExchangerName, "haha2", true, basicProperties, generateMsg().getBytes());
         try {
-            channel.basicPublish(exchangeName, routingKey, basicProperties, "".getBytes());
+            byte[] data = getCodecSupport().encode(transfredData);
+            channel.basicPublish(exchangeName, routingKey, basicProperties, data);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -91,7 +140,7 @@ public class BackendAMQPClient extends AbstractAMQPClient{
                     try {
                         Channel channel = generateChannel();
                         QueueingConsumer queueingConsumer = new QueueingConsumer(channel);
-                        channel.basicConsume(generateBackendRecvQueueName(project), false, queueingConsumer);
+                        channel.basicConsume(genBackendRecvQueueName(project), false, queueingConsumer);
 
                         while (true){
                             QueueingConsumer.Delivery delivery = queueingConsumer.nextDelivery();

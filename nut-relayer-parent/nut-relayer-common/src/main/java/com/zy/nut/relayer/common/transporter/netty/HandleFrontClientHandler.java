@@ -36,22 +36,11 @@ public class HandleFrontClientHandler extends ChannelDuplexHandler {
             else
                 logger.info("Uid:"+relayerLoginLogout.getUid()+" has logouted");
         }else if (msg instanceof RelayerRegisteringUnRegistering){
-            logger.info("receive RelayerRegisteringUnRegistering clientaddr:"+ctx.channel().remoteAddress());
             RelayerRegisteringUnRegistering relayerRegistering = (RelayerRegisteringUnRegistering)msg;
-            server.handleRegUnreg(new NettyChannel(ctx.channel(), null), relayerRegistering);
-            /*byte registerType = relayerRegistering.getRegisterType();
-            if (registerType == RelayerRegisteringUnRegistering.
-                    RelayerRegisteringType.SERVER_REG_CLIENT.getType()){
-
-            }else if (registerType == RelayerRegisteringUnRegistering.
-                    RelayerRegisteringType.SERVER_UNREG_CLIENT.getType()){
-
-            }else if (registerType == RelayerRegisteringUnRegistering.
-                    RelayerRegisteringType.NORMAL_REG_CLIENT.getType()){
-
-            }else if (registerType == RelayerRegisteringUnRegistering.
-                    RelayerRegisteringType.NORMAL_UNREG_CLIENT.getType()){
-            }*/
+            logger.info("receive RelayerRegisteringUnRegistering clientaddr:"+ctx.channel().remoteAddress()
+                +" relayerRegistering:"+relayerRegistering);
+            server.handleRegUnreg(new NettyChannel(ctx.channel(), null),
+                    relayerRegistering);
         }else if (msg instanceof RelayerPingPong){
         }else if (msg instanceof RelayerElecting){
         }else if (msg instanceof TransformData){

@@ -57,7 +57,7 @@ public class NettyClient extends AbstractClient {
                 .option(ChannelOption.SO_KEEPALIVE, Boolean.valueOf(true))
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, getConnectTimeout())
                 .option(ChannelOption.AUTO_READ, Boolean.valueOf(true))
-                .handler(new RelayerServerInitializer(getURL()));
+                .handler(new RelayerNormalClientInitializer(getURL()));
             }
         } catch (Exception exc) {
             exc.printStackTrace();

@@ -2,6 +2,7 @@ package com.zy.nut.relayer.common.container;
 
 import com.zy.nut.relayer.common.configure.Configuration;
 import com.zy.nut.relayer.common.remoting.RemotingException;
+import com.zy.nut.relayer.common.remoting.Server;
 import com.zy.nut.relayer.common.transporter.netty.NettyClient;
 
 import java.util.Set;
@@ -11,8 +12,8 @@ import java.util.Set;
  */
 public class ConnectToLeadingClientContainer extends AbstractRelayerClientContainer{
 
-    public ConnectToLeadingClientContainer(Configuration configuration)throws Throwable{
-        super(configuration);
+    public ConnectToLeadingClientContainer(Server server,Configuration configuration)throws Throwable{
+        super(server,configuration);
     }
 
     @Override

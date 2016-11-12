@@ -18,6 +18,7 @@ package com.zy.nut.relayer.common.transporter;
 
 import com.zy.nut.relayer.common.Constants;
 import com.zy.nut.relayer.common.configure.Configuration;
+import com.zy.nut.relayer.common.container.ContainerExchange;
 import com.zy.nut.relayer.common.logger.Logger;
 import com.zy.nut.relayer.common.logger.LoggerFactory;
 import com.zy.nut.relayer.common.remoting.*;
@@ -35,12 +36,18 @@ public abstract class AbstractServer extends AbstractEndPoint implements Server 
 
     private int     accepts;
     private int     idleTimeout = 600; //600 seconds
-    private DownStreamMap downStreamMap;
+    private DownStreamMap serverDownStreamMap;
+    private DownStreamMap normalDownStreamMap;
+    private ContainerExchange containerExchange;
 
-    public AbstractServer(Configuration configuration) throws RemotingException {
+    public AbstractServer(Configuration configuration, ContainerExchange containerExchange) throws RemotingException {
         super(configuration);
         this.accepts = Constants.DEFAULT_ACCEPTS;
         this.idleTimeout = Constants.DEFAULT_IDLE_TIMEOUT;
+        this.containerExchange = containerExchange;
+        if (configuration.isClusterLeader())
+            serverDownStreamMap = new DownStreamMap(true);
+        normalDownStreamMap = new DownStreamMap(false);
         try {
             doOpen();
             if (logger.isInfoEnabled()) {
@@ -113,30 +120,59 @@ public abstract class AbstractServer extends AbstractEndPoint implements Server 
 
     public void handleRegUnreg(Channel channel,
                                RelayerRegisteringUnRegistering relayerRegisteringUnRegistering) {
-        byte registerType = relayerRegisteringUnRegistering.getRegisterType();
-        if (registerType == RelayerRegisteringUnRegistering.
-                RelayerRegisteringType.NORMAL_REG_CLIENT.getType()){
-            if (getConfiguration().isClusterLeader()) {
-                downStreamMap = new DownStreamMap();
-                downStreamMap.registerDownStreamClient(relayerRegisteringUnRegistering.getProject(),
-                        relayerRegisteringUnRegistering.getType(),
+        if (relayerRegisteringUnRegistering.isServerClient()) {
+            if (serverDownStreamMap == null && getConfiguration().isClusterLeader()){
+                serverDownStreamMap = new DownStreamMap(true);
+            }
+            if (relayerRegisteringUnRegistering.isRegAction()){
+                serverDownStreamMap.registerDownStreamClient(relayerRegisteringUnRegistering.getProject(),
+                        relayerRegisteringUnRegistering.getMatchType(),
                         relayerRegisteringUnRegistering.getMatchConditiones(), channel);
             }else {
-
+                serverDownStreamMap.unregisterDownStreamClient(relayerRegisteringUnRegistering.getProject(),
+                        relayerRegisteringUnRegistering.getMatchType(),
+                        relayerRegisteringUnRegistering.getMatchConditiones());
             }
+        }else {
+            if (relayerRegisteringUnRegistering.isRegAction()){
+                normalDownStreamMap.registerDownStreamClient(relayerRegisteringUnRegistering.getProject(),
+                        relayerRegisteringUnRegistering.getMatchType(),
+                        relayerRegisteringUnRegistering.getMatchConditiones(), channel);
+                relayerRegisteringUnRegistering.setRegisterType(
+                        RelayerRegisteringUnRegistering.RelayerRegisteringType.SERVER_REG_CLIENT.getType());
+            }else {
+                normalDownStreamMap.unregisterDownStreamClient(relayerRegisteringUnRegistering.getProject(),
+                        relayerRegisteringUnRegistering.getMatchType(),
+                        relayerRegisteringUnRegistering.getMatchConditiones());
+                relayerRegisteringUnRegistering.setRegisterType(
+                        RelayerRegisteringUnRegistering.RelayerRegisteringType.SERVER_UNREG_CLIENT.getType());
+            }
+            //todo register  server leader;
+            containerExchange.sendToLeadingServers(relayerRegisteringUnRegistering, true);
         }
     }
 
     public void sendToFrontEnd(TransformData transformData) {
-        if (downStreamMap != null) {
-            List<Channel> channelList = downStreamMap.receiveChannelByRoutingKey(transformData.getProject(),
-                    transformData.getType(), transformData.getMatchConditiones());
-            for (Channel channel : channelList) {
-                try {
-                    channel.send(transformData, false);
-                } catch (RemotingException e) {
-                    e.printStackTrace();
-                }
+        List<Channel> channelList = normalDownStreamMap.receiveChannelByRoutingKey(transformData.getProject(),
+                transformData.getMatchType(), transformData.getMatchConditiones());
+        List<Channel> serverClientChannelList = serverDownStreamMap != null ?
+                serverDownStreamMap.receiveChannelByRoutingKey(transformData.getProject(),
+                transformData.getMatchType(), transformData.getMatchConditiones()) : null;
+
+        if (channelList == null){
+            if (serverClientChannelList == null)
+                return;
+            channelList = serverClientChannelList;
+        }else {
+            if (serverClientChannelList != null)
+                channelList.addAll(serverClientChannelList);
+        }
+
+        for (Channel channel : channelList) {
+            try {
+                channel.send(transformData, false);
+            } catch (RemotingException e) {
+                e.printStackTrace();
             }
         }
     }

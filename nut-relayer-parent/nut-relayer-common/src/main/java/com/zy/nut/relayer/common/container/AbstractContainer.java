@@ -13,7 +13,7 @@ import java.net.URL;
 /**
  * Created by Administrator on 2016/11/7.
  */
-public abstract class AbstractContainer implements ContainerExchange{
+public abstract class AbstractContainer implements Container{
     private Configuration configuration;
     private URL propertiesUrl;
     private String serverName;
@@ -41,10 +41,10 @@ public abstract class AbstractContainer implements ContainerExchange{
 
     public void start() {}
     public void stop() {}
-    public void receiveFromBackend(byte[] data) {}
-    public void receiveFromServer(byte[] data) {}
-    public void sendToFrontEnd(TransformData transformData) {}
-    public void sendToServerEnd(TransformData transformData) {}
+    //public void receiveFromBackend(byte[] data) {}
+    //public void receiveFromServer(byte[] data) {}
+
+
 
     public Configuration getConfiguration() {
         return configuration;

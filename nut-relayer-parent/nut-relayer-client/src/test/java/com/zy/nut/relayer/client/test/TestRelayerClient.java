@@ -25,9 +25,6 @@ public class TestRelayerClient {
             user.setName("asdfasd");
 
             TransformData transfredData = new TransformData();
-            transfredData.setGroup("com.zy");
-            transfredData.setFid("123");
-            transfredData.setTid("456");
             transfredData.setData(user);
 
             //Thread.sleep(1000);

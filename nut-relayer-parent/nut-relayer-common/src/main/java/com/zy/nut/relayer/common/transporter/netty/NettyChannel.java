@@ -15,6 +15,7 @@
  */
 package com.zy.nut.relayer.common.transporter.netty;
 
+import com.zy.nut.relayer.common.Constants;
 import com.zy.nut.relayer.common.logger.Logger;
 import com.zy.nut.relayer.common.logger.LoggerFactory;
 import com.zy.nut.relayer.common.remoting.AbstractChannel;
@@ -36,6 +37,8 @@ public class NettyChannel extends AbstractChannel implements Channel{
 
     private final io.netty.channel.Channel channel;
 
+    //private final boolean isServerClient;
+
     private final Map<String, Object> attributes = new ConcurrentHashMap<String, Object>();
 
     public NettyChannel(io.netty.channel.Channel channel, URL url){
@@ -44,6 +47,7 @@ public class NettyChannel extends AbstractChannel implements Channel{
             throw new IllegalArgumentException("netty channel == null;");
         }
         this.channel = channel;
+        //this.isServerClient = isServerClient;
     }
 
     public static NettyChannel getOrAddChannel(io.netty.channel.Channel ch, URL url) {
@@ -62,12 +66,16 @@ public class NettyChannel extends AbstractChannel implements Channel{
         }
         return ret;
     }
-
     public static void removeChannelIfDisconnected(io.netty.channel.Channel ch) {
         if (ch != null && ! ch.isOpen()) {
             channelMap.remove(ch);
         }
     }
+
+    /*public boolean isServerClient() {
+        return isServerClient;
+    }
+    */
 
     public InetSocketAddress getLocalAddress() {
         return (InetSocketAddress) channel.localAddress();
@@ -92,7 +100,10 @@ public class NettyChannel extends AbstractChannel implements Channel{
         int timeout = 0;
         try {
             ChannelFuture future = channel.writeAndFlush(message);
-
+            if (sent) {
+                timeout = getUrl().getPositiveParameter(Constants.TIMEOUT_KEY, Constants.DEFAULT_TIMEOUT);
+                success = future.await(timeout);
+            }
             Throwable cause = future.cause();
             if (cause != null) {
                 throw cause;
@@ -110,11 +121,6 @@ public class NettyChannel extends AbstractChannel implements Channel{
     public void close() {
         try {
             super.close();
-        } catch (Exception e) {
-            logger.warn(e.getMessage(), e);
-        }
-        try {
-            removeChannelIfDisconnected(channel);
         } catch (Exception e) {
             logger.warn(e.getMessage(), e);
         }

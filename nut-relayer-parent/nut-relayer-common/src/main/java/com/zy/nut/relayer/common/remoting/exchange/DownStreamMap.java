@@ -23,6 +23,11 @@ public class DownStreamMap {
         this.isClusterLeader = isClusterLeader;
     }
 
+    public void unregisterDownStreamClient(String project, byte type,
+                                         String matchConditiones){
+
+    }
+
     public void registerDownStreamClient(String project, byte type,
                                          String matchConditiones,
                                          Channel channel){
@@ -71,19 +76,45 @@ public class DownStreamMap {
                                                     String matchConditiones){
         if (StringUtils.isEmpty(matchConditiones))
             return null;
-
-        String[] matches = matchConditiones.split(",");
-        Map<String,DownStreamClient>  map = downStreamClients.get(project);
-        if (map == null)
-            return null;
-
         List<Channel> list = null;
-        for (DownStreamClient downStreamClient : map.values()) {
-            for (String match : matches) {
-                if (downStreamClient.hasContains(type, match)) {
-                    if (list == null)
-                        list = new LinkedList<Channel>();
-                    list.add(downStreamClient.getChannel());
+        if (isClusterLeader) {
+            Map<String, DownStreamClient> map = downStreamClients.get(project);
+            if (map == null)
+                return null;
+
+            String[] matches = matchConditiones.split(",");
+            for (DownStreamClient downStreamClient : map.values()) {
+                for (String match : matches) {
+                    if (downStreamClient.hasContains(type, match)) {
+                        if (list == null)
+                            list = new LinkedList<Channel>();
+                        list.add(downStreamClient.getChannel());
+                    }
+                }
+            }
+        }else {
+            Map<String,Object> map = normalClients.get(project);
+            if (map == null)
+                return null;
+
+            String[] matches = matchConditiones.split(",");
+            if (type == TransformData.TRANSFORM_DATA_TYPE.DIRECT.getType()){
+                for (String match : matches) {
+                    Channel channel = (Channel) map.get(match);
+                    if (channel != null){
+                        if (list == null)
+                            list = new LinkedList<Channel>();
+                        list.add(channel);
+                    }
+                }
+            }else {
+                for (String match : matches) {
+                    List<Channel> channelList = (List<Channel>) map.get(match);
+                    if (channelList != null){
+                        if (list == null)
+                            list = new LinkedList<Channel>();
+                        list.addAll(channelList);
+                    }
                 }
             }
         }

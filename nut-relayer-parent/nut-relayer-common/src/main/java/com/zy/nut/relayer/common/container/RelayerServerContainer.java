@@ -33,21 +33,27 @@ public class RelayerServerContainer extends AbstractContainer implements Contain
             return;
 
         try {
-            server = new NettyServer(configuration);
+            server = new NettyServer(configuration, this);
         } catch (RemotingException e) {
             e.printStackTrace();
             throw e;
         }
 
+
+
         if (configuration.isClusterLeader()){//for leading server
-            serverendAMQPClient = new ServerendAMQPClient(configuration);
-        }else {//for normal server
-            connectToLeadingClientContainer = new ConnectToLeadingClientContainer(configuration);
+            serverendAMQPClient = new ServerendAMQPClient(configuration, this);
+        }else {
+            connectToLeadingClientContainer = new ConnectToLeadingClientContainer(server,configuration);
+            serverendAMQPClient = new ServerendAMQPClient(configuration, null);
         }
         //int min = configuration.getServerCluster().getMinTransmitterCount();
     }
 
 
+    public void receiveFromServer(byte[] data) {
+
+    }
 
     public void receiveFromBackend(byte[] data) {
         logger.info("receiveFromBackend data:"+data);
@@ -64,6 +70,16 @@ public class RelayerServerContainer extends AbstractContainer implements Contain
 
     public void sendToFrontEnd(TransformData transformData) {
         server.sendToFrontEnd(transformData);
+    }
+
+    public void sendToLeadingServers(Object msg, boolean isFanout){
+        if (connectToLeadingClientContainer == null) return;
+
+        try {
+            connectToLeadingClientContainer.sendDataToLeadingServers(msg,isFanout);
+        }catch (RemotingException e){
+            e.printStackTrace();
+        }
     }
 
     public static void main(String argv[]) throws Throwable{

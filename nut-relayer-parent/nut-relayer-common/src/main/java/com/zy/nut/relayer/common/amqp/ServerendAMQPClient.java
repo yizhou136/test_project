@@ -9,6 +9,7 @@ import com.zy.nut.relayer.common.remoting.exchange.TransformData;
 import com.zy.nut.relayer.common.utils.StringUtils;
 
 import java.io.IOException;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
@@ -26,20 +27,41 @@ public class ServerendAMQPClient extends AbstractAMQPClient{
 
     public void transformData(TransformData transfredData){
         String project = transfredData.getProject();
-        Set<String> projectSet = transfredData.parseProject();
+        byte   forwardtype = transfredData.getExchangeType();
         String exchangeName = null;
         String routingKey = null;
-        if (StringUtils.isEmpty(project) ||
-            "*".equals(project)) {
-            exchangeName = generateBackendFanoutExchangeName();
-            routingKey = "";
-        }else if (projectSet.isEmpty()){
-            exchangeName = generateBackendDirectExchangeName();
-            routingKey = generateBackendDirectRoutingBindlingKey(project);
-        }else {
-            exchangeName = generateBackendTopicExchangeName();
-            routingKey = generateBackendTopicRoutingKey(projectSet);
+        if (StringUtils.isEmpty(project) || "all".equals(project)) {
+            if (forwardtype == TransformData.TRANSFORM_DATA_TYPE.DIRECT.getType()) {
+                //exchangeName = genGlobalBackendFanoutEx()
+            }else if (forwardtype == TransformData.TRANSFORM_DATA_TYPE.TOPIC.getType()){
+                exchangeName = genGlobalBackendTopicEx();
+                routingKey = transfredData.getRoutingKey();
+                if (StringUtils.isEmpty(routingKey)) {
+                    Set<String> set = new LinkedHashSet<String>();
+                    set.add("all");
+                    routingKey = genTopicRoutingKey("", set);
+                }
+            }else if (forwardtype == TransformData.TRANSFORM_DATA_TYPE.FANOUT.getType()){
+                exchangeName = genGlobalBackendFanoutEx();
+            }
+        }else if (forwardtype == TransformData.TRANSFORM_DATA_TYPE.DIRECT.getType()){
+            exchangeName = genBackendDirectEx(project);
+            routingKey = transfredData.getRoutingKey();//genDirectRoutingBindlingKey(project);
+            if (StringUtils.isEmpty(routingKey))
+                routingKey = genDirectRoutingBindlingKey(project);
+        }else if (forwardtype == TransformData.TRANSFORM_DATA_TYPE.TOPIC.getType()){
+            exchangeName = genBackendTopicEx(project);
+            routingKey = transfredData.getRoutingKey();//genDirectRoutingBindlingKey(project);
+            if (StringUtils.isEmpty(routingKey)) {
+                Set<String> set = new LinkedHashSet<String>();
+                set.add(project);
+                routingKey = genTopicRoutingKey("", set);
+            }
+        }else if (forwardtype == TransformData.TRANSFORM_DATA_TYPE.FANOUT.getType()){
+            exchangeName = genBackendFanoutEx(project);
+            //routingKey = transfredData.getMatchConditiones();//genDirectRoutingBindlingKey(project);
         }
+
         Channel channel = generateChannel();
         /*channel.addReturnListener(new ReturnListener() {
             @Override
@@ -84,6 +106,8 @@ public class ServerendAMQPClient extends AbstractAMQPClient{
     }
 
     public void initAMQPReceiver(){
+        if (getContainerExchange() == null)
+            return;
         for(final String project:getConfiguration().getProjects()){
             try {
                 declares(project);
@@ -95,7 +119,7 @@ public class ServerendAMQPClient extends AbstractAMQPClient{
                     try {
                         Channel channel = generateChannel();
                         QueueingConsumer queueingConsumer = new QueueingConsumer(channel);
-                        channel.basicConsume(generateServerRecvQueueName(project), false, queueingConsumer);
+                        channel.basicConsume(genRelayerRecvQueueName(project, getClusterName()), false, queueingConsumer);
 
                         while (true){
                             QueueingConsumer.Delivery delivery = queueingConsumer.nextDelivery();
@@ -104,9 +128,7 @@ public class ServerendAMQPClient extends AbstractAMQPClient{
                                +" data.len:"+data.length);
                             channel.basicAck(delivery.getEnvelope().getDeliveryTag(),false);
 
-                            if (getContainerExchange() != null){
-                                getContainerExchange().receiveFromBackend(data);
-                            }
+                            getContainerExchange().receiveFromBackend(data);
                             //System.out.println("reply to :"+delivery.getProperties().getReplyTo());
                             /*logger.info("AMQPReceiver delivery:"+delivery);
                             TransformData transfredData = new TransformData();

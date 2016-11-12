@@ -1,6 +1,7 @@
 package com.zy.nut.relayer.common.transporter.netty;
 
 import com.zy.nut.relayer.common.configure.Configuration;
+import com.zy.nut.relayer.common.container.ContainerExchange;
 import com.zy.nut.relayer.common.remoting.RemotingException;
 import com.zy.nut.relayer.common.remoting.Server;
 import com.zy.nut.relayer.common.transporter.AbstractServer;
@@ -25,8 +26,8 @@ public class NettyServer extends AbstractServer implements Server{
     private EventLoopGroup workerGroup;
     private io.netty.channel.Channel channel;
 
-    public NettyServer(Configuration configuration) throws RemotingException {
-        super(configuration);
+    public NettyServer(Configuration configuration, ContainerExchange containerExchange) throws RemotingException {
+        super(configuration,containerExchange);
     }
 
     @Override
@@ -50,7 +51,7 @@ public class NettyServer extends AbstractServer implements Server{
                     .channel(NioServerSocketChannel.class)
                     .option(ChannelOption.SO_BACKLOG, 100)
                     .handler(new LoggingHandler(LogLevel.INFO))
-                    .childHandler(new RelayerServerInitializer(getURL()));
+                    .childHandler(new RelayerServerInitializer(this, getURL()));
 
             // Start the server.
             ChannelFuture f = b.bind(getBindAddress()).sync();

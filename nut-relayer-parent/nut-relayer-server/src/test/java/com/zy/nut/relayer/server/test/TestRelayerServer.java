@@ -15,7 +15,7 @@ public class TestRelayerServer {
         try {
             //URL url = UrlUtils.parseURL("127.0.0.1:8282",null);
             Configuration configuration = new Configuration();
-            NettyServer nettyServer = new NettyServer(configuration);
+            //NettyServer nettyServer = new NettyServer(configuration);
         }catch (Exception e){
             e.printStackTrace();
         }
