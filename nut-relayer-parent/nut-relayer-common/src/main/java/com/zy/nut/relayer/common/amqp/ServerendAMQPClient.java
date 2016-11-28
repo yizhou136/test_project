@@ -96,7 +96,8 @@ public class ServerendAMQPClient extends AbstractAMQPClient{
         //channel.basicPublish(TestAmqp.ExchangerName, "haha", true, basicProperties, generateMsg().getBytes());
         //channel.basicPublish(TestAmqp.ExchangerName, "haha2", true, basicProperties, generateMsg().getBytes());
         try {
-            channel.basicPublish(exchangeName, routingKey, basicProperties, "".getBytes());
+            byte[] data = getCodecSupport().encode(transfredData);
+            channel.basicPublish(exchangeName, routingKey, basicProperties, data);
         } catch (IOException e) {
             e.printStackTrace();
         }

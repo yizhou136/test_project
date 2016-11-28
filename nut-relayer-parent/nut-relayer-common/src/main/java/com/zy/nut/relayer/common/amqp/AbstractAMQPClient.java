@@ -7,6 +7,7 @@ import com.zy.nut.relayer.common.configure.Configuration;
 import com.zy.nut.relayer.common.container.ContainerExchange;
 import com.zy.nut.relayer.common.logger.Logger;
 import com.zy.nut.relayer.common.logger.LoggerFactory;
+import com.zy.nut.relayer.common.remoting.exchange.TransformData;
 import com.zy.nut.relayer.common.remoting.exchange.header.RelayerCodec;
 import com.zy.nut.relayer.common.remoting.exchange.header.RelayerCodecSupport;
 
@@ -38,6 +39,28 @@ public abstract class AbstractAMQPClient{
     }
 
     public abstract void initAMQPReceiver();
+    public abstract void transformData(TransformData transfredData);
+
+    public void transformDataTo(Object msg, String matchConditions, Set<String> clusterNames){
+        TransformData transformData = new TransformData();
+        transformData.setProject(getDefaultProject());
+        if (clusterNames == null || clusterNames.isEmpty()) {
+            transformData.setExchangeType(TransformData.TRANSFORM_DATA_TYPE.FANOUT.getType());
+            //transformData.setRoutingKey();
+        }else if (clusterNames.size() == 1){
+            String routingkey = clusterNames.iterator().next();
+            transformData.setExchangeType(TransformData.TRANSFORM_DATA_TYPE.DIRECT.getType());
+            transformData.setRoutingKey(routingkey);
+        }else {
+            String routingkey = genTopicRoutingKey(getDefaultProject(), clusterNames);
+            transformData.setExchangeType(TransformData.TRANSFORM_DATA_TYPE.TOPIC.getType());
+            transformData.setRoutingKey(routingkey);
+        }
+
+        transformData.setMatchConditiones(matchConditions);
+        transformData.setData(msg);
+        transformData(transformData);
+    }
 
     public void declares(String project) throws IOException {
         boolean exculsive = false;
@@ -138,7 +161,15 @@ public abstract class AbstractAMQPClient{
             connectionFactory.setUsername(amqpConf.getUsername());
             connectionFactory.setPassword(amqpConf.getPassword());
             connectionFactory.setVirtualHost("relayer");
+            connectionFactory.setAutomaticRecoveryEnabled(true);
+            connectionFactory.setNetworkRecoveryInterval(20);
+            connectionFactory.setRequestedHeartbeat(500);
             Connection connection = connectionFactory.newConnection();
+            connection.addShutdownListener(new ShutdownListener() {
+                public void shutdownCompleted(ShutdownSignalException e) {
+                    logger.error("shutdownCompleted xxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+                }
+            });
             channel = connection.createChannel();
         }catch (Exception e){
             e.printStackTrace();

@@ -15,6 +15,8 @@ public interface Server {
 
     void sendToFrontEnd(TransformData transformData);
 
+    void sendToBackEnd(TransformData transformData);
+
     //boolean isBound();
     /**
      * get channels.

@@ -50,11 +50,6 @@ public class RelayerServerContainer extends AbstractContainer implements Contain
         //int min = configuration.getServerCluster().getMinTransmitterCount();
     }
 
-
-    public void receiveFromServer(byte[] data) {
-
-    }
-
     public void receiveFromBackend(byte[] data) {
         logger.info("receiveFromBackend data:"+data);
         getDecodedChannelBuffer().clear();
@@ -70,6 +65,10 @@ public class RelayerServerContainer extends AbstractContainer implements Contain
 
     public void sendToFrontEnd(TransformData transformData) {
         server.sendToFrontEnd(transformData);
+    }
+
+    public void sendToBackEnd(TransformData transformData) {
+        serverendAMQPClient.transformData(transformData);
     }
 
     public void sendToLeadingServers(Object msg, boolean isFanout){

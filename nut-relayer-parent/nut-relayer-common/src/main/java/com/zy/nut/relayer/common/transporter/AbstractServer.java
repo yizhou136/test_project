@@ -176,4 +176,8 @@ public abstract class AbstractServer extends AbstractEndPoint implements Server 
             }
         }
     }
+
+    public void sendToBackEnd(TransformData transformData) {
+        containerExchange.sendToBackEnd(transformData);
+    }
 }

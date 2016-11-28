@@ -3,6 +3,7 @@ package com.zy.nut.relayer.client.Container;
 import com.zy.nut.relayer.common.amqp.BackendAMQPClient;
 import com.zy.nut.relayer.common.configure.Configuration;
 import com.zy.nut.relayer.common.configure.ConfigurationLoader;
+import com.zy.nut.relayer.common.container.ContainerExchangeAdapter;
 
 import java.net.URL;
 
@@ -18,7 +19,12 @@ public class BackendClient {
         System.out.println("read path:"+path);
         URL url = BackendClient.class.getClassLoader().getResource(path);
         Configuration configuration = ConfigurationLoader.load(url);
-        BackendAMQPClient backendAMQPClient = new BackendAMQPClient(configuration);
+        BackendAMQPClient backendAMQPClient = new BackendAMQPClient(configuration, new ContainerExchangeAdapter(){
+            @Override
+            public void receiveFromServer(byte[] data) {
+                System.out.println("receiveFromServer data:"+data);
+            }
+        });
 
         backendAMQPClient.transformDataTo("haha", "1234", null);
         System.in.read();

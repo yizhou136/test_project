@@ -44,6 +44,7 @@ public class HandleFrontClientHandler extends ChannelDuplexHandler {
         }else if (msg instanceof RelayerPingPong){
         }else if (msg instanceof RelayerElecting){
         }else if (msg instanceof TransformData){
+            server.sendToBackEnd((TransformData) msg);
         }
     }
 }

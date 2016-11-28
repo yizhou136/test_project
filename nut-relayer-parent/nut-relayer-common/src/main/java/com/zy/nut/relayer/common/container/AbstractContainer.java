@@ -7,13 +7,14 @@ import com.zy.nut.relayer.common.remoting.buffer.ChannelBuffer;
 import com.zy.nut.relayer.common.remoting.buffer.ChannelBuffers;
 import com.zy.nut.relayer.common.remoting.exchange.TransformData;
 import com.zy.nut.relayer.common.remoting.exchange.header.RelayerCodec;
+import com.zy.nut.relayer.common.remoting.exchange.support.ExchangeHandlerAdapter;
 
 import java.net.URL;
 
 /**
  * Created by Administrator on 2016/11/7.
  */
-public abstract class AbstractContainer implements Container{
+public abstract class AbstractContainer extends ContainerExchangeAdapter implements Container{
     private Configuration configuration;
     private URL propertiesUrl;
     private String serverName;

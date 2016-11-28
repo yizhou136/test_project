@@ -78,6 +78,31 @@ public class RelayerClient {
         nioConnection.sendCommandByteBuffer(byteBuffer);
         logger.info("send relayerRegisteringUnRegistering commend:"+byteBuffer+" uid:"+uid);
 
+        TransformData transformData = new TransformData();
+        transformData.setProject(project);
+        transformData.setExchangeType(TransformData.TRANSFORM_DATA_TYPE.FANOUT.getType());
+        transformData.setData("afasdfasdf");
+        //transformData.setMatchType();
+        /*if (clusterNames == null || clusterNames.isEmpty()) {
+            transformData.setExchangeType(TransformData.TRANSFORM_DATA_TYPE.FANOUT.getType());
+            //transformData.setRoutingKey();
+        }else if (clusterNames.size() == 1){
+            String routingkey = clusterNames.iterator().next();
+            transformData.setExchangeType(TransformData.TRANSFORM_DATA_TYPE.DIRECT.getType());
+            transformData.setRoutingKey(routingkey);
+        }else {
+            String routingkey = genTopicRoutingKey(getDefaultProject(), clusterNames);
+            transformData.setExchangeType(TransformData.TRANSFORM_DATA_TYPE.TOPIC.getType());
+            transformData.setRoutingKey(routingkey);
+        }
+        transformData.setMatchConditiones(matchConditions);
+        transformData.setData(msg);*/
+
+        channelBuffer.clear();
+        encode(transformData);
+        byteBuffer = channelBuffer.toByteBuffer();
+        nioConnection.sendCommandByteBuffer(byteBuffer);
+
         System.in.read();
     }
 }

@@ -23,27 +23,6 @@ public class BackendAMQPClient extends AbstractAMQPClient{
         super(configuration, containerExchange);
     }
 
-    public void transformDataTo(Object msg, String matchConditions, Set<String> clusterNames){
-        TransformData transformData = new TransformData();
-        transformData.setProject(getDefaultProject());
-        if (clusterNames == null || clusterNames.isEmpty()) {
-            transformData.setExchangeType(TransformData.TRANSFORM_DATA_TYPE.FANOUT.getType());
-            //transformData.setRoutingKey();
-        }else if (clusterNames.size() == 1){
-            String routingkey = clusterNames.iterator().next();
-            transformData.setExchangeType(TransformData.TRANSFORM_DATA_TYPE.DIRECT.getType());
-            transformData.setRoutingKey(routingkey);
-        }else {
-            String routingkey = genTopicRoutingKey(getDefaultProject(), clusterNames);
-            transformData.setExchangeType(TransformData.TRANSFORM_DATA_TYPE.TOPIC.getType());
-            transformData.setRoutingKey(routingkey);
-        }
-
-        transformData.setMatchConditiones(matchConditions);
-        transformData.setData(msg);
-        transformData(transformData);
-    }
-
     public void transformData(TransformData transfredData){
         String project = transfredData.getProject();
         byte   forwardtype = transfredData.getExchangeType();

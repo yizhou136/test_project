@@ -12,5 +12,7 @@ public interface ContainerExchange extends Container{
     void receiveFromBackend(byte[] data);
 
     void sendToFrontEnd(TransformData transformData);
+    void sendToBackEnd(TransformData transformData);
+
     void sendToLeadingServers(Object msg, boolean isFanout);
 }
