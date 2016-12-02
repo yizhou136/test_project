@@ -30,8 +30,8 @@ public class HeaderExchangeCodec extends AbstractCodec implements Codec{
     protected  static final int DATA_LENGTH_POS        = 3;
     // magic header.
     protected static final short    MAGIC              = (short) 0xdabf;
-    protected static final byte     MAGIC_HIGH         = Bytes.short2bytes(MAGIC)[0];
-    protected static final byte     MAGIC_LOW          = Bytes.short2bytes(MAGIC)[1];
+    public static final byte        MAGIC_HIGH         = Bytes.short2bytes(MAGIC)[0];
+    public static final byte        MAGIC_LOW          = Bytes.short2bytes(MAGIC)[1];
 
     protected static final byte     LOGIN_FLAG_TYPE         = (byte) 0x01;
     protected static final byte     LOGOUT_FLAG_TYPE        = (byte) 0x02;

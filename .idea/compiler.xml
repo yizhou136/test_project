@@ -30,26 +30,24 @@
         <module name="nut-relayer-server" />
         <module name="nut-routing-dispatcher" />
         <module name="nut-services" />
+      </profile>
+      <profile default="false" name="Annotation profile for nut-web" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="true" />
         <module name="nut-web" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
+    <bytecodeTargetLevel target="1.8">
       <module name="hessian-lite" target="1.5" />
       <module name="nut-common" target="1.5" />
-      <module name="nut-dispatcher" target="1.5" />
-      <module name="nut-ms" target="1.5" />
-      <module name="nut-msdisp" target="1.5" />
-      <module name="nut-msdisp-backendclient" target="1.5" />
-      <module name="nut-msdisp-frontendclient" target="1.5" />
-      <module name="nut-msdisp-parent" target="1.5" />
-      <module name="nut-msdisp-server" target="1.5" />
       <module name="nut-relayer-client" target="1.5" />
       <module name="nut-relayer-common" target="1.5" />
       <module name="nut-relayer-parent" target="1.5" />
       <module name="nut-relayer-server" target="1.5" />
-      <module name="nut-routing-dispatcher" target="1.5" />
       <module name="nut-services" target="1.5" />
-      <module name="nut-web" target="1.5" />
+      <module name="nut-web" target="1.8" />
       <module name="test_project" target="1.5" />
     </bytecodeTargetLevel>
   </component>
