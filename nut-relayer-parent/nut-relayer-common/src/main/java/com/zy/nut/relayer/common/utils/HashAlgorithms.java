@@ -402,14 +402,14 @@ public class HashAlgorithms {
         //误判率的计算公式是: (1 – e^(-k * n / m)) ^ k
         //k = (m/n)ln2
 
-        long numberOfElements = 150000;
-        double bitSetSize = 1024*610*8;//Math.pow(2,23);//512 * 8;
+        long numberOfElements = 1000;
+        double bitSetSize = 1024*33*8;//Math.pow(2,23);//512 * 8;
 
         BitSet  bitSet = new BitSet((int)bitSetSize);
         bitSet.set(32);
         System.out.println(bitSet.get(32)+" "+bitSet.size());
 
-        int k = 7;//(int) (Math.log(bitSetSize/numberOfElements)); //哈希函数个数
+        int k = 8;//(int) (Math.log(bitSetSize/numberOfElements)); //哈希函数个数
         System.out.println("K:"+k+" m:"+bitSetSize+" bytes:"+(bitSetSize/8)+" KB:"+(bitSetSize/8/1024)
                 +" MB:"+(bitSetSize/8/1024/1024));
         double bitSetSize2 = bitSetSize/4;
