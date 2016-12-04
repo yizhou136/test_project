@@ -1,8 +1,11 @@
 package com.zy.nut.relayer.common.beans;
 
+//import javax.persistence.Entity;
+
 /**
  * Created by Administrator on 2016/11/28.
  */
+//@Entity
 public class DialogMsg extends BaseMsg{
     private long fuid;
     private long tuid;

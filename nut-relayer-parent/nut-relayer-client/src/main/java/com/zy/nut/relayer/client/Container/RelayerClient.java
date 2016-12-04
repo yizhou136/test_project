@@ -4,7 +4,7 @@ import com.zy.nut.relayer.common.logger.Logger;
 import com.zy.nut.relayer.common.logger.LoggerFactory;
 import com.zy.nut.relayer.common.remoting.buffer.ChannelBuffer;
 import com.zy.nut.relayer.common.remoting.buffer.ChannelBuffers;
-import com.zy.nut.relayer.common.remoting.exchange.RelayerLoginLogout;
+import com.zy.nut.relayer.common.remoting.exchange.RelayerLogin;
 import com.zy.nut.relayer.common.remoting.exchange.RelayerRegisteringUnRegistering;
 import com.zy.nut.relayer.common.remoting.exchange.TransformData;
 import com.zy.nut.relayer.common.remoting.exchange.header.RelayerCodec;
@@ -22,6 +22,7 @@ public class RelayerClient {
     private static final Logger logger = LoggerFactory.getLogger(RelayerClient.class);
     private static ChannelBuffer channelBuffer = ChannelBuffers.buffer(1024);
     private static RelayerCodec relayerCodec = new RelayerCodec();
+    private static NioConnection nioConnection;
 
     public static ByteBuffer encode(Object obj){
         try {
@@ -41,30 +42,22 @@ public class RelayerClient {
         return null;
     }
 
-    public static void main(String argv[]) throws Exception{
-        String project = "cuctv.weibo";
+    public static void login(){
         Random random = new Random(10000);
-        NioConnection.HostPortPair hostPortPair = new NioConnection.HostPortPair("127.0.0.1", 8484);
-        List<NioConnection.HostPortPair> list = new ArrayList<NioConnection.HostPortPair>();
-        list.add(hostPortPair);
-        NioConnection nioConnection = new NioConnection(list);
-        nioConnection.doConnection();
-
-
         long uid = Math.abs(random.nextLong());
-        RelayerLoginLogout relayerLoginLogout = new RelayerLoginLogout();
-        relayerLoginLogout.setUid(uid);
-        ByteBuffer byteBuffer = encode(relayerLoginLogout);
-        logger.info("encode byteBuffer:"+byteBuffer);
-        relayerLoginLogout = (RelayerLoginLogout) decode(channelBuffer);
-        logger.info("decode obj:"+relayerLoginLogout);
-
-        logger.info("send commend:"+byteBuffer+" uid:"+uid);
+        RelayerLogin relayerLogin = new RelayerLogin();
+        relayerLogin.setUid(uid);
+        relayerLogin.setPid((byte)0);
+        relayerLogin.setUserName("zgb");
+        relayerLogin.setPassword("123456");
+        ByteBuffer byteBuffer = encode(relayerLogin);
+        logger.info("login encode byteBuffer:"+byteBuffer);
+        relayerLogin = (RelayerLogin) decode(channelBuffer);
+        logger.info("login decode obj:"+relayerLogin);
         nioConnection.sendCommandByteBuffer(byteBuffer);
-
-
+        logger.info("send commend:"+byteBuffer+" uid:"+uid);
         channelBuffer.clear();
-        String uidstr = "1234";
+        /*String uidstr = "1234";
         RelayerRegisteringUnRegistering relayerRegisteringUnRegistering = new RelayerRegisteringUnRegistering();
         relayerRegisteringUnRegistering.setRegisterType(RelayerRegisteringUnRegistering
                 .RelayerRegisteringType.NORMAL_REG_CLIENT.getType());
@@ -76,8 +69,11 @@ public class RelayerClient {
         encode(relayerRegisteringUnRegistering);
         byteBuffer = channelBuffer.toByteBuffer();
         nioConnection.sendCommandByteBuffer(byteBuffer);
-        logger.info("send relayerRegisteringUnRegistering commend:"+byteBuffer+" uid:"+uid);
+        logger.info("send relayerRegisteringUnRegistering commend:"+byteBuffer+" uid:"+uid);*/
+    }
 
+    public static void doTransform(){
+        String project = "cuctv.weibo";
         TransformData transformData = new TransformData();
         transformData.setProject(project);
         transformData.setExchangeType(TransformData.TRANSFORM_DATA_TYPE.FANOUT.getType());
@@ -100,9 +96,21 @@ public class RelayerClient {
 
         channelBuffer.clear();
         encode(transformData);
-        byteBuffer = channelBuffer.toByteBuffer();
+        ByteBuffer byteBuffer = channelBuffer.toByteBuffer();
         nioConnection.sendCommandByteBuffer(byteBuffer);
+    }
 
-        System.in.read();
+    public static void init(){
+        NioConnection.HostPortPair hostPortPair = new NioConnection.HostPortPair("127.0.0.1", 8383);
+        List<NioConnection.HostPortPair> list = new ArrayList<NioConnection.HostPortPair>();
+        list.add(hostPortPair);
+        nioConnection = new NioConnection(list);
+        nioConnection.doConnection();
+    }
+
+    public static void main(String argv[]) throws Exception{
+        init();
+        login();
+        Thread.sleep(5000);
     }
 }

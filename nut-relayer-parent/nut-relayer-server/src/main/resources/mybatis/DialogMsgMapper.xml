@@ -1,27 +1,38 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.zy.nut.services.dao.UserDao">
+<mapper namespace="com.zy.nut.relayer.server.dao.DialogMsgUao">
 
-    <resultMap id="user" type="com.zy.nut.relayer.server.beans.User"/>
+    <resultMap id="roomMsg" type="com.zy.nut.relayer.common.beans.DialogMsg"/>
 
-    <insert id="save" parameterType="com.zy.nut.relayer.server.beans.User" useGeneratedKeys="true" keyColumn="uid" keyProperty="uid">
-        INSERT INTO USER (uid,uname,age,login_time,ip)
-        VALUES (#{uid},#{uname},#{age},#{loginTime},#{ip})
+    <insert id="save" parameterType="com.zy.nut.relayer.common.beans.DialogMsg" useGeneratedKeys="true" keyColumn="mid" keyProperty="mid">
+        INSERT INTO ROOM_MSG (fuid,msg,ctime,lctime)
+        VALUES (#{fuid},#{msg},#{ctime},#{lctime})
     </insert>
-    
-    <select id="selectAll" resultType="com.zy.nut.relayer.server.beans.User">
-        SELECT uid,uname,age,login_time,ip FROM USER
+
+    <select id="get" resultType="com.zy.nut.relayer.common.beans.DialogMsg">
+        SELECT mid,fuid,msg,ctime,lctime FROM ROOM_MSG WHERE mid = #{mid}
     </select>
 
-    <delete id="delAll" >
-        DELETE FROM USER
+    <select id="getAll" resultType="com.zy.nut.relayer.common.beans.DialogMsg">
+        SELECT mid,fuid,msg,ctime,lctime FROM ROOM_MSG
+    </select>
+
+    <update id="update" parameterType="com.zy.nut.relayer.common.beans.DialogMsg">
+        UPDATE set fuid=#{fuid},msg=#{msg},ctime=#{ctime},lctime=#{lctime}
+        FROM ROOM_MSG
+        WHERE mid=#{mid}
+    </update>
+    <delete id="delete" parameterType="int">
+        DELETE FROM ROOM_MSG WHERE mid=#{mid}
+    </delete>
+    <delete id="deleteAll" >
+        DELETE FROM ROOM_MSG
     </delete>
     <!--
     <delete id="deleteUser" parameterType="Java.lang.String">
         <![CDATA[ delete from user_info where id = #{id} ]]>
     </delete>
-
     <update id="updateUsers" parameterType="User">
         <![CDATA[update user_info set
   user_name = #{userName},

@@ -35,10 +35,12 @@ public class HeaderExchangeCodec extends AbstractCodec implements Codec{
 
     protected static final byte     LOGIN_FLAG_TYPE         = (byte) 0x01;
     protected static final byte     LOGOUT_FLAG_TYPE        = (byte) 0x02;
-    protected static final byte     PINGPONG_FLAG_TYPE      = (byte) 0x03;
-    protected static final byte     ELECTING_FLAG_TYPE      = (byte) 0x04;
-    protected static final byte     TRANSFORM_FLAG_TYPE     = (byte) 0x05;
-    protected static final byte     REGISTERING_ORUNREG_FLAG_TYPE   = (byte) 0x06;
+    protected static final byte     ENTERROOM_FLAG_TYPE     = (byte) 0x03;
+    protected static final byte     LEFTROOM_FLAG_TYPE      = (byte) 0x04;
+    protected static final byte     PINGPONG_FLAG_TYPE      = (byte) 0x05;
+    protected static final byte     ELECTING_FLAG_TYPE      = (byte) 0x06;
+    protected static final byte     TRANSFORM_FLAG_TYPE     = (byte) 0x07;
+    protected static final byte     REGISTERING_ORUNREG_FLAG_TYPE   = (byte) 0x08;
 
     protected static final byte      FLAG_TYPE_MASK = 0x0F;
     protected static final byte      SERIALIZATION_MASK = 0x70;

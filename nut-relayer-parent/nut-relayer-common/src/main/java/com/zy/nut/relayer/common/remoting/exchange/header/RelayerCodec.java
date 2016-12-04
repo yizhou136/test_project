@@ -22,13 +22,17 @@ public class RelayerCodec extends HeaderExchangeCodec implements Codec{
             RelayerPingPong relayerPingPong = (RelayerPingPong)message;
             out.writeBytes(relayerPingPong.getClientBitTable());
             out.writeShort(relayerPingPong.getPerformance());
-        }else if (message instanceof RelayerLoginLogout){
-            if (((RelayerLoginLogout)message).isLogin())
-                type = LOGIN_FLAG_TYPE;
-            else
-                type = LOGOUT_FLAG_TYPE;
-            RelayerLoginLogout relayerLoginLogout = (RelayerLoginLogout)message;
-            out.writeLong(relayerLoginLogout.getUid());
+        }else if (message instanceof RelayerLogin){
+            type = LOGIN_FLAG_TYPE;
+            RelayerLogin relayerLogin = (RelayerLogin)message;
+            out.writeLong(relayerLogin.getUid());
+            out.writeByte(relayerLogin.getPid());
+            out.writeUTF(relayerLogin.getUserName());
+            out.writeUTF(relayerLogin.getPassword());
+        }else if (message instanceof RelayerLogout){
+            type = LOGOUT_FLAG_TYPE;
+            RelayerLogout relayerLogout = (RelayerLogout)message;
+            out.writeLong(relayerLogout.getUid());
         }else if (message instanceof RelayerElecting){
             type = ELECTING_FLAG_TYPE;
             RelayerElecting relayerElecting = (RelayerElecting)message;
@@ -68,15 +72,16 @@ public class RelayerCodec extends HeaderExchangeCodec implements Codec{
     protected Object decodeTransfredData(Channel channel, ObjectInput in, byte type) throws IOException {
         Object obj = null;
         if (type == LOGIN_FLAG_TYPE){
-            RelayerLoginLogout relayerLoginLogout = new RelayerLoginLogout();
-            relayerLoginLogout.setUid(in.readLong());
-            obj = relayerLoginLogout;
-        }else if (type == LOGIN_FLAG_TYPE || type == LOGOUT_FLAG_TYPE){
-            RelayerLoginLogout relayerLoginLogout = new RelayerLoginLogout();
-            if (type == LOGIN_FLAG_TYPE)
-                relayerLoginLogout.setLogin(true);
-            relayerLoginLogout.setUid(in.readLong());
-            obj = relayerLoginLogout;
+            RelayerLogin relayerLogin = new RelayerLogin();
+            relayerLogin.setUid(in.readLong());
+            relayerLogin.setPid(in.readByte());
+            relayerLogin.setUserName(in.readUTF());
+            relayerLogin.setPassword(in.readUTF());
+            obj = relayerLogin;
+        }else if (type == LOGOUT_FLAG_TYPE){
+            RelayerLogout relayerLogout = new RelayerLogout();
+            relayerLogout.setUid(in.readLong());
+            obj = relayerLogout;
         }else if (type == ELECTING_FLAG_TYPE){
             RelayerElecting relayerElecting = new RelayerElecting();
             relayerElecting.setServerName(in.readUTF());

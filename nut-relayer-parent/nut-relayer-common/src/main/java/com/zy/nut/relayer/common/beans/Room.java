@@ -1,10 +1,18 @@
 package com.zy.nut.relayer.common.beans;
 
+/*import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;*/
+
 /**
  * Created by Administrator on 2016/11/28.
  */
+//@Entity
 public class Room {
+/*    @Id
+    @GeneratedValue*/
     private long rid;
+
     private String title;
     private String rtmpUrl;
     private long ctime;

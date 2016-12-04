@@ -8,6 +8,7 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -26,6 +27,7 @@ import java.util.Map;
  */
 @Configuration
 @EnableConfigurationProperties(NutDataSourceProperties.class)
+//@EntityScan("com.zy.nut.relayer.common.beans.*")
 public class NutDataSourceConfiguration {
     public static final String ReadDataSourceKey = "ReadDataSourceKey";
     public static final String RWDataSourceKey = "RWDataSourceKey";

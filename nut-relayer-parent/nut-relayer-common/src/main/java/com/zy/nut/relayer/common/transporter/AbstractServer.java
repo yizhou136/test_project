@@ -39,8 +39,9 @@ public abstract class AbstractServer extends AbstractEndPoint implements Server 
     private DownStreamMap serverDownStreamMap;
     private DownStreamMap normalDownStreamMap;
     private ContainerExchange containerExchange;
+    protected List<ChannelInitializerRegister> initializerRegisterList;
 
-    public AbstractServer(Configuration configuration, ContainerExchange containerExchange) throws RemotingException {
+    public AbstractServer(Configuration configuration, ContainerExchange containerExchange, List<ChannelInitializerRegister> initializerRegisterList) throws RemotingException {
         super(configuration);
         this.accepts = Constants.DEFAULT_ACCEPTS;
         this.idleTimeout = Constants.DEFAULT_IDLE_TIMEOUT;
@@ -48,6 +49,7 @@ public abstract class AbstractServer extends AbstractEndPoint implements Server 
         if (configuration.isClusterLeader())
             serverDownStreamMap = new DownStreamMap(true);
         normalDownStreamMap = new DownStreamMap(false);
+        this.initializerRegisterList = initializerRegisterList;
         try {
             doOpen();
             if (logger.isInfoEnabled()) {

@@ -4,6 +4,8 @@ package com.zy.nut.relayer.common.beans;
  * Created by Administrator on 2016/11/28.
  */
 public class BaseMsg {
+    /*@Id
+    @GeneratedValue*/
     private long mid;
     private String msg;
     private long ctime;
@@ -39,5 +41,16 @@ public class BaseMsg {
 
     public void setLctime(long lctime) {
         this.lctime = lctime;
+    }
+
+
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("mid:").append(getMid())
+                .append("msg:").append(getMsg())
+                .append("ctime:").append(getCtime())
+                .append("lctime:").append(getLctime());
+        return stringBuilder.toString();
     }
 }

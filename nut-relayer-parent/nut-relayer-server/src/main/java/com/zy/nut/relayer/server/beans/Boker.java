@@ -1,15 +1,10 @@
-package com.zy.nut.relayer.common.beans;
-
-/*import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;*/
+package com.zy.nut.relayer.server.beans;
 
 /**
  * Created by Administrator on 2016/11/28.
  */
+
 public class Boker {
-/*    @Id
-    @GeneratedValue*/
     private long uid;
 
     private long beans;

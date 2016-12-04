@@ -33,7 +33,7 @@ public class RelayerServerContainer extends AbstractContainer implements Contain
             return;
 
         try {
-            server = new NettyServer(configuration, this);
+            server = new NettyServer(configuration, this, null);
         } catch (RemotingException e) {
             e.printStackTrace();
             throw e;

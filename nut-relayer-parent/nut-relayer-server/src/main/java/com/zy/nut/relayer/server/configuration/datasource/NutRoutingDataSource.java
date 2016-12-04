@@ -20,7 +20,7 @@ public class NutRoutingDataSource extends AbstractRoutingDataSource{
     protected String determineCurrentLookupKey() {
         String re = NutDataSourceConfiguration.RWDataSourceKey;
         Boolean isReadOnly = (Boolean) MyAnnotationTransactionAttributeSource.getValue();
-        if (isReadOnly){
+        if (isReadOnly != null && isReadOnly){
             re = NutDataSourceConfiguration.ReadDataSourceKey;
         }
 

@@ -26,7 +26,7 @@ public abstract class AbstractContainer extends ContainerExchangeAdapter impleme
         codec = new RelayerCodec();
         decodedChannelBuffer = ChannelBuffers.buffer(1024);
         configure();
-        init();
+        //init();
     }
 
     public abstract void init() throws Throwable;
