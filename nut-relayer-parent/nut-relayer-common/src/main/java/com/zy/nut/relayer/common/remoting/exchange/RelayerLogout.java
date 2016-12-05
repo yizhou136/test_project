@@ -3,7 +3,7 @@ package com.zy.nut.relayer.common.remoting.exchange;
 /**
  * Created by zhougb on 2016/11/9.
  */
-public class RelayerLogout {
+public class RelayerLogout extends BaseRelayerBean{
     private long uid;
     private byte pid;
     private String loginedNetty;

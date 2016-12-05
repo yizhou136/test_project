@@ -1,5 +1,6 @@
 package com.zy.nut.relayer.client.Container;
 
+import com.zy.nut.relayer.common.beans.DialogMsg;
 import com.zy.nut.relayer.common.logger.Logger;
 import com.zy.nut.relayer.common.logger.LoggerFactory;
 import com.zy.nut.relayer.common.remoting.buffer.ChannelBuffer;
@@ -24,6 +25,8 @@ public class RelayerClient {
     private static RelayerCodec relayerCodec = new RelayerCodec();
     private static NioConnection nioConnection;
 
+    private static long uid = 10001;
+
     public static ByteBuffer encode(Object obj){
         try {
             relayerCodec.encode(null, channelBuffer, obj);
@@ -43,8 +46,8 @@ public class RelayerClient {
     }
 
     public static void login(){
-        Random random = new Random(10000);
-        long uid = Math.abs(random.nextLong());
+        //Random random = new Random(10000);
+        //long uid = 10000;//Math.abs(random.nextLong());
         RelayerLogin relayerLogin = new RelayerLogin();
         relayerLogin.setUid(uid);
         relayerLogin.setPid((byte)0);
@@ -72,8 +75,27 @@ public class RelayerClient {
         logger.info("send relayerRegisteringUnRegistering commend:"+byteBuffer+" uid:"+uid);*/
     }
 
+    public static void sendDialogMsg(){
+        channelBuffer.clear();
+
+        long lctime = System.currentTimeMillis();
+        DialogMsg dialogMsg = new DialogMsg();
+        dialogMsg.setFuid(uid);
+        dialogMsg.setTuid(uid-1);
+        dialogMsg.setMsg("haha"+lctime);
+        dialogMsg.setLctime(lctime);
+
+        ByteBuffer byteBuffer = encode(dialogMsg);
+        logger.info("sendDialogMsg encode byteBuffer:"+byteBuffer);
+        dialogMsg = (DialogMsg) decode(channelBuffer);
+        logger.info("sendDialogMsg decode obj:"+dialogMsg);
+        nioConnection.sendCommandByteBuffer(byteBuffer);
+        logger.info("sendDialogMsg commend:"+byteBuffer+" uid:"+uid);
+    }
+
     public static void doTransform(){
-        String project = "cuctv.weibo";
+        //String project = "cuctv.weibo";
+        byte project = (byte)0;
         TransformData transformData = new TransformData();
         transformData.setProject(project);
         transformData.setExchangeType(TransformData.TRANSFORM_DATA_TYPE.FANOUT.getType());
@@ -105,12 +127,23 @@ public class RelayerClient {
         List<NioConnection.HostPortPair> list = new ArrayList<NioConnection.HostPortPair>();
         list.add(hostPortPair);
         nioConnection = new NioConnection(list);
+        nioConnection.setProccessCommandListener(new NioConnection.ProccessCommandListener() {
+            public void processCommand(Object obj) {
+                if (obj instanceof DialogMsg) {
+                    DialogMsg dialogMsg = (DialogMsg)obj;
+                    logger.info("receive DialogMsg:"+dialogMsg);
+                }
+            }
+        });
         nioConnection.doConnection();
     }
 
     public static void main(String argv[]) throws Exception{
         init();
         login();
-        Thread.sleep(5000);
+
+        sendDialogMsg();
+        //Thread.sleep(5000);
+        System.in.read();
     }
 }

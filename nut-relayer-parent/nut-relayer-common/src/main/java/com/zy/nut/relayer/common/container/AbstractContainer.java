@@ -35,7 +35,7 @@ public abstract class AbstractContainer extends ContainerExchangeAdapter impleme
         configuration = ConfigurationLoader.load(propertiesUrl);
         if (configuration != null) {
             serverName = String.format("%s_%s",
-                    configuration.getServerCluster(),
+                    configuration.getServerCluster().getName(),
                     configuration.getServerAddress());
         }
     }

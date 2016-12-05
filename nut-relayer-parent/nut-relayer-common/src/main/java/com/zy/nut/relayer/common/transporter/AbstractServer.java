@@ -122,7 +122,7 @@ public abstract class AbstractServer extends AbstractEndPoint implements Server 
 
     public void handleRegUnreg(Channel channel,
                                RelayerRegisteringUnRegistering relayerRegisteringUnRegistering) {
-        if (relayerRegisteringUnRegistering.isServerClient()) {
+        /*if (relayerRegisteringUnRegistering.isServerClient()) {
             if (serverDownStreamMap == null && getConfiguration().isClusterLeader()){
                 serverDownStreamMap = new DownStreamMap(true);
             }
@@ -151,11 +151,11 @@ public abstract class AbstractServer extends AbstractEndPoint implements Server 
             }
             //todo register  server leader;
             containerExchange.sendToLeadingServers(relayerRegisteringUnRegistering, true);
-        }
+        }*/
     }
 
     public void sendToFrontEnd(TransformData transformData) {
-        List<Channel> channelList = normalDownStreamMap.receiveChannelByRoutingKey(transformData.getProject(),
+        /*List<Channel> channelList = normalDownStreamMap.receiveChannelByRoutingKey(transformData.getProject(),
                 transformData.getMatchType(), transformData.getMatchConditiones());
         List<Channel> serverClientChannelList = serverDownStreamMap != null ?
                 serverDownStreamMap.receiveChannelByRoutingKey(transformData.getProject(),
@@ -176,7 +176,7 @@ public abstract class AbstractServer extends AbstractEndPoint implements Server 
             } catch (RemotingException e) {
                 e.printStackTrace();
             }
-        }
+        }*/
     }
 
     public void sendToBackEnd(TransformData transformData) {

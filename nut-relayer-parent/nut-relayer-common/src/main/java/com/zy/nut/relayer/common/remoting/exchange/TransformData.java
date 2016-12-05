@@ -28,15 +28,13 @@ public class TransformData {
     private transient byte   exchangeType;
     private transient String routingKey;
 
-    private String project;
+    private byte project;
     private byte   matchType;
     private String matchConditiones;//uid liveid  or more  split by ,
 
     private Object data;
 
-    public String getProject() {
-        return project;
-    }
+
 
     public String getRoutingKey() {
         return routingKey;
@@ -54,7 +52,11 @@ public class TransformData {
         this.matchConditiones = matchConditiones;
     }
 
-    public void setProject(String project) {
+    public byte getProject() {
+        return project;
+    }
+
+    public void setProject(byte project) {
         this.project = project;
     }
 

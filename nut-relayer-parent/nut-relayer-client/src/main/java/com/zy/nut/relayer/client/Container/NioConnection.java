@@ -2,6 +2,11 @@ package com.zy.nut.relayer.client.Container;
 
 import com.zy.nut.relayer.common.logger.Logger;
 import com.zy.nut.relayer.common.logger.LoggerFactory;
+import com.zy.nut.relayer.common.remoting.Codec;
+import com.zy.nut.relayer.common.remoting.buffer.ChannelBuffer;
+import com.zy.nut.relayer.common.remoting.buffer.ChannelBuffers;
+import com.zy.nut.relayer.common.remoting.exchange.header.RelayerCodec;
+import com.zy.nut.relayer.common.transporter.netty.NettyChannel;
 
 import java.io.IOException;
 import java.net.ConnectException;
@@ -13,6 +18,7 @@ import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -36,19 +42,23 @@ public class NioConnection implements Runnable{
     private List<HostPortPair> hostPortes;
     private AtomicInteger hostportIdx = new AtomicInteger();
 
+    private static RelayerCodec codec = new RelayerCodec();
+    private ChannelBuffer channelBuffer;
+
     private SocketChannel socketChannel;
     private Selector selector;
-    private ByteBuffer readByteBuffer, bufferedSendBuffer;
+    private ByteBuffer bufferedSendBuffer;
     private Thread selectorThread;
     private boolean toClose;
-    private int msglen;
-
+    private ProccessCommandListener proccessCommandListener;
 
     private ExecutorService sendByteBufferToSocketWorker = Executors.newFixedThreadPool(1);
 
     public NioConnection() {
-        readByteBuffer = ByteBuffer.allocate(receiveBufferSize);
-        readByteBuffer.order(ByteOrder.BIG_ENDIAN);
+        channelBuffer = ChannelBuffers.buffer(1024);
+        /*readByteBuffer = channelBuffer.toByteBuffer();
+                //ByteBuffer.allocate(receiveBufferSize);
+        readByteBuffer.order(ByteOrder.BIG_ENDIAN);*/
         bufferedSendBuffer = ByteBuffer.allocate(bufferedSendBufferSize);
         bufferedSendBuffer.order(ByteOrder.BIG_ENDIAN);
     }
@@ -261,61 +271,43 @@ public class NioConnection implements Runnable{
         if (!socketIsValidate()) return;
         try {
             int readn = -1;
-            while ((readn = socketChannel.read(readByteBuffer)) < 0) {
+            while ((readn = channelBuffer.writeBytes(socketChannel, 1024)) < 0) {
                 logger.info("readBufferedCommandReplyes error or socket closed:" + readn);
                 reconnect();
                 return;
             }
-            /*if (readn == 0){ //for test
-                throw  new RuntimeException("xxxxxxxxxxxxx");
-            }*/
-            logger.info("readBufferedCommandReplyes start parse readn:" + readn + " msgLen:" + msglen + " readByteBuffer:" + readByteBuffer);
-            if (false)
-            while (true) {
-                int bufferedSize = readByteBuffer.position();
-                if (msglen == 0) {
-                    if (bufferedSize >= 4) {
-                        readByteBuffer.position(0);
-                        msglen = readByteBuffer.getInt();
-                        readByteBuffer.position(bufferedSize);
-                        if (msglen > readByteBuffer.capacity()) {
-                            logger.info("msglen is bigger than receiveBufferSize and expand it." + msglen + " capacity:" + readByteBuffer.capacity());
-                            if (msglen > 10000) {
-                                logger.info("the msglen is huge bigger, and reconnect it.");
-                                reconnect();
-                                return;
-                            }
-                            receiveBufferSize = msglen * 2;
-                            ByteBuffer tmp = ByteBuffer.allocate(receiveBufferSize);
-                            readByteBuffer.flip();
-                            tmp.put(readByteBuffer);
-                            readByteBuffer = tmp;
-                        }
-                    } else {
-                        break;
+            logger.info("readBufferedCommandReplyes start parse readn:" + readn
+                    + " readByteBuffer:" + channelBuffer);
+            List<Object> out = new ArrayList<Object>();
+            while(true) {
+                int saveReaderIndex = channelBuffer.readerIndex();
+                Object msg;
+                try {
+                    msg = codec.decode(null, channelBuffer);
+                } catch (IOException var12) {
+                    throw var12;
+                }
+
+                if(msg == Codec.DecodeResult.NEED_MORE_INPUT) {
+                    channelBuffer.readerIndex(saveReaderIndex);
+                } else {
+                    if(saveReaderIndex == channelBuffer.readerIndex()) {
+                        throw new IOException("Decode without read data.");
                     }
-                } else if (msglen > 0) {
-                    if (bufferedSize >= msglen) {
-                        logger.info("todo parseCommand");
-                        readByteBuffer.flip();
-                        readByteBuffer.position(msglen);
-                        ByteBuffer msgleftBuffer = readByteBuffer.slice();
-                        readByteBuffer.position(msglen);
-                        readByteBuffer.flip();
-                        ByteBuffer msgBuffer = readByteBuffer.slice();
-                        parseCommand(msgBuffer);
-                        msglen = 0;
-                        readByteBuffer.clear();
-                        if (msgleftBuffer.capacity() > 0)
-                            readByteBuffer.put(msgleftBuffer);
-                        else
-                            break;
-                    } else {
-                        break;
+                    if(msg != null) {
+                        out.add(msg);
+                    }
+                    if(channelBuffer.readable()) {
+                        continue;
                     }
                 }
+                break;
             }
-            logger.info("readBufferedCommandReplyes end parse msgLen:" + msglen + " readByteBuffer:" + readByteBuffer);
+            if (proccessCommandListener != null)
+                for (Object obj : out){
+                    proccessCommandListener.processCommand(obj);
+                }
+            logger.info("readBufferedCommandReplyes end parse  channelBuffer:"+channelBuffer);
         } catch (IOException e) {
             e.printStackTrace();
             logger.info("readBufferedCommandReplyes error:" + e);
@@ -414,31 +406,6 @@ public class NioConnection implements Runnable{
             }
         }
     }
-    /*private void writeBufferedCommandes(){
-        if (!socketIsValidate()) return;
-        try {
-            synchronized (this){
-                int bufferedn = writeByteBuffer.position();
-                if (bufferedn == 0){
-                    readOnly();
-                    return;
-                }
-                writeByteBuffer.mark();
-                int writen = socketChannel.write(writeByteBuffer);
-                logger.debug("writeBufferedCommandes writen:" + writen);
-                if (writeByteBuffer.remaining() == 0){
-                    readOnly();
-                    return;
-                }
-            }
-        }catch (IOException e){
-            e.printStackTrace();
-            logger.error("writeBufferedCommandes error:" + e);
-        }
-    }*/
-
-    private void parseCommand(ByteBuffer byteBuffer) {
-    }
 
     //for command
     public List<HostPortPair> getHostPortes() {
@@ -464,5 +431,17 @@ public class NioConnection implements Runnable{
             stringBuffer.append("host:").append(host).append(" port:").append(port);
             return stringBuffer.toString();
         }
+    }
+
+    public ProccessCommandListener getProccessCommandListener() {
+        return proccessCommandListener;
+    }
+
+    public void setProccessCommandListener(ProccessCommandListener proccessCommandListener) {
+        this.proccessCommandListener = proccessCommandListener;
+    }
+
+    public static interface ProccessCommandListener{
+        void processCommand(Object obj);
     }
 }

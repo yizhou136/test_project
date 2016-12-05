@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -26,7 +27,7 @@ import java.util.Map;
  * Created by Administrator on 2016/10/30.
  */
 @Configuration
-@EnableConfigurationProperties(NutDataSourceProperties.class)
+@EnableConfigurationProperties({NutDataSourceProperties.class,DataSourceProperties.class})
 //@EntityScan("com.zy.nut.relayer.common.beans.*")
 public class NutDataSourceConfiguration {
     public static final String ReadDataSourceKey = "ReadDataSourceKey";
@@ -37,8 +38,6 @@ public class NutDataSourceConfiguration {
 
     @Autowired
     private NutDataSourceProperties nutDataSourceProperties;
-
-
 
     /*@Bean
     @Qualifier(RWTransactionManagerKey)
@@ -73,6 +72,12 @@ public class NutDataSourceConfiguration {
                 nutDataSourceProperties.getRwUsername(),
                 nutDataSourceProperties.getRwPassword());
         return rwDataSource;
+    }*/
+
+    /*@Bean
+    @ConditionalOnMissingBean
+    public DataSourceInitializer dataSourceInitializer() {
+        return new DataSourceInitializer();
     }*/
 
     @Bean

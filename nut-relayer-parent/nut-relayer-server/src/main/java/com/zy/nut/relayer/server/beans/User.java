@@ -49,4 +49,27 @@ public class User {
     public void setBeans(int beans) {
         this.beans = beans;
     }
+
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof User){
+            if (getUid() == (((User) obj).getUid())){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        int key = (int)getUid();
+            key += ~(key << 15);
+            key ^= (key >>> 10);
+            key += (key << 3);
+            key ^= (key >>> 6);
+            key += ~(key << 11);
+            key ^= (key >>> 16);
+        return key;
+    }
 }

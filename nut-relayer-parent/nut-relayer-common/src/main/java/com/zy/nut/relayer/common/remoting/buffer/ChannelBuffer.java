@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
+import java.nio.channels.ScatteringByteChannel;
 
 /**
  * A random and sequential accessible sequence of zero or more bytes (octets).
@@ -927,6 +928,8 @@ public interface ChannelBuffer extends Comparable<ChannelBuffer> {
      *                                   exception during I/O
      */
     int writeBytes(InputStream src, int length) throws IOException;
+
+    int writeBytes(ScatteringByteChannel in, int length) throws IOException;
 
     /**
      * Returns the {@code writerIndex} of this buffer.

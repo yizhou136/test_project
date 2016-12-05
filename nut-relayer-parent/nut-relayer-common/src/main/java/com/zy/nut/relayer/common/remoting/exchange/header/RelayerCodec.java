@@ -1,5 +1,8 @@
 package com.zy.nut.relayer.common.remoting.exchange.header;
 
+import com.zy.nut.relayer.common.beans.DialogMsg;
+import com.zy.nut.relayer.common.beans.Room;
+import com.zy.nut.relayer.common.beans.RoomMsg;
 import com.zy.nut.relayer.common.remoting.Channel;
 import com.zy.nut.relayer.common.remoting.Codec;
 import com.zy.nut.relayer.common.remoting.exchange.*;
@@ -42,7 +45,7 @@ public class RelayerCodec extends HeaderExchangeCodec implements Codec{
         }else if (message instanceof RelayerRegisteringUnRegistering){
             RelayerRegisteringUnRegistering relayerRegistering = (RelayerRegisteringUnRegistering)message;
             out.writeByte(relayerRegistering.getRegisterType());
-            out.writeUTF(relayerRegistering.getProject());
+            out.writeByte(relayerRegistering.getProject());
             out.writeByte(relayerRegistering.getMatchType());
             out.writeUTF(relayerRegistering.getMatchConditiones());
 
@@ -59,11 +62,27 @@ public class RelayerCodec extends HeaderExchangeCodec implements Codec{
         }else if (message instanceof TransformData) {
             type = TRANSFORM_FLAG_TYPE;
             TransformData transfredData = (TransformData) message;
-            out.writeUTF(transfredData.getProject());
+            out.writeByte(transfredData.getProject());
             out.writeByte(transfredData.getMatchType());
             out.writeUTF(transfredData.getMatchConditiones());
             if (transfredData.getData() != null)
                 out.writeObject(transfredData.getData());
+        }else if (message instanceof DialogMsg) {
+            type = DIALOG_MSG_FLAG_TYPE;
+            DialogMsg dialogMsg = (DialogMsg)message;
+            out.writeLong(dialogMsg.getFuid());
+            out.writeLong(dialogMsg.getTuid());
+            out.writeLong(dialogMsg.getLctime());
+            out.writeLong(dialogMsg.getCtime());
+            out.writeUTF(dialogMsg.getMsg());
+        }else if (message instanceof RoomMsg) {
+            type = ROOM_MSG_FLAG_TYPE;
+            RoomMsg roomMsg = (RoomMsg)message;
+            out.writeLong(roomMsg.getFuid());
+            out.writeLong(roomMsg.getRid());
+            out.writeLong(roomMsg.getLctime());
+            out.writeLong(roomMsg.getCtime());
+            out.writeUTF(roomMsg.getMsg());
         }
         return type;
     }
@@ -90,7 +109,7 @@ public class RelayerCodec extends HeaderExchangeCodec implements Codec{
             obj = relayerElecting;
         }else if (type == TRANSFORM_FLAG_TYPE){
             TransformData transfredData = new TransformData();
-            transfredData.setProject(in.readUTF());
+            transfredData.setProject(in.readByte());
             transfredData.setMatchType(in.readByte());
             transfredData.setMatchConditiones(in.readUTF());
             try {
@@ -102,7 +121,7 @@ public class RelayerCodec extends HeaderExchangeCodec implements Codec{
         }else if (type == REGISTERING_ORUNREG_FLAG_TYPE){
             RelayerRegisteringUnRegistering relayerRegistering = new RelayerRegisteringUnRegistering();
             relayerRegistering.setRegisterType(in.readByte());
-            relayerRegistering.setProject(in.readUTF());
+            relayerRegistering.setProject(in.readByte());
             relayerRegistering.setMatchType(in.readByte());
             relayerRegistering.setMatchConditiones(in.readUTF());
             /*if (relayerRegistering.getRegisterType() ==
@@ -115,6 +134,22 @@ public class RelayerCodec extends HeaderExchangeCodec implements Codec{
                     RelayerRegisteringUnRegistering.RelayerRegisteringType.SERVER_UNREG_CLIENT.getType()) {
             }*/
             obj = relayerRegistering;
+        }else if (type == DIALOG_MSG_FLAG_TYPE){
+            DialogMsg dialogMsg = new DialogMsg();
+            dialogMsg.setFuid(in.readLong());
+            dialogMsg.setTuid(in.readLong());
+            dialogMsg.setLctime(in.readLong());
+            dialogMsg.setCtime(in.readLong());
+            dialogMsg.setMsg(in.readUTF());
+            obj = dialogMsg;
+        }else if (type == ROOM_MSG_FLAG_TYPE){
+            RoomMsg roomMsg = new RoomMsg();
+            roomMsg.setFuid(in.readLong());
+            roomMsg.setRid(in.readLong());
+            roomMsg.setLctime(in.readLong());
+            roomMsg.setCtime(in.readLong());
+            roomMsg.setMsg(in.readUTF());
+            obj = roomMsg;
         }
 
         return obj;

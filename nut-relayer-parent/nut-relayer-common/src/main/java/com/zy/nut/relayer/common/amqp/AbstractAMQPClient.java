@@ -52,7 +52,7 @@ public abstract class AbstractAMQPClient{
             transformData.setExchangeType(TransformData.TRANSFORM_DATA_TYPE.DIRECT.getType());
             transformData.setRoutingKey(routingkey);
         }else {
-            String routingkey = genTopicRoutingKey(getDefaultProject(), clusterNames);
+            String routingkey = genTopicRoutingKey("", clusterNames);
             transformData.setExchangeType(TransformData.TRANSFORM_DATA_TYPE.TOPIC.getType());
             transformData.setRoutingKey(routingkey);
         }
@@ -188,10 +188,14 @@ public abstract class AbstractAMQPClient{
         return cluster.getName();
     }
 
-    public String getDefaultProject(){
+    public byte getDefaultProject(){
+        return (byte) 0;
+    }
+
+    /*public String getDefaultProject(){
         Set<String> projects = getConfiguration().getProjects();
         return projects.iterator().next();
-    }
+    }*/
 
     public String genBackendRecvQueueName(String project) {
         return String.format("backend_recvq_%s", project);

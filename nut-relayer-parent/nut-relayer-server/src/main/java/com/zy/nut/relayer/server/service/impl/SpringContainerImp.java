@@ -56,35 +56,7 @@ public class SpringContainerImp extends AbstractContainer implements SpringNetty
     }
 
     @Override
-    public void login(RelayerLogin relayerLogin) {
-
-    }
-
-    @Override
-    public void logout(RelayerLogout relayerLogout) {
-
-    }
-
-    @Override
-    public void enterRoom(RelayerEnterRoom relayerEnterRoom) {
-
-    }
-
-    @Override
-    public void leftRoom(RelayerLeftRoom relayerLeftRoom) {
-
-    }
-
-    @Override
-    public void sendTransformData(TransformData transformData) {
-
-    }
-
-    @Override
-    public void addChannelInitializerRegister(ChannelInitializerRegister channelInitializerRegister) {
-        if (initializerRegisterList == null){
-            initializerRegisterList = new ArrayList<>();
-        }
-        initializerRegisterList.add(channelInitializerRegister);
+    public String getNettyName() {
+        return getServerName();
     }
 }

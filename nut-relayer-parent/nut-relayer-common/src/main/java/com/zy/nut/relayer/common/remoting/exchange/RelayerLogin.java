@@ -3,20 +3,13 @@ package com.zy.nut.relayer.common.remoting.exchange;
 /**
  * Created by zhougb on 2016/11/9.
  */
-public class RelayerLogin {
-    private long uid;
+public class RelayerLogin extends BaseRelayerBean{
+
     private byte pid;
     private String loginedNetty;
     private String userName;
     private String password;
 
-    public long getUid() {
-        return uid;
-    }
-
-    public void setUid(long uid) {
-        this.uid = uid;
-    }
 
     public byte getPid() {
         return pid;

@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
+import java.nio.channels.ScatteringByteChannel;
 
 /**
  * Created by Administrator on 2016/11/6.
@@ -304,6 +305,10 @@ public class Netty4BackedChannelBuffer implements ChannelBuffer {
 
     public int writeBytes(InputStream src, int length) throws IOException {
         return this.buffer.writeBytes(src, length);
+    }
+
+    public int writeBytes(ScatteringByteChannel in, int length) throws IOException{
+        return buffer.writeBytes(in, length);
     }
 
     public int writerIndex() {

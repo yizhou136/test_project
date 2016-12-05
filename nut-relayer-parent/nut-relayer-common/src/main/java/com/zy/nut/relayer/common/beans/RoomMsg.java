@@ -8,6 +8,15 @@ package com.zy.nut.relayer.common.beans;
 //@Entity
 public class RoomMsg extends BaseMsg{
     private long fuid;
+    private long rid;
+
+    public long getRid() {
+        return rid;
+    }
+
+    public void setRid(long rid) {
+        this.rid = rid;
+    }
 
     public long getFuid() {
         return fuid;

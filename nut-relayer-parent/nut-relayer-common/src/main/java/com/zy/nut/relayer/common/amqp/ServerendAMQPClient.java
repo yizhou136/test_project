@@ -26,7 +26,7 @@ public class ServerendAMQPClient extends AbstractAMQPClient{
     }
 
     public void transformData(TransformData transfredData){
-        String project = transfredData.getProject();
+        String project = "";//transfredData.getProject();
         byte   forwardtype = transfredData.getExchangeType();
         String exchangeName = null;
         String routingKey = null;

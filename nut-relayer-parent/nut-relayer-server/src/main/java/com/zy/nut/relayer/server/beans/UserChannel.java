@@ -1,26 +1,104 @@
 package com.zy.nut.relayer.server.beans;
 
-import com.zy.nut.relayer.common.URL;
-import com.zy.nut.relayer.common.remoting.Channel;
 import com.zy.nut.relayer.common.remoting.RemotingException;
-import com.zy.nut.relayer.common.transporter.netty.NettyChannel;
+import io.netty.channel.Channel;
 
 import java.net.InetSocketAddress;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by Administrator on 2016/12/4.
  */
-public class UserChannel implements Channel{
-    private User user;
-    private NettyChannel channel;
+public class UserChannel {
+    private static final Map<Long, Set<UserChannel>> GlobalUserChannels = new ConcurrentHashMap();
+
+    private Long uid;
+    private Channel channel;
 
 
-    public UserChannel(NettyChannel nettyChannel, User user){
+    public UserChannel(Channel nettyChannel, Long uid){
         this.channel = nettyChannel;
-        this.user = user;
+        this.uid = uid;
+    }
+
+    public static final UserChannel getOrAddChannel(Channel channel, long uid){
+        Set<UserChannel> userChannelSet = GlobalUserChannels.get(uid);
+        if (userChannelSet == null){
+            userChannelSet = new HashSet<>();
+            GlobalUserChannels.put(uid, userChannelSet);
+        }
+
+        for (UserChannel userChannel : userChannelSet){
+            if (userChannel.getUid() == uid && userChannel.getChannel().equals(channel))
+                return userChannel;
+        }
+
+        UserChannel userChannel = new UserChannel(channel,uid);
+        userChannelSet.add(userChannel);
+        return userChannel;
+    }
+
+    public static final Set<UserChannel> getByUid(long uid){
+        return GlobalUserChannels.get(uid);
+    }
+
+    public static final boolean removeUserChannel(Channel channel, long uid){
+        Set<UserChannel> userChannelSet = GlobalUserChannels.get(uid);
+        if (userChannelSet != null){
+            UserChannel userChannel = new UserChannel(channel,uid);
+            return userChannelSet.remove(userChannel);
+        }
+        return false;
+    }
+
+    public void send(Object message) throws RemotingException{
+        send(message, false);
+    }
+
+    public void send(Object message, boolean sent) throws RemotingException{
+        channel.writeAndFlush(message);
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof UserChannel){
+            UserChannel oth = (UserChannel) obj;
+            if (getUid() == oth.getUid() &&  getChannel().equals(oth.getChannel())){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        int key = getUid().intValue();
+        key += ~(key << 15);
+        key ^= (key >>> 10);
+        key += (key << 3);
+        key ^= (key >>> 6);
+        key += ~(key << 11);
+        key ^= (key >>> 16);
+        return key;
+    }
+
+    public Long getUid() {
+        return uid;
+    }
+
+    public void setUid(Long uid) {
+        this.uid = uid;
+    }
+
+    public Channel getChannel() {
+        return channel;
+    }
+
+    public void setChannel(Channel channel) {
+        this.channel = channel;
+    }
+    /*@Override
     public String getChannelId() {
         return channel.getChannelId();
     }
@@ -68,5 +146,5 @@ public class UserChannel implements Channel{
     @Override
     public void removeAttribute(String key) {
         channel.removeAttribute(key);
-    }
+    }*/
 }
