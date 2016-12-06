@@ -1,5 +1,6 @@
 package com.zy.nut.relayer.server.configuration.relayer;
 
+import com.zy.nut.relayer.common.remoting.exchange.header.RelayerCodecSupport;
 import com.zy.nut.relayer.common.transporter.ChannelInitializerRegister;
 import com.zy.nut.relayer.server.container.RelayerHandlerInitializer;
 import com.zy.nut.relayer.server.service.SpringNettyContainer;
@@ -47,5 +48,10 @@ public class RelayerConfiguration {
         }
 
         return springNettyContainer;
+    }
+
+    @Bean(name = "relayerCodecSupport")
+    public RelayerCodecSupport relayerCodecSupport(){
+        return new RelayerCodecSupport();
     }
 }

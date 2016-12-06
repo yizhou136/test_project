@@ -2,9 +2,7 @@ package com.zy.nut.relayer.server.container;
 
 import com.zy.nut.relayer.common.remoting.exchange.header.HeaderExchangeCodec;
 import com.zy.nut.relayer.common.transporter.ChannelInitializerRegister;
-import com.zy.nut.relayer.common.transporter.netty.HandleFrontClientHandler;
-import com.zy.nut.relayer.common.transporter.netty.ProtocolDetectHandler;
-import com.zy.nut.relayer.common.transporter.netty.RelayerCodecHandler;
+import com.zy.nut.relayer.common.transporter.netty.*;
 import com.zy.nut.relayer.common.utils.NamedThreadFactory;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
@@ -46,7 +44,9 @@ public class RelayerHandlerInitializer implements ChannelInitializerRegister{
 
     public void registerInitializer(ChannelHandlerContext ctx) {
         ChannelPipeline pipeline = ctx.pipeline();
-        pipeline.addLast("relayerCodec", new RelayerCodecHandler(null));
+        //pipeline.addLast("relayerCodec", new RelayerCodecHandler(null));
+        pipeline.addLast(new RelayerDecoderCodecHandler());
+        pipeline.addLast(new RelayerEncoderCodecHandler());
         pipeline.addLast(eventExecutorGroup, handleRelayerHandler);
 
         pipeline.remove(ProtocolDetectHandler.class);

@@ -1,30 +1,30 @@
 package com.zy.nut.relayer.common.transporter.netty;
 
-import com.zy.nut.relayer.common.URL;
 import com.zy.nut.relayer.common.logger.Logger;
 import com.zy.nut.relayer.common.logger.LoggerFactory;
 import com.zy.nut.relayer.common.remoting.Codec;
 import com.zy.nut.relayer.common.remoting.exchange.header.RelayerCodec;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.ByteToMessageCodec;
+import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.ChannelOutboundHandlerAdapter;
+import io.netty.channel.ChannelPromise;
+import io.netty.handler.codec.ByteToMessageDecoder;
 
 import java.io.IOException;
 import java.util.List;
 
 /**
- * Created by Administrator on 2016/11/6.
+ * Created by zhougb on 2016/12/6.
  */
-public class RelayerCodecHandler extends ByteToMessageCodec<Object>{
+public class RelayerDecoderCodecHandler extends ByteToMessageDecoder {
     private static final Logger logger = LoggerFactory.getLogger(RelayerCodecHandler.class);
 
 
-    private Codec   codec;
-    private URL     url;
+    private Codec codec;
 
-    public RelayerCodecHandler(URL url){
+    public RelayerDecoderCodecHandler(){
         codec = new RelayerCodec();
-        this.url = url;
     }
 
     @Override
@@ -32,7 +32,7 @@ public class RelayerCodecHandler extends ByteToMessageCodec<Object>{
         logger.info("decode xxxxxxxxxx  in:" + in + "   in.readableBytes:" + in.readableBytes() + " w:" + in.writableBytes());
         Netty4BackedChannelBuffer message = new Netty4BackedChannelBuffer(in);
         logger.info("decode xxxxxxxxxx  message:" + message);
-        NettyChannel channel = NettyChannel.getOrAddChannel(ctx.channel(), url);
+        NettyChannel channel = NettyChannel.getOrAddChannel(ctx.channel(), null);
 
         while(true) {
             try {
@@ -65,29 +65,6 @@ public class RelayerCodecHandler extends ByteToMessageCodec<Object>{
             }
 
             return;
-        }
-    }
-
-    @Override
-    protected void encode(ChannelHandlerContext ctx, Object msg, ByteBuf out) throws Exception {
-        if (msg instanceof ByteBuf){
-            ByteBuf buf = (ByteBuf)msg;
-            ctx.writeAndFlush(buf);
-            buf.retain();
-            //out.writeBytes((ByteBuf) msg);
-            return;
-        }
-        Netty4BackedChannelBuffer messageBuf = new Netty4BackedChannelBuffer();
-        NettyChannel channel = NettyChannel.getOrAddChannel(ctx.channel(), url);
-
-        try {
-            codec.encode(channel, messageBuf, msg);
-            ctx.writeAndFlush(((Netty4BackedChannelBuffer)messageBuf).toByteBuf());
-        } catch (Exception var10) {
-            var10.printStackTrace();
-            throw var10;
-        } finally {
-            NettyChannel.removeChannelIfDisconnected(ctx.channel());
         }
     }
 }

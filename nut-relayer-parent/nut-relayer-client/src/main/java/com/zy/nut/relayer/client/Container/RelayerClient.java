@@ -142,7 +142,8 @@ public class RelayerClient {
         init();
         login();
 
-        sendDialogMsg();
+        if (uid > 10000)
+            sendDialogMsg();
         //Thread.sleep(5000);
         System.in.read();
     }

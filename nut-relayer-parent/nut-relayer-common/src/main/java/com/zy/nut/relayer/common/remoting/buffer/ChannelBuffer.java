@@ -16,6 +16,8 @@
 
 package com.zy.nut.relayer.common.remoting.buffer;
 
+import io.netty.buffer.ByteBuf;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -786,6 +788,9 @@ public interface ChannelBuffer extends Comparable<ChannelBuffer> {
      *                                   {@code this.readableBytes}
      */
     void skipBytes(int length);
+
+
+    ByteBuf toByteBuf();
 
     /**
      * Converts this buffer's readable bytes into a NIO buffer.  The returned

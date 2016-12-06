@@ -8,11 +8,13 @@ import com.zy.nut.relayer.common.remoting.exchange.RelayerEnterRoom;
 import com.zy.nut.relayer.common.remoting.exchange.RelayerLeftRoom;
 import com.zy.nut.relayer.common.remoting.exchange.RelayerLogin;
 import com.zy.nut.relayer.common.remoting.exchange.RelayerLogout;
+import com.zy.nut.relayer.common.remoting.exchange.header.RelayerCodecSupport;
 import com.zy.nut.relayer.server.beans.UserChannel;
 import com.zy.nut.relayer.server.dao.DialogMsgUao;
 import com.zy.nut.relayer.server.dao.RoomMsgDao;
 import com.zy.nut.relayer.server.service.SpringNettyContainer;
 import com.zy.nut.relayer.server.service.UserService;
+import io.netty.buffer.ByteBuf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +37,8 @@ public class UserServiceImp implements UserService{
     private RoomMsgDao roomMsgDao;
     @Autowired
     private DialogMsgUao dialogMsgUao;
+    @Autowired
+    private RelayerCodecSupport relayerCodecSupport;
 
     private Map<Long,UserChannel> userLoginedMap = new ConcurrentHashMap<Long,UserChannel>();
     private Map<Long,Set<UserChannel>> roomNettyesMap = new ConcurrentHashMap<Long,Set<UserChannel>>();
@@ -106,10 +110,18 @@ public class UserServiceImp implements UserService{
                 fUserChannel.send(Response.FAILURED_RES);
             return;
         }else {
-            if (fUserChannel != null)
-                fUserChannel.send(Response.SUCCESSED_RES);
-            if (tUserChannel != null)
-                tUserChannel.send(dialogMsg);
+            ByteBuf byteBuf = relayerCodecSupport.encodeToByteBuf(dialogMsg);
+            if (fUserChannel != null) {
+                byteBuf.retain();
+                logger.debug("dialogMsg send to {}  byteBuf:{}", fUserChannel.getUid(), byteBuf.refCnt());
+                fUserChannel.send(byteBuf);
+            }
+            if (tUserChannel != null) {
+                //byteBuf.retain();
+                logger.debug("dialogMsg send to {}  byteBuf:{}", tUserChannel.getUid(), byteBuf.refCnt());
+                tUserChannel.send(byteBuf);
+            }
+            logger.debug("dialogMsg  before release  byteBuf:{}", byteBuf.refCnt());
         }
     }
 
