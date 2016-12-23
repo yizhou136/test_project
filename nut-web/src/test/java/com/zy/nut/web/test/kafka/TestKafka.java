@@ -1,18 +1,17 @@
 package com.zy.nut.web.test.kafka;
 
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.Producer;
-import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.*;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 /**
  * Created by zhougb on 2016/12/20.
  */
-public class TestKafka {
+public class TestKafka extends BaseKafka{
 
     /*private static class MyTest extends Thread{
         @Override
@@ -28,9 +27,9 @@ public class TestKafka {
         }
     }*/
 
-    public static void genMsg(){
+    public static void genMsg() throws ExecutionException, InterruptedException {
         Properties props = new Properties();
-        props.put("bootstrap.servers", "192.168.5.43:9092");
+        props.put("bootstrap.servers", "192.168.5.43:9093");
         props.put("acks", "all");
         props.put("retries", 1);
         props.put("advertised.host.name", "192.168.5.43:9092");
@@ -41,15 +40,25 @@ public class TestKafka {
         props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
 
-        String topicName = "mymytopic2";
+        String topicName = GLOBAL_TOPIC_NAME;
         Producer  producer = new KafkaProducer(props);
         for (int i=0;i<10;i++){
-            producer.send(new ProducerRecord(topicName, String.valueOf(i), String.valueOf(i)));
+            Future<RecordMetadata> future =
+                    producer.send(new ProducerRecord(topicName, String.valueOf(i), String.valueOf(i)));
+            RecordMetadata recordMetadata = future.get();
+            System.out.print(recordMetadata);
         }
         producer.close();
     }
 
     public static void main(String argv[]){
-        genMsg();
+
+        try {
+            genMsg();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }
