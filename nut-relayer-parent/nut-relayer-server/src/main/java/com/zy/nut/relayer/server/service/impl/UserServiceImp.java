@@ -68,7 +68,7 @@ public class UserServiceImp implements UserService{
     public void enterRoom(RelayerEnterRoom enterRoom) {
         enterRoom.setLoginedNetty(springNettyContainer.getNettyName());
         Set<UserChannel> set = roomNettyesMap.get(enterRoom.getRid());
-        if (set == null){
+        /*if (set == null){
             Integer sync = genSync(enterRoom.getRid());
             synchronized (sync) {
                 set = roomNettyesMap.get(enterRoom.getRid());
@@ -82,7 +82,18 @@ public class UserServiceImp implements UserService{
             synchronized (set){
                 set.add(UserChannel.getOrAddChannel(enterRoom.getChannel(), enterRoom.getUid()));
             }
-        }
+        }*/
+        /*if (set == null){
+            set = roomNettyesMap.computeIfAbsent(enterRoom.getRid(), v->new HashSet<UserChannel>());
+            if (set == null){
+                //set = roomNettyesMap.get(en)
+                //do db;
+            }else {
+                set.wait();
+            }
+        }else {
+
+        }*/
         redisTemplate.opsForSet().add(genRoomNettyesRediskey(enterRoom.getRid()),
                 enterRoom.getLoginedNetty());
     }
