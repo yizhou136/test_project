@@ -32,6 +32,7 @@ public class RedisMiss<T> {
         synchronized (this){
             state = DBLOADED;
             data = t;
+            atomicInteger.set(0);
             this.notifyAll();
         }
     }
