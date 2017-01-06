@@ -32,6 +32,8 @@
         <javassist_version>3.15.0-GA</javassist_version>
         <parent-path>${project.basedir}</parent-path>
         <io.netty_version>4.1.1.Final</io.netty_version>
+
+        <kafka_version>0.10.1.1</kafka_version>
     </properties>
 
     <modules>
@@ -151,15 +153,35 @@
             <dependency>
                 <groupId>org.apache.kafka</groupId>
                 <artifactId>kafka_2.11</artifactId>
-                <version>0.10.1.0</version>
+                <version>${kafka_version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.kafka</groupId>
+                <artifactId>kafka-streams</artifactId>
+                <version>${kafka_version}</version>
             </dependency>
             <!-- https://mvnrepository.com/artifact/org.apache.kafka/connect-api -->
             <dependency>
                 <groupId>org.apache.kafka</groupId>
                 <artifactId>connect-api</artifactId>
-                <version>0.10.1.0</version>
+                <version>${kafka_version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>org.apache.kafka</groupId>
+                <artifactId>connect-file</artifactId>
+                <version>${kafka_version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.kafka</groupId>
+                <artifactId>connect-runtime</artifactId>
+                <version>${kafka_version}</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/org.apache.kafka/connect-json -->
+            <dependency>
+                <groupId>org.apache.kafka</groupId>
+                <artifactId>connect-json</artifactId>
+                <version>${kafka_version}</version>
+            </dependency>
             <dependency>
                 <groupId>com.alibaba</groupId>
                 <artifactId>dubbo</artifactId>

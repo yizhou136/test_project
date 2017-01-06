@@ -1,0 +1,11 @@
+gine:player.c: jni_player_render_frame: rgb_video_queue freed ...
+12-08 17:31:13.317 8565-10950/? W/FFmpegAndroid: HTTP error 404 Not Found
+12-08 17:31:13.317 8565-10950/? E/AVEngine:player.c: player_set_data_source Could not open video file: http://bjhlg.live.cuctv.com/sd_hls/fczx13.m3u8 (-5: I/O error)
+12-08 17:31:13.322 8565-14132/? I/AVEngine:player.c: jni_player_render_frame: rgb_video_queue freed ...
+12-08 17:31:13.332 8565-8565/? E/FFmpegMediaVideo:: FFmpegView RenderFrame destroy  mThread==null: 0
+12-08 17:31:13.332 8565-8565/? E/FFmpegMediaVideo:: FFmpegView RenderFrame DestroyedThread  mThread==null: 0
+12-08 17:31:13.332 8565-8565/? E/FFmpegMediaVideo:: FFmpegPlayer todo stopRenderFrame status:OPENFAILED
+12-08 17:31:13.332 8565-8565/? E/FFmpegMediaVideo:: FFmpegView RenderFrame setRunning  to false and goto mMpegPlayer.renderFrameStop
+12-08 17:31:13.332 8565-8565/? E/FFmpegMediaVideo:: FFmpegView RenderFrame stop and goto join
+12-08 17:31:13.332 8565-8565/? E/FFmpegMediaVideo:: FFmpegView RenderFrame stoped
+12-08 17:31:13.332 8565-8565/? E/FFmpegMediaVideo:: FFmpegPlayer stopTask execute status:OPENFAILED stoping:NULL

@@ -29,14 +29,16 @@ public class TestKafka extends BaseKafka{
 
     public static void genMsg() throws ExecutionException, InterruptedException {
         Properties props = new Properties();
-        props.put("bootstrap.servers", "192.168.5.43:9093");
+        props.put("bootstrap.servers", "192.168.5.212:9092");
         props.put("acks", "all");
         props.put("retries", 1);
-        props.put("advertised.host.name", "192.168.5.43:9092");
+        //props.put("advertised.host.name", "192.168.5.60:9092");
         props.put("partitioner.class", MyPartitioner.class.getName());
         //props.put("batch.size", 16384);
         //props.put("linger.ms", 1);
         //props.put("buffer.memory", 33554432);
+        props.put("request.timeout.ms", "3000");
+        //props.put("heartbeat.interval.ms", "1000");
         props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
 
@@ -52,7 +54,6 @@ public class TestKafka extends BaseKafka{
     }
 
     public static void main(String argv[]){
-
         try {
             genMsg();
         } catch (ExecutionException e) {
