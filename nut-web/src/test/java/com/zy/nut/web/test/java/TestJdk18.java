@@ -24,8 +24,8 @@ import java.util.stream.Stream;
  */
 public class TestJdk18 {
 
-    public static Runnable addThen(Runnable r1, Runnable r2){
-        return new Runnable(){
+    public static Runnable addThen(Runnable r1, Runnable r2) {
+        return new Runnable() {
             @Override
             public void run() {
                 r1.run();

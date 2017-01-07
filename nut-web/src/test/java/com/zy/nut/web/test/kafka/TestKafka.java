@@ -44,7 +44,8 @@ public class TestKafka extends BaseKafka{
         Producer  producer = new KafkaProducer(props);
         for (int i=0;i<10;i++){
             Future<RecordMetadata> future =
-                    producer.send(new ProducerRecord(topicName, String.valueOf(i), String.valueOf(i)));
+                    producer.send(new ProducerRecord(topicName, String.valueOf(i), String.valueOf(i)),
+                            (pr,cb)->{});
             RecordMetadata recordMetadata = future.get();
             System.out.print(recordMetadata);
         }
