@@ -18,17 +18,21 @@ import java.util.stream.Stream;
 public class KafkaConsumer extends BaseKafka{
     public static void consumerMsg(){
         Properties props = new Properties();
-        props.put("bootstrap.servers", "192.168.5.43:9092");
+        props.put("bootstrap.servers", "192.168.5.212:9092");
         props.put("group.id","g1");
         props.put("enable.auto.commit","false");
         props.put("auto.commit.interval.ms","1000");
-        props.put("session.timeout.ms", "30000");
+        props.put("session.timeout.ms", "15000");
+        props.put("heartbeat.interval.ms", "1000");
         props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
 
+        props.put("group.min.session.timeout.ms", "1000");
+        props.put("group.max.session.timeout.ms", "40000");
+
         org.apache.kafka.clients.consumer.KafkaConsumer consumer =
                 new org.apache.kafka.clients.consumer.KafkaConsumer(props);
-        consumer.subscribe(Stream.of(GLOBAL_TOPIC_NAME, "test1").collect(Collectors.toList()),
+        consumer.subscribe(Stream.of(GLOBAL_TOPIC_NAME, "mytest").collect(Collectors.toList()),
                 new ConsumerRebalanceListener() {
                     @Override
                     public void onPartitionsRevoked(Collection<TopicPartition> partitions) {
