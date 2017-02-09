@@ -203,6 +203,12 @@
                 <artifactId>connect-json</artifactId>
                 <version>${kafka_version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>org.apache.avro</groupId>
+                <artifactId>avro</artifactId>
+                <version>1.8.1</version>
+            </dependency>
             <dependency>
                 <groupId>com.alibaba</groupId>
                 <artifactId>dubbo</artifactId>

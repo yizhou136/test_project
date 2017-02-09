@@ -3,12 +3,11 @@ package com.zy.nut.web.test.kafka;
 import org.apache.kafka.clients.consumer.ConsumerRebalanceListener;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.common.TopicPartition;
+import org.apache.log4j.helpers.LogLog;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -16,9 +15,13 @@ import java.util.stream.Stream;
  * Created by zhougb on 2016/12/20.
  */
 public class KafkaConsumer extends BaseKafka{
+    static{
+        LogLog.setInternalDebugging(true);
+    }
+
     public static void consumerMsg(){
         Properties props = new Properties();
-        props.put("bootstrap.servers", "192.168.5.212:9092");
+        props.put("bootstrap.servers", KAFKA_HOST);
         props.put("group.id","g1");
         props.put("enable.auto.commit","false");
         props.put("auto.commit.interval.ms","1000");
@@ -27,8 +30,8 @@ public class KafkaConsumer extends BaseKafka{
         props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
 
-        props.put("group.min.session.timeout.ms", "1000");
-        props.put("group.max.session.timeout.ms", "40000");
+        //props.put("group.min.session.timeout.ms", "1000");
+        //props.put("group.max.session.timeout.ms", "40000");
 
         org.apache.kafka.clients.consumer.KafkaConsumer consumer =
                 new org.apache.kafka.clients.consumer.KafkaConsumer(props);
@@ -53,7 +56,9 @@ public class KafkaConsumer extends BaseKafka{
                     }
                 });
         try {
+
             while (true){
+
                 ConsumerRecords consumerRecords = consumer.poll(Long.MAX_VALUE);
                 for (TopicPartition topicPartition : (Set<TopicPartition>)consumerRecords.partitions()){
                     List<ConsumerRecord> partitionRecords = consumerRecords.records(topicPartition);
@@ -65,7 +70,22 @@ public class KafkaConsumer extends BaseKafka{
                                 +" p:"+record.partition());
                     }
                     consumer.commitSync();//同步
+                    /*Long lastOffset = partitionRecords.listIterator().next().offset();
+
+                    Map<TopicPartition, OffsetAndMetadata> m = Collections.singletonMap(topicPartition,new OffsetAndMetadata(lastOffset+1));
+                    consumer.commitSync(m);*/
                 }
+
+
+                /*List<TopicPartition> list = new ArrayList<>();
+                list.add(new TopicPartition("t_1_2_n",0));
+                list.add(new TopicPartition("t_1_2_n",1));
+                Map<TopicPartition,Long> map = consumer.beginningOffsets(list);
+                map.forEach((k,v)->{
+                    System.out.println("topicpartition:"+k+"  position:"+v);
+                });
+                consumer.seek(list.get(0), map.get(list.get(0)));
+                consumer.seek(list.get(1), map.get(list.get(1)));*/
             }
         }finally {
             consumer.close();

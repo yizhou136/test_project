@@ -1,0 +1,11 @@
+{"namespace": "com.zy.nut.web.avro",
+  "type": "record",
+  "name": "User",
+  "fields": [
+    {"name": "name", "type": "string"},
+    {"name": "favorite_color", "type": ["string", "null"]},
+    {"name": "fn",  "type": ["int", "null"], "aliases":["favorite_number"]},
+    {"name": "age", "type": "int", "default":3}
+    //{"name": "intersts", "type": {"type":"array", "items":"string", "default":" "}}
+  ]
+}
