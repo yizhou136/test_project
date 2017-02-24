@@ -9,6 +9,7 @@ public class BaseKafka {
     protected static final int REPLICATION_FACTORY = 1;
     protected static final int PARTITION = 2;
 
+    protected static final String GLOBAL_HOST="192.168.5.205:9092";
     protected static final String GLOBAL_TOPIC_NAME;
     static {
         GLOBAL_TOPIC_NAME = String.format(TOPIC_NAME_PATTERN, REPLICATION_FACTORY, PARTITION);

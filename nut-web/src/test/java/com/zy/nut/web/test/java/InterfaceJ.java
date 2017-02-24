@@ -5,6 +5,8 @@ package com.zy.nut.web.test.java;
  */
 public interface InterfaceJ {
 
+    boolean t();
+
     default void f(String name){
         System.out.println("print from InterfaceJ"+name);
     };

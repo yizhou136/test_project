@@ -29,7 +29,7 @@ public class TestKafka extends BaseKafka{
 
     public static void genMsg() throws ExecutionException, InterruptedException {
         Properties props = new Properties();
-        props.put("bootstrap.servers", "192.168.5.212:9092");
+        props.put("bootstrap.servers", GLOBAL_HOST);
         props.put("acks", "all");
         props.put("retries", 1);
         //props.put("advertised.host.name", "192.168.5.60:9092");
@@ -42,13 +42,15 @@ public class TestKafka extends BaseKafka{
         props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
 
-        String topicName = GLOBAL_TOPIC_NAME;
-        Producer  producer = new KafkaProducer(props);
-        for (int i=0;i<10;i++){
-            Future<RecordMetadata> future =
-                    producer.send(new ProducerRecord(topicName, String.valueOf(i), String.valueOf(i)));
-            RecordMetadata recordMetadata = future.get();
-            System.out.print(recordMetadata);
+        Producer producer = new KafkaProducer(props);
+        for (int j=0;j<2;j++) {
+            String topicName = GLOBAL_TOPIC_NAME;
+            for (int i = 0; i < 3; i++) {
+                Future<RecordMetadata> future =
+                        producer.send(new ProducerRecord(topicName, String.valueOf(i), String.valueOf(i)));
+                RecordMetadata recordMetadata = future.get();
+                System.out.print(recordMetadata);
+            }
         }
         producer.close();
     }

@@ -26,8 +26,8 @@ import java.util.Map;
 /**
  * Created by Administrator on 2016/10/30.
  */
-@Configuration
-@EnableConfigurationProperties({NutDataSourceProperties.class,DataSourceProperties.class})
+//@Configuration
+//@EnableConfigurationProperties({NutDataSourceProperties.class,DataSourceProperties.class})
 //@EntityScan("com.zy.nut.relayer.common.beans.*")
 public class NutDataSourceConfiguration {
     public static final String ReadDataSourceKey = "ReadDataSourceKey";

@@ -3,6 +3,7 @@ package com.zy.nut.web.test.java;
 import com.google.common.base.*;
 import com.google.common.collect.Collections2;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,6 +20,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static java.util.Comparator.comparing;
+
 /**
  * Created by zhougb on 2016/11/28.
  */
@@ -34,7 +37,38 @@ public class TestJdk18 {
         };
     }
 
+    public static void testPriorityQueue(){
+        List<Integer> list = new ArrayList<>();
+        list.sort(Integer::compareTo);
+        list.sort(Comparator.naturalOrder());
+
+        PriorityQueue<Integer> priorityQueue = new PriorityQueue<Integer>(10, Integer::compareTo);
+        priorityQueue.add(1);
+        priorityQueue.add(4);
+        priorityQueue.add(2);
+        priorityQueue.add(6);
+        priorityQueue.add(3);
+        priorityQueue.add(9);
+        priorityQueue.add(8);
+
+
+        priorityQueue.removeIf((v)->{return v>10;});
+
+        System.out.println("head:"+priorityQueue.peek());
+        while (priorityQueue.size() > 5){
+            priorityQueue.remove();
+        }
+
+        int size = priorityQueue.size();
+        for (int i=0;i<size;i++){
+            System.out.println(priorityQueue.poll());
+        }
+
+        System.out.println(priorityQueue.peek());
+    }
+
     public static void main(String argv[]){
+        testPriorityQueue();
         Runnable runnable1 = () -> {System.out.println("runnable1");};
         Runnable runnable2 = () -> {System.out.println("runnable2");};
 
@@ -42,6 +76,10 @@ public class TestJdk18 {
         Arrays.sort(intArr);
         List<Integer> intList = Arrays.asList(1,8,2,5,3,7,4);
         Collections.sort(intList);
+
+        List<Person> personList = Arrays.asList(new Person(1,"zy"));
+        personList.sort(comparing(Person::getId));
+        //intList.sort(Comparator.comparing());
 
         /*for (int i:intArr)
             intList.add(()->{System.out.println(i); return i;});*/
@@ -83,7 +121,7 @@ public class TestJdk18 {
 
         Stream<String> sourt = Stream.of("a a b b c".split(" "))
                 .distinct()
-                .sorted(Comparator.comparing(String::length).reversed());
+                .sorted(comparing(String::length).reversed());
         System.out.println(Arrays.toString(sourt.toArray()));
 
         Optional<String> optional = Stream.of("a","c","e","ab","e").filter((a)-> a.equals("ad")).findAny();
@@ -145,7 +183,7 @@ public class TestJdk18 {
 
 
         Map<String,Integer> topWordCntMap = Stream.of("aadfa,badsfasd,cadfas,dasdfas,aaasdfas,ccasdfasdf,aasdf,basdf,c,d,c"
-                .split(",")).filter(ss->ss.length()>=5).sorted(Comparator.comparing(String::length))
+                .split(",")).filter(ss->ss.length()>=5).sorted(comparing(String::length))
                 .parallel().collect(Collectors.toConcurrentMap((k)->{return k;},
                         (v)->{
                             return 1;},
@@ -178,7 +216,7 @@ public class TestJdk18 {
         List<String> list = Stream.of("1234511,1234522,1234533,123,12345,12345,123453,123452,123451,12345,123456"
                 .split(","))
                 .peek((ss)->{System.out.print("before sorted::::"+ss);})
-                .sorted(Comparator.comparing(String::length)
+                .sorted(comparing(String::length)
                 .reversed())
                 .peek((ss)->{System.out.print("\nbefore limit::::"+ss);})
                 .limit(5)

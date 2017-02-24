@@ -102,12 +102,10 @@
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.alibaba/dubbo -->
-        <!--
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>dubbo</artifactId>
         </dependency>
-        -->
         <dependency>
             <groupId>org.javassist</groupId>
             <artifactId>javassist</artifactId>
@@ -132,6 +130,10 @@
         <dependency>
             <groupId>com.zy</groupId>
             <artifactId>nut-relayer-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.zy</groupId>
+            <artifactId>nut_common</artifactId>
         </dependency>
     </dependencies>
     <build>

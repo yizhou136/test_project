@@ -1,5 +1,6 @@
 package com.zy.nut.web.configuration.webmvc;
 
+import com.zy.nut.common.beans.User;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.ObjectProvider;
@@ -7,7 +8,9 @@ import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
 import org.springframework.boot.autoconfigure.web.ResourceProperties;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 import org.springframework.http.MediaType;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.config.annotation.*;
@@ -15,6 +18,7 @@ import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 import org.springframework.web.servlet.view.xml.MappingJackson2XmlView;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,5 +48,14 @@ public class SpringMVCConfiguration extends WebMvcConfigurationSupport {
         registry.enableContentNegotiation(mappingJackson2JsonView, mappingJackson2XmlView);
         registry.freeMarker();
         registry.jsp();
+    }
+
+    @Bean(name = "zyUser")
+    @Scope("request")
+    public User zy(){
+        User user = new User();
+        user.setUname("zy"+ Instant.now().getEpochSecond());
+        user.setAge((byte)11);
+        return user;
     }
 }

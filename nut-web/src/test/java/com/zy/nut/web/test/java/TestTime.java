@@ -24,5 +24,14 @@ public class TestTime {
         System.out.println(duration.getSeconds()+" "+duration.getNano()+" "+duration.getUnits());
 
         Date date = new Date();
+
+
+        int i1 = Integer.MAX_VALUE;
+        System.out.println("max:"+Integer.MAX_VALUE);
+        System.out.println("i1:"+(i1+1));
+
+        int xx = -5  % 3;
+
+        System.out.println("xx:"+(xx));
     }
 }

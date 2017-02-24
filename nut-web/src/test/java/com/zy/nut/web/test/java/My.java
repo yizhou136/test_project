@@ -10,5 +10,13 @@ public class My implements InterfaceI, InterfaceJ{
         //InterfaceJ.super.f(name);
         InterfaceI.super.f(name);
         //System.out.println("print My f");
+
+
+        InterfaceJ interfaceI  = () ->{return false;};
+    }
+
+    @Override
+    public boolean t() {
+        return false;
     }
 }

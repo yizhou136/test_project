@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 /**
  * Created by Administrator on 2016/12/3.
  */
-@AutoConfigureAfter(NutDataSourceConfiguration.class)
+//@AutoConfigureAfter(NutDataSourceConfiguration.class)
 //@EnableJpaRepositories(basePackages="com.zy.nut.relayer.common.beans.*")
 //@EntityScan("com.zy.nut.relayer.common.beans.*")
 public class JpaConfiguration {
