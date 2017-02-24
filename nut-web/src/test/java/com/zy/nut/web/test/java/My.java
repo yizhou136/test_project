@@ -19,4 +19,9 @@ public class My implements InterfaceI, InterfaceJ{
     public boolean t() {
         return false;
     }
+
+    @Override
+    public boolean t(Object o) {
+        return false;
+    }
 }

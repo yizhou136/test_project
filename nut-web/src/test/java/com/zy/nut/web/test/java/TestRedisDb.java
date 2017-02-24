@@ -9,10 +9,7 @@ import com.zy.nut.common.beans.User;
 import java.time.Instant;
 import java.util.Map;
 import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Delayed;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 /**
  * Created by Administrator on 2016/12/8.
@@ -26,28 +23,29 @@ public class TestRedisDb {
     public Product load(Long pid){
         Product product = loadFromRedis(pid);
         if (product == null){
-            logger.info("loadFromRedis is null");
-            RedisMiss<Product> redisMiss = redisMissMap.putIfAbsent(pid, new RedisMiss<Product>());
-            if (redisMiss.isDataValid()) return redisMiss.getData();
-            int waitThreads = 0;
-            if ((waitThreads=redisMiss.inc()) == 0){
+            RedisMiss<Product> redisMiss = redisMissMap.computeIfAbsent(pid, (id)->{
+                logger.info("computeIfAbsent    xxxxxxxxxxxxxxx thread:"+Thread.currentThread().getName());
+                return new RedisMiss<Product>();
+            });
+            int waitThread = 0;
+            if ((waitThread=redisMiss.inc()) == 0){
+                logger.info("loadFromRedis is null and loadFromDB thread:"+Thread.currentThread().getName());
                 product = loadFromDB(pid);
-                logger.info("loadFromDB has returned ");
+                ///logger.info("loadFromRedis is null and loadFromDB product:"+product+" thread:"+Thread.currentThread().getName());
                 if (product != null){
-                    logger.info("loadFromDB has loadDataSuccessed ");
                     redisMiss.loadDataSuccessed(product);
                     saveToRedis(product);
                 }else {
-                    logger.info("loadFromDB has loadDataFailured ");
                     redisMiss.loadDataFailured();
                 }
             }else {
-                logger.info("loadFromRedis is null and goto waitForLoadData waitThreads:"+waitThreads);
+                logger.info("waitForLoadData thread:"+Thread.currentThread().getName()+" waitThread:"+waitThread);
                 product = redisMiss.waitForLoadData();
-                logger.info("loadFromRedis is null and waitForLoadData has returnd ");
+
+                logger.info("waitForLoadData and returned thread:"+Thread.currentThread().getName());
             }
         }else {
-            logger.info("loadFromRedis and return");
+            logger.info("loadFromRedis and return thread:"+Thread.currentThread().getName());
         }
 
         return product;
@@ -56,7 +54,7 @@ public class TestRedisDb {
 
     public Product loadFromRedis(Long pid){
         try {
-            Thread.sleep(500);
+            Thread.sleep(random.nextInt(300));
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -88,26 +86,45 @@ public class TestRedisDb {
 
     public Product loadFromDB(Long pid){
         try {
-            Thread.sleep(random.nextInt(1000));
+            Thread.sleep(10000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         Product product = new Product();
         product.setPid(pid);
         product.setCtime(System.currentTimeMillis());
+
+        logger.info("xxxxxxxxxxxxxxxx loadFromDB thread:"+Thread.currentThread().getName());
         return product;
     }
 
     public static void main(String argv[]){
         TestRedisDb testRedisDb = new TestRedisDb();
         ExecutorService executorService = Executors.newCachedThreadPool();
-        for (int i=0; i < 100; i++) {
-            executorService.submit(new Runnable() {
+        for (int i=0; i < 2; i++) {
+            Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
+                    //logger.info("run Thread:"+Thread.currentThread().getName());
                     testRedisDb.load(Long.valueOf(1));
                 }
-            });
+            };
+            //executorService.execute(runnable);
+            //Future future = executorService.submit(runnable);
         }
+
+
+        RedisMiss<Product> redisMiss0 = new RedisMiss<Product>();
+        logger.info("redisMiss0:"+redisMiss0);
+
+        testRedisDb.redisMissMap.put(Long.valueOf(1), redisMiss0);
+
+        RedisMiss<Product> redisMiss = testRedisDb.redisMissMap.merge(Long.valueOf(1),
+                redisMiss0, (existv, newv)->{
+                    logger.info("merge existv:"+existv+" newv:"+newv);
+            return new RedisMiss();
+        });
+
+        logger.info("after redisMiss:"+redisMiss);
     }
 }

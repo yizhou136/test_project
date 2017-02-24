@@ -29,7 +29,11 @@ public class TestKafka extends BaseKafka{
 
     public static void genMsg() throws ExecutionException, InterruptedException {
         Properties props = new Properties();
+<<<<<<< HEAD
         props.put("bootstrap.servers", GLOBAL_HOST);
+=======
+        props.put("bootstrap.servers", KAFKA_HOST);
+>>>>>>> 1812cb04121c7185cdcdaff430228cfeee3bfd7f
         props.put("acks", "all");
         props.put("retries", 1);
         //props.put("advertised.host.name", "192.168.5.60:9092");
@@ -42,6 +46,7 @@ public class TestKafka extends BaseKafka{
         props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
 
+<<<<<<< HEAD
         Producer producer = new KafkaProducer(props);
         for (int j=0;j<2;j++) {
             String topicName = GLOBAL_TOPIC_NAME;
@@ -51,6 +56,16 @@ public class TestKafka extends BaseKafka{
                 RecordMetadata recordMetadata = future.get();
                 System.out.print(recordMetadata);
             }
+=======
+        String topicName = GLOBAL_TOPIC_NAME;
+        Producer  producer = new KafkaProducer(props);
+        for (int i=0;i<10;i++){
+            Future<RecordMetadata> future =
+                    producer.send(new ProducerRecord(topicName, String.valueOf(i), String.valueOf(i)),
+                            (pr,cb)->{});
+            RecordMetadata recordMetadata = future.get();
+            System.out.print(recordMetadata);
+>>>>>>> 1812cb04121c7185cdcdaff430228cfeee3bfd7f
         }
         producer.close();
     }

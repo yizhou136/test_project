@@ -14,4 +14,7 @@ public class BaseKafka {
     static {
         GLOBAL_TOPIC_NAME = String.format(TOPIC_NAME_PATTERN, REPLICATION_FACTORY, PARTITION);
     }
+
+
+    protected static final String KAFKA_HOST = "192.168.1.106:9092";
 }
