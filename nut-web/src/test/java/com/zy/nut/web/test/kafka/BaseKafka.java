@@ -15,5 +15,5 @@ public class BaseKafka {
     }
 
 
-    protected static final String KAFKA_HOST = "192.168.1.106:9092";
+    protected static final String KAFKA_HOST = "192.168.1.110:9092";
 }

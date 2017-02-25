@@ -37,14 +37,14 @@ public class TestKafka extends BaseKafka{
         //props.put("batch.size", 16384);
         //props.put("linger.ms", 1);
         //props.put("buffer.memory", 33554432);
-        props.put("request.timeout.ms", "3000");
+        //props.put("request.timeout.ms", "3000");
         //props.put("heartbeat.interval.ms", "1000");
         props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
 
         String topicName = GLOBAL_TOPIC_NAME;
         Producer  producer = new KafkaProducer(props);
-        for (int i=0;i<10;i++){
+        for (int i=0;i<1;i++){
             Future<RecordMetadata> future =
                     producer.send(new ProducerRecord(topicName, String.valueOf(i), String.valueOf(i)),
                             (pr,cb)->{});
