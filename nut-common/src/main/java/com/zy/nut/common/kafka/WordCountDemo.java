@@ -23,6 +23,9 @@ import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.kstream.*;
+import org.apache.kafka.streams.processor.TopologyBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.Locale;
@@ -40,9 +43,10 @@ import java.util.Properties;
  * and write some data to it (e.g. via bin-kafka-console-producer.sh). Otherwise you won't see any data arriving in the output topic.
  */
 public class WordCountDemo {
+    private static final Logger logger = LoggerFactory.getLogger(WordCountDemo.class);
 
     public static void main(String[] args) throws Exception {
-        String host = "192.168.5.212";
+        String host = "192.168.5.43";
         Properties props = new Properties();
         props.put(StreamsConfig.APPLICATION_ID_CONFIG, "streams-wordcount");
         props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, host+":9092");
@@ -57,21 +61,31 @@ public class WordCountDemo {
 
         KStream<String, String> source = builder.stream("streams-file-input");
 
-        KTable<String, Long> counts = source
+        KStream<String,String> s1 = source
                 .flatMapValues(new ValueMapper<String, Iterable<String>>() {
                     @Override
                     public Iterable<String> apply(String value) {
+                        logger.info("flatMapValues apply value:{}", value);
                         return Arrays.asList(value.toLowerCase(Locale.getDefault()).split(" "));
                     }
                 }).map(new KeyValueMapper<String, String, KeyValue<String, String>>() {
                     @Override
                     public KeyValue<String, String> apply(String key, String value) {
+                        logger.info("map apply key:{} value:{}", key,value);
                         return new KeyValue<>(value, value);
                     }
-                }).groupByKey().count("abc");
+                });
+        s1.foreach((k,v)->{
+            logger.info("k:{}, v:{}",k,v);
+        });
+
+
+        TopologyBuilder  ta;
+
+        s1.to("a");
 
         // need to override value serde to Long type
-        counts.to(Serdes.String(), Serdes.Long(), "streams-wordcount-output");
+        //counts.to(Serdes.String(), Serdes.Long(), "streams-wordcount-output");
 
         KafkaStreams streams = new KafkaStreams(builder, props);
         streams.start();

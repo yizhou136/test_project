@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 /**
  * Created by Administrator on 2016/12/3.
  */
-@Service("msgService")
+//@Service("msgService")
 public class MsgServerImp implements MsgService{
     private static  final Logger logger = LoggerFactory.getLogger(MsgServerImp.class);
 

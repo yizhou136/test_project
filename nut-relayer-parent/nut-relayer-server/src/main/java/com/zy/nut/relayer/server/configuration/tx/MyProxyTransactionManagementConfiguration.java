@@ -15,7 +15,7 @@ import org.springframework.transaction.interceptor.TransactionAttributeSource;
 /**
  * Created by Administrator on 2016/10/30.
  */
-@Configuration
+//@Configuration
 public class MyProxyTransactionManagementConfiguration extends ProxyTransactionManagementConfiguration{
 
     @Bean(name = TransactionManagementConfigUtils.TRANSACTION_ADVISOR_BEAN_NAME)

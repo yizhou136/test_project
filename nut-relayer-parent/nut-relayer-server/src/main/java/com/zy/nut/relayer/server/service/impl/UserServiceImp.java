@@ -29,7 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by Administrator on 2016/12/3.
  */
-@Service
+//@Service
 public class UserServiceImp implements UserService{
     private static  final Logger logger = LoggerFactory.getLogger(MsgServerImp.class);
 

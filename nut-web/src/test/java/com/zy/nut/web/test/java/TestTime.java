@@ -44,6 +44,15 @@ public class TestTime {
         Date date = new Date();
 
 
+<<<<<<< HEAD
+        int i1 = Integer.MAX_VALUE;
+        System.out.println("max:"+Integer.MAX_VALUE);
+        System.out.println("i1:"+(i1+1));
+
+        int xx = -5  % 3;
+
+        System.out.println("xx:"+(xx));
+=======
         isOdd(-4);
 
         main2();
@@ -51,5 +60,6 @@ public class TestTime {
         int x = 1 , i = 0;
         x += i;     // Must be LEGAL
         x = x + i;  // Must be ILLEGAL
+>>>>>>> 1812cb04121c7185cdcdaff430228cfeee3bfd7f
     }
 }

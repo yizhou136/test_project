@@ -10,16 +10,15 @@
 
         <dubbo:application name="nut"/>
         <dubbo:registry group="for_test" address="${spring.redis.host}" port="6379" protocol="redis"></dubbo:registry>
-        <dubbo:protocol name="dubbo" id="dubboProtocol" transporter="netty4" port="8484"/>
+        <dubbo:protocol name="dubbo" id="dubboProtocol" transporter="netty4" port="8585"/>
 
-        <dubbo:reference interface="com.zy.nut.common.msp.MspService" id="mspService"/>
+        <dubbo:reference interface="com.zy.nut.common.msp.MsBackService" id="msBackService"/>
 
-        <dubbo:service interface="com.zy.nut.common.msp.MsBackService" ref="msBackServiceImpl" protocol="dubboProtocol" timeout="3000">
+        <dubbo:service interface="com.zy.nut.common.msp.MspService" ref="mspServiceImpl" protocol="dubboProtocol" timeout="3000">
         </dubbo:service>
 
         <!--
-        <dubbo:service interface="com.zy.nut.common.service.UserService" ref="userServiceImpl" protocol="dubboProtocol" timeout="3000">
-        </dubbo:service>
+        <dubbo:reference interface="com.zy.nut.common.service.UserService" id="userService"/>
         <dubbo:protocol name="http" id="httpProtocol" port="8181" />
         -->
         <!--

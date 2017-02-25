@@ -18,8 +18,8 @@ import org.springframework.stereotype.Component;
 /**
  * Created by zhougb on 2016/11/9.
  */
-@Component
-@ChannelHandler.Sharable
+//@Component
+//@ChannelHandler.Sharable
 public class HandleRelayerHandler extends ChannelDuplexHandler {
     private static final Logger logger = LoggerFactory.getLogger(HandleRelayerHandler.class);
 

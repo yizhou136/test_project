@@ -16,7 +16,7 @@ import javax.sql.DataSource;
 /**
  * Created by zhougb on 2016/11/1.
  */
-@Configuration
+//@Configuration
 public class MybatisConfiguration {
 
 

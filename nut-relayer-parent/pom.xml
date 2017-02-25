@@ -51,6 +51,14 @@
                 <artifactId>jackson-annotations</artifactId>
                 <version>2.8.5</version>
             </dependency>
+
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>dubbo</artifactId>
+                <version>2.5.4</version>
+                <scope>system</scope>
+                <systemPath>${project.basedir}/../../nut-libs/dubbo-2.5.4-SNAPSHOT.jar</systemPath>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 </project>
