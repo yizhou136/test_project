@@ -38,6 +38,7 @@ public class BootNutServices {
             @Override
             public void onApplicationEvent(final ContextRefreshedEvent event) {
                 logger.debug("ContextRefreshedEvent {}  and goto sendTo sleep",event);
+                if (false)
                 new Thread(new Runnable() {
                     @Override
                     public void run() {

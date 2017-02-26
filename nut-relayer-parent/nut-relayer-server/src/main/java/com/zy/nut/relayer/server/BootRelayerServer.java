@@ -60,8 +60,10 @@ public class BootRelayerServer {
                         MsBackService msBackService = (MsBackService)
                                 event.getApplicationContext().getBean("msBackService");
                         logger.debug("ContextRefreshedEvent {}  msBackService:{}",event, msBackService);
-                        Response response = msBackService.nofity("goodboy".getBytes());
-                        logger.debug("msBackService notify response:{}", response);
+                        for (int i=0;i<2;i++) {
+                            Response response = msBackService.nofity("goodboy".getBytes());
+                            logger.debug("msBackService notify response:{}", response);
+                        }
                     }
                 }).start();
             }

@@ -49,8 +49,20 @@ public class TestJdk18 {
         priorityQueue.add(6);
         priorityQueue.add(3);
         priorityQueue.add(9);
+        priorityQueue.add(1);
         priorityQueue.add(8);
 
+
+        /*int size = priorityQueue.size();
+        for (int i=0;i<size;i++){
+            System.out.println(priorityQueue.poll());
+        }*/
+
+        for (int v : priorityQueue){
+            System.out.println(v);
+        }
+
+        priorityQueue.forEach(System.out::print);
 
         priorityQueue.removeIf((v)->{return v>10;});
 
@@ -59,10 +71,7 @@ public class TestJdk18 {
             priorityQueue.remove();
         }
 
-        int size = priorityQueue.size();
-        for (int i=0;i<size;i++){
-            System.out.println(priorityQueue.poll());
-        }
+
 
         System.out.println(priorityQueue.peek());
     }

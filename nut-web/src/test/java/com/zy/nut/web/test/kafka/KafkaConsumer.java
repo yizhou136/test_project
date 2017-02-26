@@ -7,14 +7,11 @@ import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.log4j.helpers.LogLog;
 
-<<<<<<< HEAD
+
 import java.time.Instant;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-=======
-import java.util.*;
->>>>>>> 1812cb04121c7185cdcdaff430228cfeee3bfd7f
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -22,13 +19,9 @@ import java.util.stream.Stream;
  * Created by zhougb on 2016/12/20.
  */
 public class KafkaConsumer extends BaseKafka{
-<<<<<<< HEAD
+
     public static final Pattern pattern = Pattern.compile("channel_\\d+");
 
-    public static void consumerMsg(){
-        Properties props = new Properties();
-        props.put("bootstrap.servers", GLOBAL_HOST);
-=======
     static{
         LogLog.setInternalDebugging(true);
     }
@@ -36,7 +29,7 @@ public class KafkaConsumer extends BaseKafka{
     public static void consumerMsg(){
         Properties props = new Properties();
         props.put("bootstrap.servers", KAFKA_HOST);
->>>>>>> 1812cb04121c7185cdcdaff430228cfeee3bfd7f
+
         props.put("group.id","g1");
         props.put("enable.auto.commit","false");
         props.put("fetch.max.wait.ms",500);
@@ -49,13 +42,9 @@ public class KafkaConsumer extends BaseKafka{
         props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
 
-<<<<<<< HEAD
+
         System.out.println("group.id __consumer_offset partition:"
                 +Math.abs(props.getProperty("group.id").hashCode()) % 50);
-=======
-        //props.put("group.min.session.timeout.ms", "1000");
-        //props.put("group.max.session.timeout.ms", "40000");
->>>>>>> 1812cb04121c7185cdcdaff430228cfeee3bfd7f
 
         org.apache.kafka.clients.consumer.KafkaConsumer consumer =
                 new org.apache.kafka.clients.consumer.KafkaConsumer(props);
@@ -86,11 +75,6 @@ public class KafkaConsumer extends BaseKafka{
         try {
 
             while (true){
-<<<<<<< HEAD
-                //consumer.wakeup();
-=======
-
->>>>>>> 1812cb04121c7185cdcdaff430228cfeee3bfd7f
                 ConsumerRecords consumerRecords = consumer.poll(Long.MAX_VALUE);
                 System.out.println("after poll "+ Instant.now());
                 for (TopicPartition topicPartition : (Set<TopicPartition>)consumerRecords.partitions()){
@@ -102,7 +86,7 @@ public class KafkaConsumer extends BaseKafka{
                                 +" tm:"+record.timestamp()
                                 +" partition:"+record.partition());
                     }
-<<<<<<< HEAD
+
                     //consumer.
                     //consumer.commitSync();//同步
                 }
@@ -119,15 +103,7 @@ public class KafkaConsumer extends BaseKafka{
                         consumer.com
                     }
                 }).start();*/
-=======
-                    consumer.commitSync();//同步
-                    /*Long lastOffset = partitionRecords.listIterator().next().offset();
-
-                    Map<TopicPartition, OffsetAndMetadata> m = Collections.singletonMap(topicPartition,new OffsetAndMetadata(lastOffset+1));
-                    consumer.commitSync(m);*/
                 }
-
-
                 /*List<TopicPartition> list = new ArrayList<>();
                 list.add(new TopicPartition("t_1_2_n",0));
                 list.add(new TopicPartition("t_1_2_n",1));
@@ -137,8 +113,6 @@ public class KafkaConsumer extends BaseKafka{
                 });
                 consumer.seek(list.get(0), map.get(list.get(0)));
                 consumer.seek(list.get(1), map.get(list.get(1)));*/
->>>>>>> 1812cb04121c7185cdcdaff430228cfeee3bfd7f
-            }
         }finally {
             consumer.close();
         }

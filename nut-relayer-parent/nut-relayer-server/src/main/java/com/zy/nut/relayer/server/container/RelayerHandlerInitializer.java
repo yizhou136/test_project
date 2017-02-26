@@ -22,8 +22,8 @@ import java.util.concurrent.ThreadFactory;
  */
 @Component
 public class RelayerHandlerInitializer implements ChannelInitializerRegister{
-    //@Autowired
-    //private HandleRelayerHandler handleRelayerHandler;
+    @Autowired
+    private HandleRelayerHandler handleRelayerHandler;
 
     private EventExecutorGroup eventExecutorGroup;
 
@@ -47,7 +47,7 @@ public class RelayerHandlerInitializer implements ChannelInitializerRegister{
         //pipeline.addLast("relayerCodec", new RelayerCodecHandler(null));
         pipeline.addLast(new RelayerDecoderCodecHandler());
         pipeline.addLast(new RelayerEncoderCodecHandler());
-        //pipeline.addLast(eventExecutorGroup, handleRelayerHandler);
+        pipeline.addLast(eventExecutorGroup, handleRelayerHandler);
 
         pipeline.remove(ProtocolDetectHandler.class);
     }

@@ -1,14 +1,8 @@
 package com.zy.nut.relayer.server.container;
 
-import com.zy.nut.relayer.common.beans.DialogMsg;
-import com.zy.nut.relayer.common.beans.RoomMsg;
+import com.zy.nut.common.msp.*;
 import com.zy.nut.relayer.common.logger.Logger;
 import com.zy.nut.relayer.common.logger.LoggerFactory;
-import com.zy.nut.relayer.common.remoting.Server;
-import com.zy.nut.relayer.common.remoting.exchange.*;
-import com.zy.nut.relayer.common.transporter.netty.NettyChannel;
-import com.zy.nut.relayer.server.service.MsgService;
-import com.zy.nut.relayer.server.service.UserService;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -18,13 +12,14 @@ import org.springframework.stereotype.Component;
 /**
  * Created by zhougb on 2016/11/9.
  */
-//@Component
-//@ChannelHandler.Sharable
+@Component
+@ChannelHandler.Sharable
 public class HandleRelayerHandler extends ChannelDuplexHandler {
     private static final Logger logger = LoggerFactory.getLogger(HandleRelayerHandler.class);
 
     @Autowired
-    private UserService userService;
+    private MsBackService msBackService;
+    //private UserService userService;
 
 
 
@@ -40,7 +35,10 @@ public class HandleRelayerHandler extends ChannelDuplexHandler {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        if (msg instanceof RelayerLogin){
+        logger.info("msBackService notify:");
+        com.zy.nut.common.msp.Response response = msBackService.nofity("loginorlogout".getBytes());
+        logger.info("msBackService notify response:"+response);
+        /*if (msg instanceof RelayerLogin){
             RelayerLogin relayerLogin = (RelayerLogin)msg;
             relayerLogin.setChannel(ctx.channel());
             logger.info("Uid:"+relayerLogin.getUid()+" has logined");
@@ -63,6 +61,6 @@ public class HandleRelayerHandler extends ChannelDuplexHandler {
             logger.info("roommsg "+roomMsg.getFuid()+" to "+roomMsg.getRid()
                     +" msg:"+roomMsg.getMsg());
             userService.sendRoomMsg(roomMsg);
-        }
+        }*/
     }
 }

@@ -1,6 +1,6 @@
 package com.zy.nut.web.test.java;
 
-<<<<<<< HEAD
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -8,18 +8,18 @@ import java.util.ListIterator;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveAction;
 import java.util.concurrent.TimeUnit;
-=======
+
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.OptionalInt;
->>>>>>> 1812cb04121c7185cdcdaff430228cfeee3bfd7f
+
 
 /**
  * Created by zhougb on 2016/12/9.
  */
 public class TestString {
 
-<<<<<<< HEAD
+
     public static void testList(){
         System.out.println("testList");
         List<String> list = new ArrayList<>();
@@ -56,10 +56,7 @@ public class TestString {
         return url.substring(lastSlashIdx + 1, lastDotIdx);
     }
 
-    public static void main(String argv[]){
-        /*String t = "http://q.qlogo.cn/qqapp/100528606/C7D2C4F02AEB11D58D7520547E6FD6DA/100";
-        System.out.println(extractUrlLastFileName(t));
-=======
+
     public static void testHugeStringGC(){
         String hugeStr = "abc=3,d=e,fa=34,gad=34,sfasd=34,fas=34,dfa=34,sdf=34,sadfas=34,dfasd=34,fasdfa=34,dsfas=34,dfdsaffasdfsdafdsaf=34,asdfsdafdsafdsf";
         String[] arrStr = hugeStr.split("34");
@@ -68,18 +65,18 @@ public class TestString {
     public static void main(String argv[]){
         testHugeStringGC();
 
->>>>>>> 1812cb04121c7185cdcdaff430228cfeee3bfd7f
+
         System.out.println(String.join(",", "a","b","c"));
         "abc".codePoints().forEach(System.out::println);
         System.out.println(Math.floorMod(13,-3)+" "+Math.nextDown(0.2)+" "+Math.nextUp(0.2));
-<<<<<<< HEAD
+
         System.out.println((-4%4));
         testList();
         int a = 10;
         int b = 10;
         methodA(a, b);
         System.out.println("a="+a);
-        System.out.println("b="+b);*/
+        System.out.println("b="+b);
 
         /*ForkJoinPool forkJoinPool = new ForkJoinPool(3);
         forkJoinPool.submit(new MyRecursiveAction(0,9));
@@ -90,9 +87,7 @@ public class TestString {
         System.out.println( 10<<3 + 10<<1);
         System.out.println( 10 << 14);
 
-        Integer i = 0;
-        int b = 0;
-        System.out.println(b == i);
+
     }
     public static void methodA(int a, int b){
         a = 1000;
@@ -136,14 +131,5 @@ public class TestString {
                 rightMy.join();
             }
         }
-=======
-
-        OptionalInt maxOptional = Arrays.asList("abc","bca","afc","adc","dbc").stream()
-                .filter((str)->str.startsWith("a"))
-                .mapToInt(String::length)
-                .max();
-
-        maxOptional.ifPresent(System.out::println);
->>>>>>> 1812cb04121c7185cdcdaff430228cfeee3bfd7f
     }
 }
