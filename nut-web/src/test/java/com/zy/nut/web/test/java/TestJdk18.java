@@ -87,7 +87,7 @@ public class TestJdk18 {
         Collections.sort(intList);
 
         List<Person> personList = Arrays.asList(new Person(1,"zy"));
-        personList.sort(comparing(Person::getId));
+        //personList.sort(comparing(Person::getId));
         //intList.sort(Comparator.comparing());
 
         /*for (int i:intArr)
@@ -150,11 +150,11 @@ public class TestJdk18 {
         sumOptional.ifPresent(System.out::println);
         Stream.of(1,3,4).reduce(0, Integer::sum);
 
-        Map<Integer,String> map = Stream.of(new Person(1,"zy1"),
+        /*Map<Integer,String> map = Stream.of(new Person(1,"zy1"),
                 new Person(2,"zy2"),
                 new Person(3,"zy3"),
                 new Person(4,"zy4")).collect(Collectors.toMap(Person::getId, Person::getName));
-        System.out.println("map:"+map);
+        System.out.println("map:"+map);*/
 
         Map<String,List<Locale>> locales = Stream.of(Locale.getAvailableLocales())
                 .collect(Collectors.groupingBy(Locale::getCountry));

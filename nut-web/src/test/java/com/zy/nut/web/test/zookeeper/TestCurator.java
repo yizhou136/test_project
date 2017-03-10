@@ -12,7 +12,7 @@ import org.apache.zookeeper.data.Stat;
 public class TestCurator {
 
     public static void main(String argv[]) throws Exception {
-        String  connectionString = "192.168.1.106:2181";
+        String  connectionString = "192.168.5.62:4180";
 
         CuratorFramework curatorFramework = CuratorFrameworkFactory.builder()
                 .connectString(connectionString)
@@ -49,5 +49,7 @@ public class TestCurator {
         byte [] bytes = curatorFramework.getData().forPath(path);
 
         System.out.println("getdata bytes:"+new String(bytes));
+
+        //curatorFramework.getChildren().forPath("");
     }
 }

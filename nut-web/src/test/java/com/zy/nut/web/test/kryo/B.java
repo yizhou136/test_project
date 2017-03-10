@@ -1,22 +1,27 @@
-package com.zy.nut.web.test.java;
+package com.zy.nut.web.test.kryo;
 
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer;
 
+import java.io.Serializable;
+
 /**
- * Created by zhougb on 2016/12/8.
+ * Created by zhougb on 2017/3/2.
  */
-public class Person {
+public class B implements Serializable{
     //@TaggedFieldSerializer.Tag(1)
     private int a;
     //@TaggedFieldSerializer.Tag(3)
     private String b;
+    //@TaggedFieldSerializer.Tag(2)
     private int c;
 
-    public Person(){}
-    public Person(int id, String name){
-        this.a = id;
-        this.b = name;
-        c  = 10;
+    //private N n;
+    public B(){}
+
+    public B(int a, String b, int c){
+        this.a = a;
+        this.b = b;
+        this.c = c;
     }
 
     public int getA() {
@@ -42,4 +47,11 @@ public class Person {
     public void setC(int c) {
         this.c = c;
     }
+
+    /*public N getN() {
+        return n;
+    }
+    public void setN(N n) {
+        this.n = n;
+    }*/
 }
