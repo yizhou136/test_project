@@ -13,5 +13,12 @@ public class TestPattern {
         Matcher matcher = pattern.matcher("adfdsafasdf_120x90");
         if (matcher.find())
         System.out.println(matcher.group(1));
+
+        System.out.println(isPower(4));
+    }
+
+
+    public static boolean isPower(int v){
+        return  (v & -v) == v;
     }
 }

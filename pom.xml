@@ -246,7 +246,11 @@
                 <artifactId>disruptor</artifactId>
                 <version>3.3.6</version>
             </dependency>
-
+            <dependency>
+                <groupId>com.github.pagehelper</groupId>
+                <artifactId>pagehelper</artifactId>
+                <version>5.0.0</version>
+            </dependency>
             <dependency>
                 <groupId>com.alibaba</groupId>
                 <artifactId>dubbo</artifactId>

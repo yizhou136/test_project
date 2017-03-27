@@ -5,6 +5,8 @@
 
     <resultMap id="roomMsg" type="com.zy.nut.relayer.common.beans.RoomMsg"/>
 
+    <sql id=""/>
+
     <insert id="save" parameterType="com.zy.nut.relayer.common.beans.RoomMsg" useGeneratedKeys="true" keyColumn="mid" keyProperty="mid">
         INSERT INTO ROOM_MSG (fuid,msg,ctime,lctime)
         VALUES (#{fuid},#{msg},#{ctime},#{lctime})

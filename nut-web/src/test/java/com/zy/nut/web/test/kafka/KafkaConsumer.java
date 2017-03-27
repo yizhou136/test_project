@@ -73,7 +73,6 @@ public class KafkaConsumer extends BaseKafka{
                 });
         //consumer.unsubscribe();
         try {
-
             while (true){
                 ConsumerRecords consumerRecords = consumer.poll(Long.MAX_VALUE);
                 System.out.println("after poll "+ Instant.now());

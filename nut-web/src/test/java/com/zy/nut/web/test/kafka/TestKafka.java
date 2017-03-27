@@ -29,7 +29,7 @@ public class TestKafka extends BaseKafka{
 
     public static void genMsg() throws ExecutionException, InterruptedException {
         Properties props = new Properties();
-        props.put("bootstrap.servers", GLOBAL_HOST);
+        //props.put("bootstrap.servers", GLOBAL_HOST);
         props.put("bootstrap.servers", KAFKA_HOST);
         props.put("acks", "all");
         props.put("retries", 1);
