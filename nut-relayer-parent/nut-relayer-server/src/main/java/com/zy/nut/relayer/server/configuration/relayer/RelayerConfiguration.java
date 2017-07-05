@@ -47,6 +47,7 @@ public class RelayerConfiguration {
             throwable.printStackTrace();
         }
 
+        System.setProperty("relayer.nodeName", springNettyContainer.getServer().getNodeName());
         return springNettyContainer;
     }
 

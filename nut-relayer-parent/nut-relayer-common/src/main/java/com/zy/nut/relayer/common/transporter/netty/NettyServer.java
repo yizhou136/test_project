@@ -1,9 +1,17 @@
 package com.zy.nut.relayer.common.transporter.netty;
 
+
+import com.zy.nut.common.beans.DialogMsg;
+import com.zy.nut.common.beans.NodeServer;
+import com.zy.nut.common.beans.RoomMsg;
 import com.zy.nut.relayer.common.configure.Configuration;
 import com.zy.nut.relayer.common.container.ContainerExchange;
 import com.zy.nut.relayer.common.remoting.RemotingException;
 import com.zy.nut.relayer.common.remoting.Server;
+import com.zy.nut.common.beans.exchange.RelayerEnterRoom;
+import com.zy.nut.common.beans.exchange.RelayerLeftRoom;
+import com.zy.nut.common.beans.exchange.RelayerLogin;
+import com.zy.nut.common.beans.exchange.RelayerLogout;
 import com.zy.nut.relayer.common.transporter.AbstractServer;
 import com.zy.nut.relayer.common.transporter.ChannelInitializerRegister;
 import io.netty.bootstrap.ServerBootstrap;
@@ -16,23 +24,38 @@ import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by Administrator on 2016/11/5.
  */
 public class NettyServer extends AbstractServer implements Server{
 
-    //private Map<String, Channel> channels; // <ip:port, channel>
+    private NettyClient parentNode;
+    private ConcurrentHashMap<String, NodeServer> childrenNodesMap;
+
+    private ConcurrentHashMap<Long, ConcurrentLinkedQueue<Channel>> userLoginedChannelMap;
+    private ConcurrentHashMap<Long, ConcurrentLinkedQueue<Channel>> roomEnteredChannelMap;
+    private AtomicInteger totalChannelCounter;
+
     private boolean needSSL;
     private EventLoopGroup bossGroup;
     private EventLoopGroup workerGroup;
-    private io.netty.channel.Channel channel;
+    private Channel channel;
 
 
 
     public NettyServer(Configuration configuration, ContainerExchange containerExchange, List<ChannelInitializerRegister> initializerRegisterList) throws RemotingException {
         super(configuration,containerExchange, initializerRegisterList);
+        userLoginedChannelMap = new ConcurrentHashMap<>(1000);
+        roomEnteredChannelMap = new ConcurrentHashMap<>(100);
+        childrenNodesMap = new ConcurrentHashMap<>(20);
+        totalChannelCounter = new AtomicInteger();
     }
 
     @Override
@@ -55,7 +78,7 @@ public class NettyServer extends AbstractServer implements Server{
             b.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
                     .option(ChannelOption.SO_BACKLOG, 100)
-                    .handler(new LoggingHandler(LogLevel.INFO))
+                    .handler(new LoggingHandler(LogLevel.DEBUG))
                     //.childHandler(new ProtocolDetectHandler(initializerRegisterList));
                     .childHandler(new RelayerServerInitializer(initializerRegisterList));
 
@@ -81,6 +104,90 @@ public class NettyServer extends AbstractServer implements Server{
         if (workerGroup != null){
             workerGroup.shutdownGracefully();
         }
+    }
+
+    @Override
+    public void heartbeat() {
+    }
+
+    @Override
+    public void userLogin(RelayerLogin relayerLogin) {
+        Long uid = relayerLogin.getUid();
+        userLoginedChannelMap.compute(uid, (key, val)->{
+            if (val == null){
+                val = new ConcurrentLinkedQueue<Channel>();
+            }
+
+            val.add(relayerLogin.getChannel());
+            return val;
+        });
+    }
+
+    @Override
+    public void userLogout(RelayerLogout relayerLogout) {
+        Long uid = relayerLogout.getUid();
+        userLoginedChannelMap.compute(uid, (key, val)->{
+            if (val == null){
+                logger.warn("userLogout but the user channel is empty");
+            }else
+                val.remove(relayerLogout.getChannel());
+
+            return val;
+        });
+    }
+
+    @Override
+    public void enterRoom(RelayerEnterRoom relayerEnterRoom) {
+        Long rid = relayerEnterRoom.getRid();
+        roomEnteredChannelMap.compute(rid, (key, val)->{
+            if (val == null){
+                val = new ConcurrentLinkedQueue<Channel>();
+            }
+
+            val.add(relayerEnterRoom.getChannel());
+            return val;
+        });
+    }
+
+    @Override
+    public void leftRoom(RelayerLeftRoom relayerLeftRoom) {
+        Long rid = relayerLeftRoom.getRid();
+        roomEnteredChannelMap.compute(rid, (key, val)->{
+            if (val == null){
+                logger.warn("leftRoom but the room of user channel is empty");
+            }else
+                val.remove(relayerLeftRoom.getChannel());
+
+            return val;
+        });
+
+    }
+
+    @Override
+    public void sendTo(DialogMsg dialogMsg) {
+        Long fuid = dialogMsg.getFuid();
+        Long tuid = dialogMsg.getTuid();
+        Queue<Channel> queue = userLoginedChannelMap.get(tuid);
+        if (queue != null)
+            for (Channel channel : queue){
+                channel.writeAndFlush(dialogMsg);
+            }
+
+        logger.info("sentTo fuid:{} tuid:{}",
+                fuid, tuid);
+    }
+
+    @Override
+    public void publish(RoomMsg roomMsg) {
+        Long rid = roomMsg.getRid();
+        Queue<Channel> queue = roomEnteredChannelMap.get(rid);
+        if (queue != null)
+            for (Channel channel : queue){
+                channel.writeAndFlush(roomMsg);
+            }
+
+        logger.info("publish rid:{} roomMsg:{}",
+                rid, roomMsg);
     }
 
     /*public Collection<Channel> getChannels() {

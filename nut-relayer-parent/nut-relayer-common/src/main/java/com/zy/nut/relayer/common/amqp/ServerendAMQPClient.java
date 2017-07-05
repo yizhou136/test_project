@@ -5,7 +5,7 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.QueueingConsumer;
 import com.zy.nut.relayer.common.configure.Configuration;
 import com.zy.nut.relayer.common.container.ContainerExchange;
-import com.zy.nut.relayer.common.remoting.exchange.TransformData;
+import com.zy.nut.common.beans.exchange.TransformData;
 import com.zy.nut.relayer.common.utils.StringUtils;
 
 import java.io.IOException;

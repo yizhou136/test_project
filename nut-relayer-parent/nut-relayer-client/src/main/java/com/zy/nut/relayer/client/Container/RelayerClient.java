@@ -1,20 +1,18 @@
 package com.zy.nut.relayer.client.Container;
 
-import com.zy.nut.relayer.common.beans.DialogMsg;
+import com.zy.nut.common.beans.DialogMsg;
 import com.zy.nut.relayer.common.logger.Logger;
 import com.zy.nut.relayer.common.logger.LoggerFactory;
 import com.zy.nut.relayer.common.remoting.buffer.ChannelBuffer;
 import com.zy.nut.relayer.common.remoting.buffer.ChannelBuffers;
-import com.zy.nut.relayer.common.remoting.exchange.RelayerLogin;
-import com.zy.nut.relayer.common.remoting.exchange.RelayerRegisteringUnRegistering;
-import com.zy.nut.relayer.common.remoting.exchange.TransformData;
+import com.zy.nut.common.beans.exchange.RelayerLogin;
+import com.zy.nut.common.beans.exchange.TransformData;
 import com.zy.nut.relayer.common.remoting.exchange.header.RelayerCodec;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 /**
  * Created by zhougb on 2016/11/9.

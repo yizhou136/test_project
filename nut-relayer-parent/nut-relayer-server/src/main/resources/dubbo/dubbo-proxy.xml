@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	    http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd
+	    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+	    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+        <dubbo:application name="nut"/>
+        <dubbo:registry group="for_test" address="${spring.redis.host}" port="6379" protocol="redis"/>
+        <dubbo:protocol name="dubbo" id="dubboProtocol" transporter="netty4" port="8585"/>
+        <dubbo:reference interface="com.zy.nut.common.msp.MsBackService" id="msBackService"
+                         check="false" group="*">
+        </dubbo:reference>
+
+        <dubbo:service interface="com.zy.nut.common.msp.MsProxyService" ref="mspServiceImpl"
+                       protocol="dubboProtocol" timeout="3000">
+            <dubbo:parameter key="match" value="c1_bj_0.0.0.0:8383"/>
+        </dubbo:service>
+
+        <!--
+        <dubbo:reference interface="com.zy.nut.common.service.UserService" id="userService"/>
+        <dubbo:protocol name="http" id="httpProtocol" port="8181" />
+        -->
+        <!--
+        <dubbo:protocol name="thrift" port="9111"/>
+        <dubbo:service interface="com.alibaba.dubbo.demo.thrift.HelloWorldService$Iface"  protocol="thrift"/>
+        -->
+</beans>

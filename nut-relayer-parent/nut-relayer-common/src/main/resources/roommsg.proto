@@ -1,0 +1,15 @@
+package com.zy.nut.relayer.common.beans.pb;
+option java_package = "com.zy.nut.relayer.common.beans.pb";
+option java_outer_classname = "RoomMsg";
+
+import "basemsg.proto";
+
+message RoomMsg {
+    extend BaseMsg {
+        optional RoomMsg roomMsgFuid = 101;
+        optional RoomMsg roomMsgRuid = 102;
+    };
+
+    required fixed64 fuid = 100;
+    required fixed64 rid = 101;
+}

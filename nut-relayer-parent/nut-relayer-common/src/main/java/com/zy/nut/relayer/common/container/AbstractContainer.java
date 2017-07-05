@@ -5,9 +5,7 @@ import com.zy.nut.relayer.common.configure.ConfigurationLoader;
 import com.zy.nut.relayer.common.remoting.Codec;
 import com.zy.nut.relayer.common.remoting.buffer.ChannelBuffer;
 import com.zy.nut.relayer.common.remoting.buffer.ChannelBuffers;
-import com.zy.nut.relayer.common.remoting.exchange.TransformData;
 import com.zy.nut.relayer.common.remoting.exchange.header.RelayerCodec;
-import com.zy.nut.relayer.common.remoting.exchange.support.ExchangeHandlerAdapter;
 
 import java.net.URL;
 
@@ -17,7 +15,7 @@ import java.net.URL;
 public abstract class AbstractContainer extends ContainerExchangeAdapter implements Container{
     private Configuration configuration;
     private URL propertiesUrl;
-    private String serverName;
+
     private Codec codec;
     private ChannelBuffer decodedChannelBuffer;
 
@@ -33,11 +31,7 @@ public abstract class AbstractContainer extends ContainerExchangeAdapter impleme
 
     public void configure() {
         configuration = ConfigurationLoader.load(propertiesUrl);
-        if (configuration != null) {
-            serverName = String.format("%s_%s",
-                    configuration.getServerCluster().getName(),
-                    configuration.getServerAddress());
-        }
+
     }
 
     public void start() {}
@@ -69,14 +63,6 @@ public abstract class AbstractContainer extends ContainerExchangeAdapter impleme
 
     public void setDecodedChannelBuffer(ChannelBuffer decodedChannelBuffer) {
         this.decodedChannelBuffer = decodedChannelBuffer;
-    }
-
-    public String getServerName() {
-        return serverName;
-    }
-
-    public void setServerName(String serverName) {
-        this.serverName = serverName;
     }
 
     public URL getPropertiesUrl() {

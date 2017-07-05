@@ -1,7 +1,6 @@
 package com.zy.nut.relayer.common.container;
 
-import com.zy.nut.relayer.common.remoting.RemotingException;
-import com.zy.nut.relayer.common.remoting.exchange.TransformData;
+import com.zy.nut.common.beans.exchange.TransformData;
 
 /**
  * Created by zhougb on 2016/11/11.

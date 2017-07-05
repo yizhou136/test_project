@@ -41,7 +41,7 @@ public class Log4jLoggerAdapter implements LoggerAdapter {
                         Appender appender = appenders.nextElement();
                         if (appender instanceof FileAppender) {
                             FileAppender fileAppender = (FileAppender)appender;
-                            String filename = fileAppender.getFile();
+                            String filename = fileAppender.toString();
                             file = new File(filename);
                             break;
                         }

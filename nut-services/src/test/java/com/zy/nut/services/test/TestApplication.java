@@ -2,7 +2,7 @@ package com.zy.nut.services.test;
 
 import com.zy.nut.common.beans.User;
 import com.zy.nut.common.service.UserService;
-import com.zy.nut.services.BootNutServices;
+import com.zy.nut.services.ShowApplication;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -13,9 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.util.AssertionErrors;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Random;
 
@@ -23,7 +21,7 @@ import java.util.Random;
  * Created by Administrator on 2016/10/30.
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = BootNutServices.class)
+@SpringBootTest(classes = ShowApplication.class)
 public class TestApplication{
     private Logger logger = LoggerFactory.getLogger(TestApplication.class);
 

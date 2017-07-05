@@ -1,7 +1,7 @@
 package com.zy.nut.relayer.server.service;
 
-import com.zy.nut.relayer.common.beans.DialogMsg;
-import com.zy.nut.relayer.common.beans.RoomMsg;
+import com.zy.nut.common.beans.DialogMsg;
+import com.zy.nut.common.beans.RoomMsg;
 
 /**
  * Created by Administrator on 2016/11/28.

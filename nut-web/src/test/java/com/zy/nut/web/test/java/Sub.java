@@ -5,6 +5,8 @@ package com.zy.nut.web.test.java;
  */
 public class Sub extends My{
 
+    public void test(){}
+
     public static void main(String argv[]){
         Sub sub = new Sub();
         sub.f("sub");

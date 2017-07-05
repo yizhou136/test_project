@@ -1,7 +1,7 @@
 package com.zy.nut.relayer.common.remoting.exchange;
 
+import com.zy.nut.common.beans.exchange.TransformData;
 import com.zy.nut.relayer.common.remoting.Channel;
-import com.zy.nut.relayer.common.transporter.netty.NettyChannel;
 import com.zy.nut.relayer.common.utils.StringUtils;
 
 import java.util.LinkedList;

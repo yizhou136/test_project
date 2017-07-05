@@ -24,4 +24,7 @@ public class My implements InterfaceI, InterfaceJ{
     public boolean t(Object o) {
         return false;
     }
+
+
+    protected void test(){}
 }

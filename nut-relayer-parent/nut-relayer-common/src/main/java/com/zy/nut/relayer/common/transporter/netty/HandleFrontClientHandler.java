@@ -1,9 +1,9 @@
 package com.zy.nut.relayer.common.transporter.netty;
 
+import com.zy.nut.common.beans.exchange.*;
 import com.zy.nut.relayer.common.logger.Logger;
 import com.zy.nut.relayer.common.logger.LoggerFactory;
 import com.zy.nut.relayer.common.remoting.Server;
-import com.zy.nut.relayer.common.remoting.exchange.*;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 

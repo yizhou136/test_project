@@ -1,11 +1,10 @@
 package com.zy.nut.relayer.common.remoting.exchange.header;
 
-import com.zy.nut.relayer.common.beans.DialogMsg;
-import com.zy.nut.relayer.common.beans.Room;
-import com.zy.nut.relayer.common.beans.RoomMsg;
+import com.zy.nut.common.beans.DialogMsg;
+import com.zy.nut.common.beans.RoomMsg;
+import com.zy.nut.common.beans.exchange.*;
 import com.zy.nut.relayer.common.remoting.Channel;
 import com.zy.nut.relayer.common.remoting.Codec;
-import com.zy.nut.relayer.common.remoting.exchange.*;
 import com.zy.nut.relayer.common.serialize.ObjectInput;
 import com.zy.nut.relayer.common.serialize.ObjectOutput;
 

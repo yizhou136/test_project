@@ -23,7 +23,7 @@ public class RelayerServerInitializer extends ChannelInitializer<SocketChannel> 
     @Override
     protected void initChannel(SocketChannel channel) throws Exception {
         ChannelPipeline pipeline = channel.pipeline();
-        pipeline.addLast(new LoggingHandler(LogLevel.INFO));
+        pipeline.addLast(new LoggingHandler(LogLevel.DEBUG));
         pipeline.addLast(new ProtocolDetectHandler(initializerRegisterList));
         //pipeline.addLast("idleStateHandler", new IdleStateHandler(20, 10, 0));
         //pipeline.addLast("relayerEventHandler", new RelayerEventHandler());

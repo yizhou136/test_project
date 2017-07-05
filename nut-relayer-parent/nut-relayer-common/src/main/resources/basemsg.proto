@@ -1,0 +1,11 @@
+package com.zy.nut.relayer.common.beans.pb;
+option java_package = "com.zy.nut.relayer.common.beans.pb";
+option java_outer_classname = "BaseMsg";
+message BaseMsg {
+    required fixed64 mid = 1;
+    required string msg = 2;
+    required fixed64 ctime = 3;
+    required fixed64 lctime = 4;
+
+    extensions 100 to 200;
+}

@@ -4,7 +4,7 @@ import com.zy.nut.relayer.common.configure.Configuration;
 import com.zy.nut.relayer.common.configure.ConfigurationLoader;
 import com.zy.nut.relayer.common.logger.Logger;
 import com.zy.nut.relayer.common.logger.LoggerFactory;
-import com.zy.nut.relayer.common.remoting.exchange.TransformData;
+import com.zy.nut.common.beans.exchange.TransformData;
 import com.zy.nut.relayer.common.transporter.netty.NettyClient;
 
 /**

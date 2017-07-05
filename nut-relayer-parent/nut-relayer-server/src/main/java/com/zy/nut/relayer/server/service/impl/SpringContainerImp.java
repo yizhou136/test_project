@@ -5,6 +5,7 @@ import com.zy.nut.relayer.common.configure.Configuration;
 import com.zy.nut.relayer.common.container.AbstractContainer;
 import com.zy.nut.relayer.common.container.ConnectToLeadingClientContainer;
 import com.zy.nut.relayer.common.remoting.RemotingException;
+import com.zy.nut.relayer.common.remoting.Server;
 import com.zy.nut.relayer.common.remoting.exchange.*;
 import com.zy.nut.relayer.common.transporter.ChannelInitializerRegister;
 import com.zy.nut.relayer.common.transporter.netty.NettyServer;
@@ -55,8 +56,9 @@ public class SpringContainerImp extends AbstractContainer implements SpringNetty
         }*/
     }
 
+
     @Override
-    public String getNettyName() {
-        return getServerName();
+    public Server getServer() {
+        return server;
     }
 }

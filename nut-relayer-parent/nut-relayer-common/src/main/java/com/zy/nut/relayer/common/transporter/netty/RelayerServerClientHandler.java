@@ -3,8 +3,7 @@ package com.zy.nut.relayer.common.transporter.netty;
 import com.zy.nut.relayer.common.logger.Logger;
 import com.zy.nut.relayer.common.logger.LoggerFactory;
 import com.zy.nut.relayer.common.remoting.Server;
-import com.zy.nut.relayer.common.remoting.exchange.RelayerRegisteringUnRegistering;
-import com.zy.nut.relayer.common.remoting.exchange.TransformData;
+import com.zy.nut.common.beans.exchange.TransformData;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 

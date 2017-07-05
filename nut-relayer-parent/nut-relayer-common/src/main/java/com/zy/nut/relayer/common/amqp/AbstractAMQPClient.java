@@ -7,8 +7,7 @@ import com.zy.nut.relayer.common.configure.Configuration;
 import com.zy.nut.relayer.common.container.ContainerExchange;
 import com.zy.nut.relayer.common.logger.Logger;
 import com.zy.nut.relayer.common.logger.LoggerFactory;
-import com.zy.nut.relayer.common.remoting.exchange.TransformData;
-import com.zy.nut.relayer.common.remoting.exchange.header.RelayerCodec;
+import com.zy.nut.common.beans.exchange.TransformData;
 import com.zy.nut.relayer.common.remoting.exchange.header.RelayerCodecSupport;
 
 import java.io.IOException;

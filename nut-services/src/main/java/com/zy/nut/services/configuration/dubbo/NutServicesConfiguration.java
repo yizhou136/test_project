@@ -7,7 +7,7 @@ import org.springframework.context.annotation.ImportResource;
  * Created by zhougb on 2016/11/3.
  */
 @Configuration
-@ImportResource(locations ="classpath:dubbo/dubbo-nut-services.xml")
+@ImportResource(locations ="classpath:dubbo/dubbo-show-services.xml")
 public class NutServicesConfiguration {
 
     static {

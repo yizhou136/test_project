@@ -1,12 +1,12 @@
 package com.zy.nut.relayer.server.service;
 
-import com.zy.nut.relayer.common.beans.DialogMsg;
-import com.zy.nut.relayer.common.beans.RoomMsg;
+import com.zy.nut.common.beans.DialogMsg;
+import com.zy.nut.common.beans.RoomMsg;
 import com.zy.nut.relayer.common.remoting.RemotingException;
-import com.zy.nut.relayer.common.remoting.exchange.RelayerEnterRoom;
-import com.zy.nut.relayer.common.remoting.exchange.RelayerLeftRoom;
-import com.zy.nut.relayer.common.remoting.exchange.RelayerLogin;
-import com.zy.nut.relayer.common.remoting.exchange.RelayerLogout;
+import com.zy.nut.common.beans.exchange.RelayerEnterRoom;
+import com.zy.nut.common.beans.exchange.RelayerLeftRoom;
+import com.zy.nut.common.beans.exchange.RelayerLogin;
+import com.zy.nut.common.beans.exchange.RelayerLogout;
 
 /**
  * Created by Administrator on 2016/11/28.

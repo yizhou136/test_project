@@ -19,23 +19,21 @@ package com.zy.nut.relayer.common.transporter;
 import com.zy.nut.relayer.common.Constants;
 import com.zy.nut.relayer.common.configure.Configuration;
 import com.zy.nut.relayer.common.container.ContainerExchange;
-import com.zy.nut.relayer.common.logger.Logger;
-import com.zy.nut.relayer.common.logger.LoggerFactory;
 import com.zy.nut.relayer.common.remoting.*;
-import com.zy.nut.relayer.common.remoting.exchange.DownStreamClient;
 import com.zy.nut.relayer.common.remoting.exchange.DownStreamMap;
-import com.zy.nut.relayer.common.remoting.exchange.RelayerRegisteringUnRegistering;
-import com.zy.nut.relayer.common.remoting.exchange.TransformData;
+import com.zy.nut.common.beans.exchange.RelayerRegisteringUnRegistering;
+import com.zy.nut.common.beans.exchange.TransformData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.BitSet;
 import java.util.List;
-import java.util.Map;
 
 public abstract class AbstractServer extends AbstractEndPoint implements Server {
-    private static final Logger logger = LoggerFactory.getLogger(AbstractServer.class);
+    protected static final Logger logger = LoggerFactory.getLogger(AbstractServer.class);
 
     private int     accepts;
     private int     idleTimeout = 600; //600 seconds
+    private String serverName;
     private DownStreamMap serverDownStreamMap;
     private DownStreamMap normalDownStreamMap;
     private ContainerExchange containerExchange;
@@ -50,6 +48,11 @@ public abstract class AbstractServer extends AbstractEndPoint implements Server 
             serverDownStreamMap = new DownStreamMap(true);
         normalDownStreamMap = new DownStreamMap(false);
         this.initializerRegisterList = initializerRegisterList;
+        if (configuration != null) {
+            serverName = String.format("%s_%s",
+                    configuration.getServerCluster().getName(),
+                    configuration.getServerAddress());
+        }
         try {
             doOpen();
             if (logger.isInfoEnabled()) {
@@ -119,6 +122,10 @@ public abstract class AbstractServer extends AbstractEndPoint implements Server 
         super.disconnected(ch);
     }*/
 
+    @Override
+    public String getNodeName() {
+       return serverName;
+    }
 
     public void handleRegUnreg(Channel channel,
                                RelayerRegisteringUnRegistering relayerRegisteringUnRegistering) {
