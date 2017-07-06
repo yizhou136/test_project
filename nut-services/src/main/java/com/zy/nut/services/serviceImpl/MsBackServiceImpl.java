@@ -83,12 +83,15 @@ public class MsBackServiceImpl implements MsBackService{
 
     @Override
     public Response notify(Object object) {
-        logger.info("notify object:{}", object);
+        logger.info("notify start object:{}", object);
+        long start = System.currentTimeMillis();
         if (object instanceof DialogMsg){
            return msProxyService.sendTo((DialogMsg) object);
         }else if (object instanceof RoomMsg){
            return msProxyService.publish((RoomMsg) object);
         }
+        long now = System.currentTimeMillis();
+        logger.info("notify escape:{}ms", (now-start));
 
         return new Response((byte) 0,"OK");
     }

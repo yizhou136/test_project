@@ -33,10 +33,17 @@ public class MsProxyClient {
     private int port;
     private Channel channel;
     private EventLoopGroup group;
+    private Long uid;
 
     public MsProxyClient(String host, int port){
+        this(host, port, null,null);
+    }
+
+    public MsProxyClient(String host, int port, Long uid, EventLoopGroup group){
         this.host = host;
         this.port = port;
+        this.uid = uid;
+        this.group = group;
 
         try {
             init();
@@ -57,7 +64,8 @@ public class MsProxyClient {
         }
 
         // Configure the client.
-        group = new NioEventLoopGroup();
+        if (group == null)
+            group = new NioEventLoopGroup();
         try {
             Bootstrap b = new Bootstrap();
             b.group(group)
@@ -92,18 +100,33 @@ public class MsProxyClient {
         }
     }
 
+    public Long getUid() {
+        return uid;
+    }
+
+    public void setUid(Long uid) {
+        this.uid = uid;
+    }
+
     private Channel getChannel(){
         return channel;
+    }
+
+    public void login(){
+        login(uid);
     }
 
     public void login(long uid){
         RelayerLogin relayerLogin = new RelayerLogin();
         relayerLogin.setUid(uid);
         relayerLogin.setPid((byte)0);
-        relayerLogin.setUserName("zgb");
+        relayerLogin.setUserName("zgb"+uid);
         relayerLogin.setPassword("123456");
-
         getChannel().writeAndFlush(relayerLogin);
+    }
+
+    public void sendDialogMsg(long tuid){
+        sendDialogMsg(uid, tuid);
     }
 
     public void sendDialogMsg(long fuid, long tuid){
@@ -115,7 +138,7 @@ public class MsProxyClient {
         dialogMsg.setLctime(lctime);
 
         getChannel().writeAndFlush(dialogMsg);
-        //logger.info("sendDialogMsg dialogMsg:"+dialogMsg+" uid:"+uid);
+
     }
 
     public void doTransform(){

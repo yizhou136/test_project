@@ -44,7 +44,11 @@ public class ShowMsProxyServiceImpl implements MsProxyService{
                 routeKey, nodeNames, dialogMsg);
         for (String nodeName : nodeNames) {
             RpcContext.getContext().setAttachment("match", nodeName);
-            msProxyService.sendTo(dialogMsg);
+            Response response = msProxyService.sendTo(dialogMsg);
+            if (response == null){
+                logger.info("sendTo the node:{} have expired and rem", nodeName);
+                redisTemplate.opsForSet().remove(routeKey, nodeName);
+            }
         }
         return Response.SUCCESSED_RES;
     }

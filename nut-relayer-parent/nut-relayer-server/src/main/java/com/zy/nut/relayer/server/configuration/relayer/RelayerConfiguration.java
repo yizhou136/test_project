@@ -13,6 +13,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.OrderComparator;
+import org.springframework.core.annotation.Order;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +23,7 @@ import java.util.List;
  * Created by Administrator on 2016/12/4.
  */
 @Configuration
-//@AutoConfigureAfter(RelayerHandlerInitializer.class)
+@Order(0)
 @EnableConfigurationProperties(RelayerProperties.class)
 
 public class RelayerConfiguration {
@@ -47,7 +49,7 @@ public class RelayerConfiguration {
             throwable.printStackTrace();
         }
 
-        System.setProperty("relayer.nodeName", springNettyContainer.getServer().getNodeName());
+
         return springNettyContainer;
     }
 

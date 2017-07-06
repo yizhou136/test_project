@@ -85,6 +85,12 @@ public class Configuration {
         this.leadingServerAddress = leadingServerAddress;
     }
 
+    public String generateNodeName(){
+        return String.format("%s_%s",
+                getServerCluster().getName(),
+                getServerAddress());
+    }
+
     public boolean isServerClient() {
         return !StringUtils.isEmpty(scConnectedAddress);
     }

@@ -1,6 +1,9 @@
 package com.zy.nut.relayer.server;
 
+import com.zy.nut.relayer.common.configure.Configuration;
+import com.zy.nut.relayer.common.configure.ConfigurationLoader;
 import com.zy.nut.relayer.common.container.RelayerServerContainer;
+import com.zy.nut.relayer.server.configuration.relayer.RelayerProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -19,6 +22,11 @@ public class OnlineMsgProxyApplication {
     private static  final Logger logger = LoggerFactory.getLogger(OnlineMsgProxyApplication.class);
 
     public static void main(String args[]){
+        RelayerProperties relayerProperties = new RelayerProperties();
+        relayerProperties.setConfigure("classpath:relayer.properties");
+        Configuration configuration = ConfigurationLoader.load(relayerProperties.getConfigureUrl());
+        //System.setProperty("",configuration.generateNodeName());
+        System.setProperty("relayer.nodeName", configuration.generateNodeName());
         new SpringApplicationBuilder(OnlineMsgProxyApplication.class).web(false).run();
     }
 
