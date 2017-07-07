@@ -21,7 +21,7 @@ public class BootRelayerClient {
     };
     private static NioEventLoopGroup nioEventLoopGroup;
     private static List<MsProxyClient> msProxyClientList;
-    private static int size = 2;
+    private static int size = 500;
 
     public static void setUp(){
         nioEventLoopGroup = new NioEventLoopGroup(size);
@@ -58,8 +58,9 @@ public class BootRelayerClient {
     public static void main(String argv[]) throws InterruptedException {
         setUp();
         login();
-        Thread.sleep(30000);
+        sendMsg(3);
+        //Thread.sleep(30000);
         //sendMsg(3);
-        msProxyClientList.get(0).sendDialogMsg(1);
+        //msProxyClientList.get(0).sendDialogMsg(1);
     }
 }

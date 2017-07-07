@@ -62,12 +62,13 @@
 
         <!-- https://mvnrepository.com/artifact/org.apache.hadoop/zookeeper -->
 
+        <!--
         <dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>zookeeper</artifactId>
             <version>3.3.1</version>
         </dependency>
-
+        -->
 
         <!-- https://mvnrepository.com/artifact/com.alibaba/dubbo -->
         <dependency>
