@@ -1,5 +1,6 @@
 package com.zy.nut.relayer.server;
 
+import com.alibaba.dubbo.common.Constants;
 import com.zy.nut.relayer.common.configure.Configuration;
 import com.zy.nut.relayer.common.configure.ConfigurationLoader;
 import com.zy.nut.relayer.common.container.RelayerServerContainer;
@@ -22,6 +23,14 @@ public class OnlineMsgProxyApplication {
     private static  final Logger logger = LoggerFactory.getLogger(OnlineMsgProxyApplication.class);
 
     public static void main(String args[]){
+        String path = System.getProperty(Constants.DUBBO_PROPERTIES_KEY);
+        if (path == null || path.length() == 0) {
+            path = System.getenv(Constants.DUBBO_PROPERTIES_KEY);
+            if (path == null || path.length() == 0) {
+                path = Constants.DEFAULT_DUBBO_PROPERTIES;
+            }
+        }
+
         RelayerProperties relayerProperties = new RelayerProperties();
         relayerProperties.setConfigure("classpath:relayer.properties");
         Configuration configuration = ConfigurationLoader.load(relayerProperties.getConfigureUrl());

@@ -238,9 +238,13 @@
             <dependency>
                 <groupId>com.alibaba</groupId>
                 <artifactId>dubbo</artifactId>
-                <version>2.5.4</version>
+                <version>nut-2.5.4</version>
+                <!--
+                mvn install:install-file -Dfile=E:\workspace\web\test_project\nut-libs\dubbo-2.5.4-SNAPSHOT.jar  -DgroupId=com.alibaba  -DartifactId=dubbo -Dversion=2.5.4 -Dpackaging=jar -DgeneratePom=true
+                mvn install:install-file -Dfile=/work/test_project/nut-libs/dubbo-2.5.4-SNAPSHOT.jar  -DgroupId=com.alibaba  -DartifactId=dubbo -Dversion=2.5.4 -Dpackaging=jar -DgeneratePom=true
                 <scope>system</scope>
                 <systemPath>${project.basedir}/../nut-libs/dubbo-2.5.4-SNAPSHOT.jar</systemPath>
+                -->
             </dependency>
 
             <!-- https://mvnrepository.com/artifact/junit/junit -->

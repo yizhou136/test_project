@@ -35,21 +35,11 @@ public class RelayerConfiguration {
     public SpringNettyContainer springContainer(ApplicationContext applicationContext){
         SpringNettyContainer springNettyContainer = null;
         try {
-            List<ChannelInitializerRegister> initializerRegisterList = new ArrayList<>();
-            String[] beanNames = applicationContext.getBeanNamesForType(ChannelInitializerRegister.class);
-            logger.info("initializerRegisterList beanNames:{}", beanNames);
-            for (String beanName : beanNames) {
-                initializerRegisterList.add((ChannelInitializerRegister)
-                        applicationContext.getBean(beanName));
-            }
-
             springNettyContainer = new SpringContainerImp(
-                    relayerProperties.getConfigureUrl(),initializerRegisterList);
+                    relayerProperties.getConfigureUrl());
         } catch (Throwable throwable) {
             throwable.printStackTrace();
         }
-
-
         return springNettyContainer;
     }
 

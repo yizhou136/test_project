@@ -12,6 +12,10 @@ import com.zy.nut.relayer.common.transporter.netty.NettyServer;
 import com.zy.nut.relayer.server.service.SpringNettyContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -20,7 +24,7 @@ import java.util.List;
 /**
  * Created by Administrator on 2016/12/4.
  */
-public class SpringContainerImp extends AbstractContainer implements SpringNettyContainer{
+public class SpringContainerImp extends AbstractContainer implements SpringNettyContainer, InitializingBean, ApplicationContextAware{
     private static final Logger logger = LoggerFactory.getLogger(SpringContainerImp.class);
 
     private NettyServer server;
@@ -29,10 +33,10 @@ public class SpringContainerImp extends AbstractContainer implements SpringNetty
 
     private List<ChannelInitializerRegister> initializerRegisterList;
 
-    public SpringContainerImp(URL url, List<ChannelInitializerRegister> initializerRegisterList)throws Throwable{
+    private ApplicationContext applicationContext;
+
+    public SpringContainerImp(URL url)throws Throwable{
         super(url);
-        this.initializerRegisterList = initializerRegisterList;
-        init();
     }
 
     @Override
@@ -60,5 +64,29 @@ public class SpringContainerImp extends AbstractContainer implements SpringNetty
     @Override
     public Server getServer() {
         return server;
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        logger.info("afterPropertiesSet");
+        List<ChannelInitializerRegister> initializerRegisterList = new ArrayList<>();
+        String[] beanNames = applicationContext.getBeanNamesForType(ChannelInitializerRegister.class);
+        logger.info("initializerRegisterList beanNames:{}", beanNames);
+        for (String beanName : beanNames) {
+            initializerRegisterList.add((ChannelInitializerRegister)
+                    applicationContext.getBean(beanName));
+        }
+
+        this.initializerRegisterList = initializerRegisterList;
+        try {
+            init();
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
 }
