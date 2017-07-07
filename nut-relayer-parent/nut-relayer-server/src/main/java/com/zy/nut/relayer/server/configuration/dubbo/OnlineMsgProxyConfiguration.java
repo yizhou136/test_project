@@ -21,7 +21,7 @@ public class OnlineMsgProxyConfiguration {
             LoggerFactory.getLogger(OnlineMsgProxyConfiguration.class);
 
     static {
-        System.setProperty("dubbo.properties.file", "classpath:dubbo/dubbo.properties");
+        //System.setProperty("dubbo.properties.file", "classpath:dubbo/dubbo.properties");
     }
 
     @Bean
