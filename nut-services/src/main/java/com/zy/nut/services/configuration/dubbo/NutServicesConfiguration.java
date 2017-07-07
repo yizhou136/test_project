@@ -11,6 +11,6 @@ import org.springframework.context.annotation.ImportResource;
 public class NutServicesConfiguration {
 
     static {
-        System.setProperty("dubbo.properties.file", "classpath:dubbo/dubbo.properties");
+        //System.setProperty("dubbo.properties.file", "classpath:dubbo/dubbo.properties");
     }
 }
