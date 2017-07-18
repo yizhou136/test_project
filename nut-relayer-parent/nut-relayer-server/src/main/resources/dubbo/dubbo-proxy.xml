@@ -12,7 +12,7 @@
         <dubbo:registry group="for_test" address="${spring.redis.host}" port="6379" protocol="redis"/>
         <dubbo:protocol name="dubbo" id="dubboProtocol" transporter="netty4" port="8686"/>
         <dubbo:reference interface="com.zy.nut.common.msp.MsBackService" id="msBackService"
-                         check="false" group="*">
+                         check="false" group="*" async="true">
         </dubbo:reference>
 
         <dubbo:service interface="com.zy.nut.common.msp.MsProxyService" ref="mspServiceImpl"

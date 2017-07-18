@@ -29,6 +29,7 @@ public class MspServiceImpl implements MsProxyService {
 
     @Override
     public Response sendTo(DialogMsg dialogMsg) {
+        dialogMsg.setProxyReceiveBackMs(System.currentTimeMillis());
         getServer().sendTo(dialogMsg);
         return Response.SUCCESSED_RES;
     }

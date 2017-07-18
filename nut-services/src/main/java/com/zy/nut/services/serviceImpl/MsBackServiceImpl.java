@@ -86,7 +86,9 @@ public class MsBackServiceImpl implements MsBackService{
         logger.info("notify start object:{}", object);
         long start = System.currentTimeMillis();
         if (object instanceof DialogMsg){
-           return msProxyService.sendTo((DialogMsg) object);
+            DialogMsg dialogMsg = (DialogMsg) object;
+            dialogMsg.setBackReceiveMs(System.currentTimeMillis());
+            return msProxyService.sendTo(dialogMsg);
         }else if (object instanceof RoomMsg){
            return msProxyService.publish((RoomMsg) object);
         }

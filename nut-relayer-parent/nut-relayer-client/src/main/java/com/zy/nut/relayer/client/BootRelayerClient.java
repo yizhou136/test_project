@@ -17,11 +17,13 @@ public class BootRelayerClient {
     private static final Logger logger = LoggerFactory.getLogger(BootRelayerClient.class);
     private static String[][] hostIpes = new String[][]{
             //new String[]{"0.0.0.0","8383"},
-            new String[]{"0.0.0.0","8484"}
+            //new String[]{"192.168.1.106","8484",
+            new String[]{"0.0.0.0","8484"
+            }
     };
     private static NioEventLoopGroup nioEventLoopGroup;
     private static List<MsProxyClient> msProxyClientList;
-    private static int size = 500;
+    private static int size = 2;
 
     public static void setUp(){
         nioEventLoopGroup = new NioEventLoopGroup(size);
@@ -58,9 +60,13 @@ public class BootRelayerClient {
     public static void main(String argv[]) throws InterruptedException {
         setUp();
         login();
-        sendMsg(3);
+        //sendMsg(3);
         //Thread.sleep(30000);
         //sendMsg(3);
-        //msProxyClientList.get(0).sendDialogMsg(1);
+        for (int i=0; i < 10; i++) {
+            Thread.sleep(300);
+            msProxyClientList.get(0).sendDialogMsg(1);
+            System.out.println("send i"+i);
+        }
     }
 }

@@ -73,6 +73,15 @@ public class RelayerCodec extends HeaderExchangeCodec implements Codec{
             out.writeLong(dialogMsg.getTuid());
             out.writeLong(dialogMsg.getLctime());
             out.writeLong(dialogMsg.getCtime());
+
+            out.writeLong(dialogMsg.getProxyReceiveMs());
+            out.writeLong(dialogMsg.getStartDecodeMs());
+            out.writeLong(dialogMsg.getEndDecodeMs());
+            out.writeLong(dialogMsg.getProxySendMs());
+            out.writeLong(dialogMsg.getBackReceiveMs());
+            out.writeLong(dialogMsg.getBackSendMs());
+            out.writeLong(dialogMsg.getProxyReceiveBackMs());
+
             out.writeUTF(dialogMsg.getMsg());
         }else if (message instanceof RoomMsg) {
             type = ROOM_MSG_FLAG_TYPE;
@@ -88,6 +97,7 @@ public class RelayerCodec extends HeaderExchangeCodec implements Codec{
 
     @Override
     protected Object decodeTransfredData(Channel channel, ObjectInput in, byte type) throws IOException {
+        long start = System.currentTimeMillis();
         Object obj = null;
         if (type == LOGIN_FLAG_TYPE){
             RelayerLogin relayerLogin = new RelayerLogin();
@@ -139,6 +149,15 @@ public class RelayerCodec extends HeaderExchangeCodec implements Codec{
             dialogMsg.setTuid(in.readLong());
             dialogMsg.setLctime(in.readLong());
             dialogMsg.setCtime(in.readLong());
+
+            dialogMsg.setProxyReceiveMs(in.readLong());
+            dialogMsg.setStartDecodeMs(in.readLong());
+            dialogMsg.setEndDecodeMs(in.readLong());
+            dialogMsg.setProxySendMs(in.readLong());
+            dialogMsg.setBackReceiveMs(in.readLong());
+            dialogMsg.setBackSendMs(in.readLong());
+            dialogMsg.setProxyReceiveBackMs(in.readLong());
+
             dialogMsg.setMsg(in.readUTF());
             obj = dialogMsg;
         }else if (type == ROOM_MSG_FLAG_TYPE){

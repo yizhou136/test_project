@@ -1,12 +1,15 @@
-package com.zy.nut.relayer.common.transporter.netty;
+package com.zy.nut.relayer.client.netty;
 
-import com.zy.nut.common.beans.DialogMsg;
 import com.zy.nut.relayer.common.logger.Logger;
 import com.zy.nut.relayer.common.logger.LoggerFactory;
 import com.zy.nut.relayer.common.remoting.Codec;
 import com.zy.nut.relayer.common.remoting.exchange.header.RelayerCodec;
+import com.zy.nut.relayer.common.transporter.netty.Netty4BackedChannelBuffer;
+import com.zy.nut.relayer.common.transporter.netty.NettyChannel;
+import com.zy.nut.relayer.common.transporter.netty.RelayerCodecHandler;
 import io.netty.buffer.ByteBuf;
-import io.netty.channel.*;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import io.netty.util.Attribute;
 import io.netty.util.AttributeKey;
@@ -17,53 +20,44 @@ import java.util.List;
 /**
  * Created by zhougb on 2016/12/6.
  */
-public class RelayerDecoderCodecHandler extends ByteToMessageDecoder {
+public class ClientRelayerDecoderCodecHandler extends ByteToMessageDecoder {
     private static final Logger logger = LoggerFactory.getLogger(RelayerCodecHandler.class);
+
 
     private Codec codec;
 
-    public RelayerDecoderCodecHandler(){
+    public ClientRelayerDecoderCodecHandler(){
         codec = new RelayerCodec();
     }
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
-        //if (Codec.ReceiveDataStartMS.get() == 0)
-
-        logger.info("RelayerDecoderCodecHandler  received msg start:"+Codec.ReceiveDataStartMS.get()+" in:"+in);
+        logger.info("ClientRelayerDecoderCodecHandler  received msg ReceiveDataStartMS:"+Codec.ReceiveDataStartMS.get());
         Netty4BackedChannelBuffer message = new Netty4BackedChannelBuffer(in);
         Channel nettyChannel = ctx.channel();
         NettyChannel channel = NettyChannel.getOrAddChannel(nettyChannel, null);
 
-        long startDecode = 0;
-        long endDecode = 0;
         while(true) {
             try {
                 int saveReaderIndex = message.readerIndex();
                 Object msg;
                 try {
-                    //Codec.StartDecodeMS.set(System.currentTimeMillis());
-                    startDecode = System.currentTimeMillis();
+                    if (Codec.StartDecodeMS.get() == 0)
+                        Codec.StartDecodeMS.set(System.currentTimeMillis());
                     msg = codec.decode(channel, message);
-                    endDecode = System.currentTimeMillis();
                 } catch (IOException var12) {
                     throw var12;
                 }
+
                 if(msg == Codec.DecodeResult.NEED_MORE_INPUT) {
                     message.readerIndex(saveReaderIndex);
                 } else {
                     if(saveReaderIndex == message.readerIndex()) {
                         throw new IOException("Decode without read data.");
                     }
+
                     if(msg != null) {
                         out.add(msg);
-                        if (msg instanceof DialogMsg){
-                            DialogMsg dialogMsg = (DialogMsg)msg;
-                            dialogMsg.setProxyReceiveMs(Codec.ReceiveDataStartMS.get());
-                            //dialogMsg.setProxyReceiveBackMs(receiveMs);
-                            dialogMsg.setStartDecodeMs(startDecode);
-                            dialogMsg.setEndDecodeMs(endDecode);
-                        }
                     }
 
                     if(message.readable()) {
@@ -74,7 +68,6 @@ public class RelayerDecoderCodecHandler extends ByteToMessageDecoder {
                 NettyChannel.removeChannelIfDisconnected(ctx.channel());
             }
 
-            //Codec.ReceiveDataStartMS.set(0L);
             return;
         }
     }

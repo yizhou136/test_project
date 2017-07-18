@@ -12,8 +12,6 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.logging.LogLevel;
-import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
@@ -78,13 +76,14 @@ public class MsProxyClient {
                             if (sslCtx != null) {
                                 pipeline.addLast(sslCtx.newHandler(ch.alloc(), host, port));
                             }
-                            pipeline.addLast(new LoggingHandler(LogLevel.INFO));
+                            //pipeline.addLast(new LoggingHandler(LogLevel.INFO));
                             //pipeline.addLast("idleStateHandler", new IdleStateHandler(20, 5, 0));
                             //pipeline.addLast("relayerEventHandler", new RelayerEventHandler());
 
-                            pipeline.addLast(new RelayerDecoderCodecHandler());
-                            pipeline.addLast(new RelayerEncoderCodecHandler());
-                            pipeline.addLast(new HandleRelayerHandler());
+                            pipeline.addLast(new ClientLoggingHandler());
+                            pipeline.addLast(new ClientRelayerDecoderCodecHandler());
+                            pipeline.addLast(new ClientRelayerEncoderCodecHandler());
+                            pipeline.addLast(new ClientHandleRelayerHandler());
                             //p.addLast(new EchoClientHandler());
                         }
                     });
@@ -157,7 +156,7 @@ public class MsProxyClient {
     }
 
     public static void main(String argv[]){
-        MsProxyClient msProxyClient = new MsProxyClient("0.0.0.0", 8383);
+        /*MsProxyClient msProxyClient = new MsProxyClient("0.0.0.0", 8383);
 
         msProxyClient.login(1000);
         msProxyClient.login(1001);
@@ -169,6 +168,15 @@ public class MsProxyClient {
             msProxyClient.getChannel().closeFuture().sync();
         } catch (InterruptedException e) {
             e.printStackTrace();
-        }
+        }*/
+
+
+        String x = "hello";
+        String y = "world";
+        String z = new String("helloworld");
+        String a = "helloworld";
+        System.out.println("x == hello:" + (x == "hello"));
+        System.out.println("a == helloworld:" + (a == "hello" + "world"));
+        System.out.println("a == x+y:" + (a == (x + y)));
     }
 }

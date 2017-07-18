@@ -1,5 +1,6 @@
 package com.zy.nut.common.msp;
 
+import com.zy.nut.common.beans.DialogMsg;
 import com.zy.nut.common.beans.NodeServer;
 
 /**

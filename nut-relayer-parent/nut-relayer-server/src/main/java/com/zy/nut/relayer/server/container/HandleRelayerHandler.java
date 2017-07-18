@@ -5,11 +5,14 @@ import com.zy.nut.common.msp.*;
 
 import com.zy.nut.common.beans.DialogMsg;
 import com.zy.nut.common.beans.RoomMsg;
+import com.zy.nut.relayer.common.remoting.Codec;
 import com.zy.nut.relayer.common.remoting.Server;
 import com.zy.nut.relayer.server.service.SpringNettyContainer;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.util.Attribute;
+import io.netty.util.AttributeKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,9 +48,7 @@ public class HandleRelayerHandler extends ChannelDuplexHandler {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        logger.info("msProxy receive msg:{}", msg);
-        com.zy.nut.common.msp.Response response = null;//msBackService.nofity("loginorlogout".getBytes());
-        logger.info("msBackService notify response:"+response);
+        logger.info("HandleRelayerHandler  received msg");
         if (msg instanceof RelayerLogin){
             RelayerLogin userLogin = (RelayerLogin)msg;
             userLogin.setChannel(ctx.channel());
@@ -75,8 +76,10 @@ public class HandleRelayerHandler extends ChannelDuplexHandler {
             //msgService.s
         }else if (msg instanceof DialogMsg){
             DialogMsg dialogMsg = (DialogMsg)msg;
-            logger.info("DialogMsg "+dialogMsg.getFuid()+" to "+dialogMsg.getTuid()
-                    +" msg:"+dialogMsg.getMsg());
+            dialogMsg.setProxySendMs(System.currentTimeMillis());
+            logger.info("HandleRelayerHandler  received dialogMsg:{}",
+                    dialogMsg);
+
             msBackService.notify(dialogMsg);
         }else if (msg instanceof RoomMsg){
             RoomMsg roomMsg = (RoomMsg)msg;

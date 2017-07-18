@@ -45,9 +45,11 @@ public class RelayerHandlerInitializer implements ChannelInitializerRegister{
     public void registerInitializer(ChannelHandlerContext ctx) {
         ChannelPipeline pipeline = ctx.pipeline();
         //pipeline.addLast("relayerCodec", new RelayerCodecHandler(null));
+        pipeline.addLast(new MyLoggingHandler());
         pipeline.addLast(new RelayerDecoderCodecHandler());
         pipeline.addLast(new RelayerEncoderCodecHandler());
-        pipeline.addLast(eventExecutorGroup, handleRelayerHandler);
+        //pipeline.addLast(eventExecutorGroup, handleRelayerHandler);
+        pipeline.addLast(handleRelayerHandler);
 
         pipeline.remove(ProtocolDetectHandler.class);
     }

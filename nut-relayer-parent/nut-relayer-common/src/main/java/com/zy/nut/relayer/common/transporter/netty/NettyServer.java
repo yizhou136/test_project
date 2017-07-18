@@ -1,6 +1,7 @@
 package com.zy.nut.relayer.common.transporter.netty;
 
 
+import com.alibaba.dubbo.common.utils.ConcurrentHashSet;
 import com.zy.nut.common.beans.DialogMsg;
 import com.zy.nut.common.beans.NodeServer;
 import com.zy.nut.common.beans.RoomMsg;
@@ -27,6 +28,7 @@ import io.netty.handler.ssl.util.SelfSignedCertificate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -39,8 +41,8 @@ public class NettyServer extends AbstractServer implements Server{
     private NettyClient parentNode;
     private ConcurrentHashMap<String, NodeServer> childrenNodesMap;
 
-    private ConcurrentHashMap<Long, ConcurrentLinkedQueue<Channel>> userLoginedChannelMap;
-    private ConcurrentHashMap<Long, ConcurrentLinkedQueue<Channel>> roomEnteredChannelMap;
+    private ConcurrentHashMap<Long, ConcurrentHashSet<Channel>> userLoginedChannelMap;
+    private ConcurrentHashMap<Long, ConcurrentHashSet<Channel>> roomEnteredChannelMap;
     private AtomicInteger totalChannelCounter;
 
     private boolean needSSL;
@@ -78,7 +80,7 @@ public class NettyServer extends AbstractServer implements Server{
             b.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
                     .option(ChannelOption.SO_BACKLOG, 100)
-                    .handler(new LoggingHandler(LogLevel.DEBUG))
+                    //.handler(new LoggingHandler(LogLevel.DEBUG))
                     //.childHandler(new ProtocolDetectHandler(initializerRegisterList));
                     .childHandler(new RelayerServerInitializer(initializerRegisterList));
 
@@ -141,7 +143,7 @@ public class NettyServer extends AbstractServer implements Server{
         Long rid = relayerEnterRoom.getRid();
         roomEnteredChannelMap.compute(rid, (key, val)->{
             if (val == null){
-                val = new ConcurrentLinkedQueue<Channel>();
+                val = new ConcurrentHashSet<Channel>();
             }
 
             val.add(relayerEnterRoom.getChannel());
@@ -180,7 +182,7 @@ public class NettyServer extends AbstractServer implements Server{
     @Override
     public void publish(RoomMsg roomMsg) {
         Long rid = roomMsg.getRid();
-        Queue<Channel> queue = roomEnteredChannelMap.get(rid);
+        Set<Channel> queue = roomEnteredChannelMap.get(rid);
         if (queue != null)
             for (Channel channel : queue){
                 channel.writeAndFlush(roomMsg);
