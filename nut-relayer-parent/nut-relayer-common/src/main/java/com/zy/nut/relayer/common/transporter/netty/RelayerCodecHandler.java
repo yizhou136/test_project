@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * Created by Administrator on 2016/11/6.
+ * Created by Administrator on 2016/2/6.
  */
 public class RelayerCodecHandler extends ByteToMessageCodec<Object>{
     private static final Logger logger = LoggerFactory.getLogger(RelayerCodecHandler.class);

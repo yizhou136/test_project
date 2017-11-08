@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import java.io.Serializable;
 
 /**
- * Created by zhougb on 2017/2/24.
+ * Created by zhougb on 2016/2/24.
  */
 @Service
 public class MspServiceImpl implements MsProxyService {

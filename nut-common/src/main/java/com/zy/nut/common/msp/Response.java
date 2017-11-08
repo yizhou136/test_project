@@ -3,7 +3,7 @@ package com.zy.nut.common.msp;
 import java.io.Serializable;
 
 /**
- * Created by zhougb on 2016/12/5.
+ * Created by zhougb on 2016/2/5.
  */
 public class Response implements Serializable{
     public static enum ResponseCode {

@@ -1,24 +1,23 @@
-package com.zy.nut.relayer.server.container;
+package com.zy.nut.relayer.server.handlers.relayer;
 
 import com.zy.nut.relayer.common.remoting.exchange.header.HeaderExchangeCodec;
 import com.zy.nut.relayer.common.transporter.ChannelInitializerRegister;
-import com.zy.nut.relayer.common.transporter.netty.*;
+import com.zy.nut.relayer.common.transporter.netty.ProtocolDetectHandler;
+import com.zy.nut.relayer.common.transporter.netty.RelayerDecoderCodecHandler;
+import com.zy.nut.relayer.common.transporter.netty.RelayerEncoderCodecHandler;
 import com.zy.nut.relayer.common.utils.NamedThreadFactory;
+import com.zy.nut.relayer.server.handlers.MyLoggingHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.DefaultEventLoopGroup;
-import io.netty.util.concurrent.EventExecutor;
 import io.netty.util.concurrent.EventExecutorGroup;
-import io.netty.util.concurrent.MultithreadEventExecutorGroup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.nio.ByteBuffer;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ThreadFactory;
 
 /**
- * Created by Administrator on 2016/12/4.
+ * Created by Administrator on 2016/2/4.
  */
 @Component
 public class RelayerHandlerInitializer implements ChannelInitializerRegister{

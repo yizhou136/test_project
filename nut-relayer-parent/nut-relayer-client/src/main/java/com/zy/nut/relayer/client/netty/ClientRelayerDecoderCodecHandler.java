@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * Created by zhougb on 2016/12/6.
+ * Created by zhougb on 2016/2/6.
  */
 public class ClientRelayerDecoderCodecHandler extends ByteToMessageDecoder {
     private static final Logger logger = LoggerFactory.getLogger(RelayerCodecHandler.class);
@@ -32,7 +32,7 @@ public class ClientRelayerDecoderCodecHandler extends ByteToMessageDecoder {
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
-        logger.info("ClientRelayerDecoderCodecHandler  received msg ReceiveDataStartMS:"+Codec.ReceiveDataStartMS.get());
+        //logger.info("ClientRelayerDecoderCodecHandler  received msg ReceiveDataStartMS:"+Codec.ReceiveDataStartMS.get());
         Netty4BackedChannelBuffer message = new Netty4BackedChannelBuffer(in);
         Channel nettyChannel = ctx.channel();
         NettyChannel channel = NettyChannel.getOrAddChannel(nettyChannel, null);

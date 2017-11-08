@@ -10,7 +10,7 @@ import com.zy.nut.relayer.common.remoting.exchange.header.RelayerCodec;
 import java.net.URL;
 
 /**
- * Created by Administrator on 2016/11/7.
+ * Created by Administrator on 2016/2/7.
  */
 public abstract class AbstractContainer extends ContainerExchangeAdapter implements Container{
     private Configuration configuration;

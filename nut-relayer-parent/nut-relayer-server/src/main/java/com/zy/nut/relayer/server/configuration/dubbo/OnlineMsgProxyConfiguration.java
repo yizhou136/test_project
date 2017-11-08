@@ -11,7 +11,7 @@ import org.springframework.context.annotation.ImportResource;
 import org.springframework.core.annotation.Order;
 
 /**
- * Created by zhougb on 2016/11/3.
+ * Created by zhougb on 2016/2/3.
  */
 @Configuration
 @Order(1)

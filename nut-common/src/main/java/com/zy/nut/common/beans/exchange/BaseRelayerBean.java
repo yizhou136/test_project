@@ -3,7 +3,7 @@ package com.zy.nut.common.beans.exchange;
 import io.netty.channel.Channel;
 
 /**
- * Created by zhougb on 2016/12/5.
+ * Created by zhougb on 2016/2/5.
  */
 public class BaseRelayerBean {
     private long uid;

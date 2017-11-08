@@ -1,25 +1,21 @@
-package com.zy.nut.relayer.server.container;
-
-import com.zy.nut.common.beans.exchange.*;
-import com.zy.nut.common.msp.*;
+package com.zy.nut.relayer.server.handlers.relayer;
 
 import com.zy.nut.common.beans.DialogMsg;
 import com.zy.nut.common.beans.RoomMsg;
-import com.zy.nut.relayer.common.remoting.Codec;
+import com.zy.nut.common.beans.exchange.*;
+import com.zy.nut.common.msp.MsBackService;
 import com.zy.nut.relayer.common.remoting.Server;
 import com.zy.nut.relayer.server.service.SpringNettyContainer;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.util.Attribute;
-import io.netty.util.AttributeKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * Created by zhougb on 2016/11/9.
+ * Created by zhougb on 2016/2/9.
  */
 @Component
 @ChannelHandler.Sharable

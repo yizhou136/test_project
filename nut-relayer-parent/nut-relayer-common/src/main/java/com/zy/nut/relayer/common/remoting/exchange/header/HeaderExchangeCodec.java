@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Created by Administrator on 2016/11/6.
+ * Created by Administrator on 2016/1/6.
  *   magic  type&serilization&other    data_length       data
  *   --          -                       ----         pingpong,loginout,electing,transfrom etc
  *

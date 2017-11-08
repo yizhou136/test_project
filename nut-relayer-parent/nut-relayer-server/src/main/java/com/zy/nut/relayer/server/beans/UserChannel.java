@@ -8,7 +8,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Created by Administrator on 2016/12/4.
+ * Created by Administrator on 2016/2/4.
  */
 public class UserChannel {
     private static final Map<Long, Set<UserChannel>> GlobalUserChannels = new ConcurrentHashMap();

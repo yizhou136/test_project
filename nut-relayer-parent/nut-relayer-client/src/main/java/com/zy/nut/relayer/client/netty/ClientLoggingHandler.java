@@ -15,7 +15,7 @@ public class ClientLoggingHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        logger.info("channelRead msg:{}"+ msg);
+        //logger.info("channelRead msg:{}"+ msg);
         Codec.ReceiveDataStartMS.set(System.currentTimeMillis());
         super.channelRead(ctx, msg);
     }

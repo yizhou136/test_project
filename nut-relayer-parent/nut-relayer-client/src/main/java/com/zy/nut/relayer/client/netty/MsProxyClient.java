@@ -125,15 +125,19 @@ public class MsProxyClient {
     }
 
     public void sendDialogMsg(long tuid){
-        sendDialogMsg(uid, tuid);
+        sendDialogMsg(tuid, "hello ");
     }
 
-    public void sendDialogMsg(long fuid, long tuid){
+    public void sendDialogMsg(long tuid, String msg){
+        sendDialogMsg(uid, tuid, msg);
+    }
+
+    public void sendDialogMsg(long fuid, long tuid, String msg){
         long lctime = System.currentTimeMillis();
         DialogMsg dialogMsg = new DialogMsg();
         dialogMsg.setFuid(fuid);
         dialogMsg.setTuid(tuid);
-        dialogMsg.setMsg("haha342343434142341234"+lctime);
+        dialogMsg.setMsg(msg);
         dialogMsg.setLctime(lctime);
 
         getChannel().writeAndFlush(dialogMsg);

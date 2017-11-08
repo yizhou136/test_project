@@ -5,31 +5,30 @@ import com.zy.nut.common.beans.RoomMsg;
 import com.zy.nut.common.beans.exchange.RelayerLogin;
 import com.zy.nut.common.beans.exchange.RelayerLogout;
 import com.zy.nut.common.beans.exchange.TransformData;
-import com.zy.nut.relayer.common.logger.Logger;
-import com.zy.nut.relayer.common.logger.LoggerFactory;
 import com.zy.nut.relayer.common.remoting.Codec;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.Attribute;
 import io.netty.util.AttributeKey;
+import org.apache.log4j.Logger;
 
 /**
- * Created by zhougb on 2016/11/9.
+ * Created by zhougb on 2016/2/9.
  */
 @ChannelHandler.Sharable
 public class ClientHandleRelayerHandler extends ChannelDuplexHandler {
-    private static final Logger logger = LoggerFactory.getLogger(ClientHandleRelayerHandler.class);
+    private static final Logger logger = Logger.getLogger(ClientHandleRelayerHandler.class);
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        logger.info("channelActive ctx:"+ctx);
+        //logger.info("channelActive ctx:"+ctx);
         ctx.fireChannelActive();
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        logger.info("channelInactive ctx:"+ctx);
+        //logger.info("channelInactive ctx:"+ctx);
         ctx.fireChannelInactive();
     }
 
@@ -54,12 +53,12 @@ public class ClientHandleRelayerHandler extends ChannelDuplexHandler {
             DialogMsg dialogMsg = (DialogMsg)msg;
             dialogMsg.setCtime(Codec.ReceiveDataStartMS.get());
             long clientDecodeMs = endDecodeMs - startDecodeMs;
-            logger.info("HandleRelayerHandler  received dialogMsg:{}"+
-                    dialogMsg+" clientDecodeMs:"+clientDecodeMs);
+            //logger.info("HandleRelayerHandler  received dialogMsg:{}"+
+              //      dialogMsg+" clientDecodeMs:"+clientDecodeMs);
 
             long escapeMs = System.currentTimeMillis() - dialogMsg.getLctime();
-            logger.warn("receive DialogMsg "+dialogMsg.getFuid()+" to "+dialogMsg.getTuid()
-                    +" msg:"+dialogMsg.getMsg()+"  escapeMs:"+escapeMs+"ms");
+            logger.info("receive DialogMsg "+dialogMsg.getFuid()+" => "+dialogMsg.getTuid()
+                        +" :"+dialogMsg.getMsg());
         }else if (msg instanceof RoomMsg){
             RoomMsg roomMsg = (RoomMsg)msg;
             logger.info("roommsg "+roomMsg.getFuid()+" to "+roomMsg.getRid()

@@ -1,7 +1,7 @@
 package com.zy.nut.relayer.server.beans;
 
 /**
- * Created by Administrator on 2016/12/4.
+ * Created by Administrator on 2016/2/4.
  */
 public class User {
     private long uid;

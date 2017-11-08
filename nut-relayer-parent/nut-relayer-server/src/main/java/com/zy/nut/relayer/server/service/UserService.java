@@ -9,7 +9,7 @@ import com.zy.nut.common.beans.exchange.RelayerLogin;
 import com.zy.nut.common.beans.exchange.RelayerLogout;
 
 /**
- * Created by Administrator on 2016/11/28.
+ * Created by Administrator on 2016/2/28.
  */
 public interface UserService {
     void login(RelayerLogin relayerLogin);

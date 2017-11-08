@@ -103,14 +103,17 @@ public class DialogMsg extends BaseMsg{
         long backToClientNetMs = getCtime() - getBackSendMs();
         long totalEscapeMs = getCtime() - getLctime();
         long proxyAndBackRTEscapeMs =  proxyRTEscapeMs + backRTEscapeMs;
-        stringBuilder.append("\nclientToProxyNetMs:").append(clientToProxyNetMs)
+        /*stringBuilder.append("\nclientToProxyNetMs:").append(clientToProxyNetMs)
                 .append("\nproxyDecodeEscapeMs:").append(proxyDecodeEscapeMs)
                 .append("\nproxyRTEscapeMs:").append(proxyRTEscapeMs)
                 .append("\nproxyToBackNetMs:").append(proxyToBackNetMs)
                 .append("\nbackRTEscapeMs:").append(backRTEscapeMs)
                 .append("\nbackToClientNetMs:").append(backToClientNetMs)
                 .append("\ntotalEscapeMs:").append(totalEscapeMs)
-                .append("\nproxyAndBackRTEscapeMs:").append(proxyAndBackRTEscapeMs);
+                .append("\nproxyAndBackRTEscapeMs:").append(proxyAndBackRTEscapeMs);*/
+        stringBuilder.append("fuid:").append(getFuid())
+                    .append(" tuid:").append(getTuid())
+                    .append(" msg:").append(getMsg());
         return stringBuilder.toString();
     }
 }

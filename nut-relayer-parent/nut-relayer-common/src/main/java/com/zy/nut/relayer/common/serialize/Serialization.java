@@ -21,12 +21,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-/**
- * Serialization. (SPI, Singleton, ThreadSafe)
- * 
- * @author ding.lid
- * @author william.liangf
- */
 public interface Serialization {
 
     /**

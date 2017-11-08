@@ -1,7 +1,7 @@
 package com.zy.nut.relayer.server.beans;
 
 /**
- * Created by Administrator on 2016/11/28.
+ * Created by Administrator on 2016/2/28.
  */
 
 public class Boker {

@@ -19,16 +19,16 @@ import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
+import io.netty.util.Attribute;
+import io.netty.util.AttributeKey;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -37,6 +37,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Created by Administrator on 2016/11/5.
  */
 public class NettyServer extends AbstractServer implements Server{
+    public static final AttributeKey<Boolean> IS_WEBSOCKET_CHANNEL = AttributeKey.valueOf("IS_WEBSOCKET_CHANNEL");
 
     private NettyClient parentNode;
     private ConcurrentHashMap<String, NodeServer> childrenNodesMap;
@@ -80,7 +81,7 @@ public class NettyServer extends AbstractServer implements Server{
             b.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
                     .option(ChannelOption.SO_BACKLOG, 100)
-                    //.handler(new LoggingHandler(LogLevel.DEBUG))
+                    .handler(new LoggingHandler(LogLevel.DEBUG))
                     //.childHandler(new ProtocolDetectHandler(initializerRegisterList));
                     .childHandler(new RelayerServerInitializer(initializerRegisterList));
 
@@ -117,7 +118,8 @@ public class NettyServer extends AbstractServer implements Server{
         Long uid = relayerLogin.getUid();
         userLoginedChannelMap.compute(uid, (key, val)->{
             if (val == null){
-                val = new ConcurrentLinkedQueue<Channel>();
+                //val = new ConcurrentLinkedQueue<Channel>();
+                val = new ConcurrentHashSet<Channel>();
             }
 
             val.add(relayerLogin.getChannel());
@@ -169,10 +171,19 @@ public class NettyServer extends AbstractServer implements Server{
     public void sendTo(DialogMsg dialogMsg) {
         Long fuid = dialogMsg.getFuid();
         Long tuid = dialogMsg.getTuid();
-        Queue<Channel> queue = userLoginedChannelMap.get(tuid);
+        //Queue<Channel> queue = userLoginedChannelMap.get(tuid);
+        Set<Channel> queue = userLoginedChannelMap.get(tuid);
         if (queue != null)
             for (Channel channel : queue){
-                channel.writeAndFlush(dialogMsg);
+                Attribute<Boolean> attribute = channel.attr(IS_WEBSOCKET_CHANNEL);
+                if (attribute.get() != null
+                        && attribute.get()) {
+                    String msg = String.format("%d => %d: %s",
+                            fuid, tuid, dialogMsg.getMsg());
+                    channel.writeAndFlush(new TextWebSocketFrame(msg));
+                }else {
+                    channel.writeAndFlush(dialogMsg);
+                }
             }
 
         logger.info("sentTo fuid:{} tuid:{}",

@@ -12,13 +12,10 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import java.net.URL;
 
 /**
- * Created by Administrator on 2016/11/6.
+ * Created by Administrator on 2016/2/6.
  */
 
 @SpringBootApplication
-//@EnableJpaRepositories("com.zy.nut.relayer.common.beans.*")
-//@ComponentScan(basePackages = { "com.zy.nut.relayer.common.beans.*" })
-//@EntityScan("com.zy.nut.relayer.common.beans.*")
 public class OnlineMsgProxyApplication {
     private static  final Logger logger = LoggerFactory.getLogger(OnlineMsgProxyApplication.class);
 
@@ -34,15 +31,12 @@ public class OnlineMsgProxyApplication {
         RelayerProperties relayerProperties = new RelayerProperties();
         relayerProperties.setConfigure("classpath:relayer.properties");
         Configuration configuration = ConfigurationLoader.load(relayerProperties.getConfigureUrl());
-        //System.setProperty("",configuration.generateNodeName());
         System.setProperty("relayer.nodeName", configuration.generateNodeName());
         new SpringApplicationBuilder(OnlineMsgProxyApplication.class).web(false).run();
     }
 
-    public static void main2(String argv[]){
+    public static void apiRun(){
         String path = "relayer.properties";
-        if (argv.length > 0)
-            path = argv[0];
         System.out.println("read path:"+path);
         URL url = RelayerServerContainer.class.getClassLoader().getResource(path);
         RelayerServerContainer relayerContainer = null;

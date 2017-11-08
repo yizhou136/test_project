@@ -32,7 +32,7 @@ public class BootRelayerClient {
         for (int i=0; i < size; i++){
             String[] hostip = hostIpes[random.nextInt(hostIpes.length)];
             MsProxyClient msProxyClient = new MsProxyClient(hostip[0], Integer.parseInt(hostip[1]),
-                    Long.valueOf(i),nioEventLoopGroup);
+                            Long.valueOf(i),nioEventLoopGroup);
             msProxyClientList.add(msProxyClient);
             logger.info("create msProxyClient:"+msProxyClientList.size());
         }

@@ -4,7 +4,7 @@ import com.zy.nut.common.beans.DialogMsg;
 import com.zy.nut.common.beans.RoomMsg;
 
 /**
- * Created by zhougb on 2017/2/24.
+ * Created by zhougb on 2016/2/24.
  */
 public interface MsProxyService {
 
